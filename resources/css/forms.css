@@ -1,0 +1,178 @@
+/* Universal form styling */
+form{
+	font-family: helvetica, sans-serif;
+	font-size: 1.12em;
+}
+
+label{
+	color: darkblue;
+	letter-spacing: 0.025em;
+	display: inline-block;
+	width: 6em;
+	text-align: right;
+	margin-right: 3px;
+}
+
+.form_input_row{
+	margin-bottom: 12px;
+}
+
+#form_header .form_input_row{
+	margin-bottom: 0px;
+}
+
+/*
+.lbl_col{
+	float: left;
+	margin-bottom: 10px;
+}
+
+.input_col{
+	float: right;
+	margin-bottom: 10px;
+}
+*/
+
+/*.clearfix:after, .clearfix:before{
+	content: " ";
+	display:table
+}
+
+.clearfix:after{
+	clear: both;
+}
+*/
+
+.txt_box, .select_box{
+	padding: 0.5em 0.2em;
+	outline: none;
+	letter-spacing: 0.05em;
+	/*float: right;*/
+	background-color: #fff;
+	border-style: solid;
+	border-radius: 3px;
+	border-color: #ccc;
+	
+}
+
+.btn_row{
+	width: fit-content;
+	margin:auto;
+	margin-top: 10px;
+}
+
+
+/**
+	>>> Styling login form begins <<<
+
+**/
+.form_input_row .txt_box{
+	display: inline-block;
+	
+}
+
+.login_btn input[type="button"]{
+	padding: 5px 7px;
+	border: 1px solid #fff;
+	border-radius: 3px;
+	background-color: darkblue;
+	color: #fff;
+}
+
+/**
+	>>> Styling Orders, Requisition & Payment edit/add table form begins <<<
+
+**/
+#details_form{
+	margin-top: 10px;
+	border: 1px solid;
+	padding: 10px;
+}
+
+#form_header{
+	margin-bottom: 10px;
+		display: flex;
+	justify-content:  space-between;
+}
+
+.pymt_btn{
+	background-color: #ddd;
+	padding: 3px 10px;
+	border: 1px solid rgb(244,117,13);
+	border-radius: 3px;
+	color: rgb(244,117,13);
+	letter-spacing: 0.05em;
+	font-family: "Trebuchet MS", sans-serif;
+}
+
+.pymt_btn:hover{
+	background-image: linear-gradient(orange,rgb(244,117,13));
+	color: #ffffff;
+	border-color: #ffffff;
+}
+
+#form_content #grid_view_header{
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content:  space-between
+}
+
+#form_content #grid_view_content{
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content:  space-between;
+	background-color: whitesmoke;
+}
+
+#form_content .grid_view_header_cell:nth-child(2){
+	width: 8em;
+}
+
+#form_content .grid_view_content_cell:nth-child(2){
+	width: 8em;
+	display: inline-flex;
+}
+
+#grid_view_content input, #grid_view_content select{
+	font-size: .75em;
+	
+}
+.qty_input{
+	width: 9em;
+	text-align: center
+}
+
+.rate_input{
+	width: 10em;
+	text-align: right;
+}
+
+.total_input{
+	width: 10em;
+	text-align: right;
+}
+
+#form_footer{
+	padding: 7px 5px;
+}
+
+#form_footer input:first-child{
+	padding: 5px 7px;
+	border: 1px solid #000;
+	background-color: blue;
+	border-radius: 2px;
+	color: #fff;
+	
+}
+
+#form_footer input:last-child{
+	float: right;
+	padding: 5px 7px;
+	border: 1px solid #000;
+	background-color: red;
+	border-radius: 2px;
+	color: #fff;
+	
+}

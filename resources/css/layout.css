@@ -1,0 +1,333 @@
+*{
+	box-sizing: border-box;
+}
+body{
+	box-sizing: border-box;
+	font-size: 100%;
+	background-image: url("../images/background.png");
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-size: cover;
+	/*background-image: linear-gradient(270deg, #e7e7e0, #fff);
+	background-color: #e7e7e0;*/
+	margin-top: 2px;
+}
+
+/**
+	>>> Styling the Login page layout begins <<<
+
+**/
+
+#login_box{
+	border: 1px solid;
+	width: fit-content;
+	margin: auto;
+	padding: 50px 30px;
+	margin-top: 15%;
+	border-radius: 2px;
+	background-image: linear-gradient(150deg,rgb(244,117,13), #ffffff);
+	height: 200px;
+}
+
+
+/**
+	>>> Styling the app Page layout begins <<<
+
+**/
+
+ul{
+	margin: 0;
+	list-style-type:none;
+	padding: 0;
+}
+
+#app_container{
+	border: 1px solid black;
+	border-radius: 3px;
+	width: 80%;
+	margin: auto;
+	
+}
+
+#header_content_box{
+	border: 1px solid black;
+	margin-bottom: 3px;
+}
+
+#header_box>h1{
+	text-align: center;
+	font-family: Verdana, sans-serif;
+	letter-spacing: 0.09em;
+	font-size: 2.3em;
+	margin-bottom: none;
+}
+
+#user_box{
+	position: fixed;
+	top: 4px;
+	right: 11%;
+	padding: 5px;
+	color: darkblue;
+}
+
+#user_welcome{
+	padding: 5px;
+}
+
+.user_chevron{
+	margin-left: 5px;
+	color: rgba(244,117,13, 0.9);
+	font-size: 20px;
+	margin: 1px solid red;
+	
+}
+
+#user_lnks_box{
+	border: 1px solid white;
+	background-color: rgb(244,117,13);
+}
+
+.user_lnks_lst a:link, .user_lnks_lst a:visited{
+	text-decoration: none;
+	display: block;
+	padding: 2px 5px;
+	color: darkblue;
+	
+}
+
+.user_lnks_lst:first-child{
+	background-image: linear-gradient(180deg, rgb(244,117,13), white);
+}
+
+.user_lnks_lst a:hover, .user_lnks_lst a:active{
+	text-decoration: underline;
+	color: #ffffff;
+}
+
+#top_nav_bar_box{
+	border: 1px solid #f2f2f2;
+	width: 75%;
+	margin: auto;
+	margin-bottom: 3px;
+	text-align: center;
+	background-color: rgb(244,117,13);
+}
+
+#nav_lnk_box{
+	display: flex;
+	justify-content: space-around;
+}
+
+.nav_lnks_lst {
+	padding: 12px 0.4em;
+
+}
+
+.active_nav_link{
+	border-bottom: 3px solid darkblue;
+}
+
+.nav_lnks_lst a:link, .nav_lnks_lst a:visited{
+	text-decoration: none;
+	padding: 12px 1.3em;
+	color: darkblue;
+	font-size: 1.2rem;
+	font-family: Calibri, sans-serif;
+	
+}
+
+.nav_lnks_lst a:hover, .nav_lnks_lst a:active{
+	color: #ffffff;
+	text-decoration:underline;
+}
+
+#main_content_box{
+	border: 1px solid black;
+}
+
+#content_banner_box{
+	border: 1px solid black;
+	width: 90%;
+	margin: auto;
+	margin-top: 3px;
+	margin-bottom: 3px;
+	padding: 3px 0 3px 12px;
+}
+
+#banner{
+	margin: 0;
+	letter-spacing: 0.05em;
+	font-family: Verdana, sans-serif;
+	font-weight: 500;
+	color: rgb(244,117,13)
+}
+
+#sub_content_box{
+	border: 1px solid black;
+	width: 90%;
+	margin: auto;
+	margin-bottom: 2px;
+	padding: 3px 12px 3px 12px;
+}
+
+
+/** 
+	>>> Home view styling begins <<<
+
+**/
+#analysis_box{
+	margin-top: 10px;
+}
+
+.analysis_small_box{
+	border-radius: 3px;
+	width: 12em;
+	height: 6em;
+	padding: 10px;
+}
+
+.analysis_small_box:nth-child(1){
+	margin:auto;
+	margin-bottom: 1.5em;
+	background-image: linear-gradient(to left,gold, chocolate)
+}
+
+.analysis_small_box:nth-child(2){
+	position: relative;
+	float: right;
+	right: 8%;
+	background-image: linear-gradient(to left,orangered, crimson)
+}
+
+.analysis_small_box:nth-child(3){
+	position: relative;
+	left: 8%;
+	background-image: linear-gradient(to left,limegreen, dimgray)
+}
+
+.analysis_small_box_header{
+	margin-top: 3px;
+	margin-bottom: 5px;
+	font-size: 1.4em;
+	letter-spacing: 0.02em;
+	font-family: Calibri, sans-serif;
+	text-decoration: underline;
+	color:whitesmoke;
+}
+
+.analysis_figure{
+	font-size: 2em;
+	font-weight: 600;
+	font-family: "Segoe UI"
+}
+
+.analysis_link_arrow{
+	position: relative;
+	float: right;
+	top: 15px;
+	right: 15px;
+	font-size: 1.5em;
+	text-align: center;
+	vertical-align: center;
+	width: 1.5em;
+	height: 1.4em;
+}
+
+#home_msg_box{
+	border: 1px solid;
+	width: 85%;
+	margin:auto;
+	margin-top: 10px;
+	padding: 10px;
+}
+
+/** 
+	>>> Other views general styling begins <<<
+
+**/
+
+#details_link_box{
+	padding-top: 7px;	
+}
+
+#details_link_box>a:link, #details_link_box>a:visited{
+	text-decoration: none;
+	background-image: linear-gradient(white,#E0E0E0);
+	padding: 4px 10px;
+	border: 1px solid rgb(244,117,13);
+	border-radius: 3px;
+	color: rgb(244,117,13);
+	letter-spacing: 0.05em;
+	font-family: "Trebuchet MS", sans-serif;
+	
+}
+
+#details_link_box>a:hover, #details_link_box>a:active{
+	background-image: linear-gradient(orange,rgb(244,117,13));
+	color: #ffffff;
+	border-color: #ffffff;
+}
+
+#details_box{
+	border: 1px solid;
+	margin-top: 12px;
+	padding: 10px;
+}
+
+#details_header_box>h3{
+	margin: 5px 0;
+	color: darkblue;
+	font-family: Verdana, sans-serif;
+	font-weight: 500;
+}
+
+
+/** 
+	>>> Manage orders styling begins <<<
+
+**/
+
+#grid_view_header{
+	background-color: darkblue;
+	width: fit-content;
+	border-radius: 3px;
+	margin-bottom: 3px;
+}
+
+.grid_view_header_cell:nth-child(1){
+	width: 20px;
+}
+
+
+.grid_view_header_cell{
+	display: inline-block;
+	color: #ffffff;
+	width: 4.72em;
+	padding: 8px;
+	text-align: center;
+	font-weight: 500;
+	font-size: 1.1em;
+	letter-spacing: 0.05em;
+	font-family: Arial, sans-serif;
+}
+
+#grid_view_content{
+	/*background-color: red;*/
+	width: fit-content;
+	margin-bottom: 3px;
+	border: 1.5px solid #F5F5F5;
+	border-radius: 2px;
+}
+
+.grid_view_content_cell{
+	display: inline-block;
+	width: 4.7em;
+	text-align: center;
+	padding: 5px 2px;
+	font-size: 1.1em;
+	color: #00478bab;
+}
+
+.grid_view_content_cell:nth-child(1){
+	width: 20px
+}

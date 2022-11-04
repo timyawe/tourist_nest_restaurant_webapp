@@ -7,41 +7,27 @@ form{
 label{
 	color: darkblue;
 	letter-spacing: 0.025em;
-	display: inline-block;
-	width: 6em;
+	width: 50%;
 	text-align: right;
 	margin-right: 3px;
+	padding: 6px 0; /* Used to vertically align label text in center */
+
+}
+
+.form_input_col{
+	display: flex;
+	flex-direction: column;
 }
 
 .form_input_row{
 	margin-bottom: 12px;
+	display: flex;
 }
 
 #form_header .form_input_row{
-	margin-bottom: 0px;
+	margin-bottom: 2px;
 }
 
-/*
-.lbl_col{
-	float: left;
-	margin-bottom: 10px;
-}
-
-.input_col{
-	float: right;
-	margin-bottom: 10px;
-}
-*/
-
-/*.clearfix:after, .clearfix:before{
-	content: " ";
-	display:table
-}
-
-.clearfix:after{
-	clear: both;
-}
-*/
 
 .txt_box, .select_box{
 	padding: 0.5em 0.2em;
@@ -52,6 +38,7 @@ label{
 	border-style: solid;
 	border-radius: 3px;
 	border-color: #ccc;
+	width: 100%
 	
 }
 
@@ -61,15 +48,28 @@ label{
 	margin-top: 10px;
 }
 
+.save_btn{
+	padding: 5px 7px;
+	border: 1px solid #000;
+	background-color: rgb(51,204,51);
+	border-radius: 2px;
+	color: #fff;
+	cursor: pointer;
+	
+}
 
+.cancel_btn{
+	padding: 5px 7px;
+	border: 1px solid #000;
+	background-color: red;
+	border-radius: 2px;
+	color: #fff;
+	cursor: pointer;
+}
 /**
 	>>> Styling login form begins <<<
 
 **/
-.form_input_row .txt_box{
-	display: inline-block;
-	
-}
 
 .login_btn input[type="button"]{
 	padding: 5px 7px;
@@ -85,15 +85,39 @@ label{
 **/
 #details_form{
 	margin-top: 10px;
-	border: 1px solid;
+	border: 1px solid #ddd;
+	border-radius: 4px;
 	padding: 10px;
+	background-color: #d0d0d0;
+}
+
+@keyframes pulsate{
+	0%{outline: none;}
+	50%{background-color: rgba(255, 5, 5, 0.8);}
+	100%{background-color: rgba(244, 12, 12, 0.55); outline: solid rgba(204, 51, 51, 0.15); font-size: 1.2em;}
+}
+
+#response_box{
+	background-color: green;
+	width: 50%;
+	margin:  auto;
+	padding: 8px;
+	border-radius: 3px;
+	margin-bottom: 10px;
+	/*box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.15), 0 6px 20px 0 rgba(0, 0, 0, 0.1);*/
+	text-align: center;
+	color: #fff;
+	font-family: "Calibri" , sans-serif;
+	letter-spacing: 0.03em;
+	/*animation: pulsate 1s infinite*/
 }
 
 #form_header{
 	margin-bottom: 10px;
-		display: flex;
+	display: flex;
 	justify-content:  space-between;
 }
+
 
 .pymt_btn{
 	background-color: #ddd;
@@ -109,6 +133,59 @@ label{
 	background-image: linear-gradient(orange,rgb(244,117,13));
 	color: #ffffff;
 	border-color: #ffffff;
+	cursor: pointer;
+}
+
+/*#order_status{
+	width: 8em;
+	height: 8em;
+	transition: width 1s, height 1s, transform 1s;
+}
+
+#order_status:hover{
+	transform: scale(1.03,1.03);
+}*/
+
+#order_status p {
+	border-radius: 3px;
+	margin: 0 auto;
+	text-align: center;
+	padding: 12px;
+	width: fit-content;
+	animation: pulsate 1s infinite;
+}
+
+.delvier_btn_box button{
+	padding: 7px;
+	margin-top: 5px;
+	margin-bottom: 2px;
+	margin-left: 5.5em;
+	cursor: pointer;
+	border: 1px solid rgb(244,117,13);
+	border-radius: 4px;
+	letter-spacing: 0.04em;
+	color: rgb(244,117,13);
+}
+
+#order_status div{
+	width: fit-content;
+	margin:  auto;
+	text-decoration: underline 2px;
+	letter-spacing: 0.03em;
+	color: slategrey;
+}
+
+#order_status span{
+	color: slategrey;
+	font-size: 3em;
+	font-weight: 500;
+}
+
+#payment_bill{
+	padding: .25em 1.5em;
+	border: 1px solid rgb(244,117,13);
+	color: darkblue;
+	font-size: 1.5em;
 }
 
 #form_content #grid_view_header{
@@ -126,53 +203,93 @@ label{
 	background-color: whitesmoke;
 }
 
-#form_content .grid_view_header_cell:nth-child(2){
-	width: 8em;
-}
-
-#form_content .grid_view_content_cell:nth-child(2){
-	width: 8em;
-	display: inline-flex;
-}
-
 #grid_view_content input, #grid_view_content select{
 	font-size: .75em;
 	
 }
+
+#grid_view_content pdt_cell{
+	display: inline-flex;
+}
+
+.pdt_cell span{
+	width: 100%
+}
+
+.pdt_cell{
+	flex-grow: 3
+}
+.qty_cell{
+	flex-grow: 1
+}
+
+.rate_cell{
+	flex-grow: 2
+}
+
+.total_cell{
+	flex-grow: 2
+}
+
+.action_cell{
+	width: 3em
+}
+
 .qty_input{
-	width: 9em;
+	width: 100%;
 	text-align: center
 }
 
 .rate_input{
-	width: 10em;
+	width: 100%;
 	text-align: right;
 }
 
 .total_input{
-	width: 10em;
+  width: 100%;
 	text-align: right;
 }
 
+.pymt_amt_cell{
+	flex-grow: 1;
+}
+
+.pymt_typ_cell{
+	flex-grow: 2
+}
+
+.pymt_date_cell{
+	flex-grow: 3
+}
 #form_footer{
 	padding: 7px 5px;
 }
 
-#form_footer input:first-child{
-	padding: 5px 7px;
-	border: 1px solid #000;
-	background-color: blue;
-	border-radius: 2px;
-	color: #fff;
-	
-}
-
 #form_footer input:last-child{
 	float: right;
-	padding: 5px 7px;
-	border: 1px solid #000;
-	background-color: red;
-	border-radius: 2px;
-	color: #fff;
-	
 }
+
+
+/*.pdt_select{
+	background-color: red;
+}
+.pdt_cell{
+	width: 30%
+}
+
+.qty_cell{
+	
+	width: 20%
+}
+
+.rate_cell{
+	width: 20%
+}
+
+.total_cell{
+	width: 20%
+}
+
+.action_cell{
+	width: 2em;
+}*/

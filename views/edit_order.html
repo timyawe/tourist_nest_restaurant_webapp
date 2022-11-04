@@ -1,52 +1,26 @@
-<!doctype html>
-<html>
-	<head>
-		<meta charset="utf-8">
-		<title>Restaurant: Home</title>
-		<link rel="stylesheet" href="../resources/thirdparty/fontawesome/css/font-awesome.css" />
-		<link type="text/css" rel="stylesheet" href="../resources/css/layout.css" />
-		<link rel="stylesheet" href="../resources/css/forms.css" />
-		
-	</head>
-	<body>
-		<div id="app_container">
-			<div id="header_content_box">
-				<div id="header_box"><h1>Header</h1></div>
-				<div id="user_box">
-					<span id="user_welcome">Hello User</span><span class="user_chevron"><i class="fa fa-chevron-circle-down"></i></span>
-					<ul id="user_lnks_box">
-						<li  class="user_lnks_lst"><a href="#">Account</a></li>
-						<li  class="user_lnks_lst"><a href="#">Logout</a></li>
-					</ul>
-				</div>
-			</div>
-			<div id="top_nav_bar_box">
-				<ul id="nav_lnk_box">
-					<li class="nav_lnks_lst active_nav_link"><a href="#">Home</a></li>
-					<li class="nav_lnks_lst"><a href="#">Orders</a></li>
-					<li class="nav_lnks_lst"><a href="#">Requisitions</a></li>
-					<li class="nav_lnks_lst"><a href="#">Reports</a></li>
-				</ul>
-			</div>
-			<div id="main_content_box">
-				<div id="content_banner_box">
-					<h2 id="banner">Banner</h2>
-				</div>
-					
-				<div id="sub_content_box">
-				<div id="view_content">
+<div id="view_content">
 <div id="details_link_box">
-	<a href="#">Manage Requisitions</a>
+	<a href="#">Manage Orders</a>
 </div>
 <div id="details_box">	
 	<div id="details_header_box">
-		<h3>Edit Requisition</h3>
+		<h3>Edit Order</h3>
 	</div>
 	<div id="details_content_box">
 		<form id="details_form" name="order_form" novalidate>
+			<div id="response_box">
+				Order was saved succesfully Order was saved
+				
+			</div>
 			<div id="form_header">
 				<div>
-					
+					<input type="button" class="pymt_btn" value="Payments" />
+				</div>
+
+				<div id="order_status">
+					<!--<p>Not Delivered</p>-->
+					<div>Order Timer</div>
+					<span>10:05</span>
 				</div>
 				
 				<div class="form_input_col">
@@ -54,7 +28,13 @@
 						<label>Station:</label><input type="text" class="txt_box" readonly />
 					</div>
 					<div class="form_input_row">
-						<label>For:</label><input type="text" class="txt_box" readonly />
+						<label>To:</label><input type="text" class="txt_box" readonly />
+					</div>
+					<div class="delvier_btn_box">
+						<button>Deliver Now</button>
+					</div>
+					<div class="form_input_row">
+					<label>Verify:</label><select class="select_box"><option>Not Verified</option><option>Verified</option></select>
 					</div>
 				</div>
 			</div>
@@ -86,10 +66,10 @@
 							<span>1</span>
 						</div>
 						<div class="grid_view_content_cell pdt_cell">
-							<span><input type="text" class="txt_box" readonly />
+							<span><input type="text" class="txt_box" readonly /></span>
 						</div>
 						<div class="grid_view_content_cell">
-							<span><input type="text" class="txt_box qty_input" /></span>
+							<span><input type="text" class="txt_box qty_input" readonly /></span>
 						</div>
 						<div class="grid_view_content_cell">
 							<span><input type="text" class="txt_box rate_input" readonly /></span>
@@ -107,7 +87,7 @@
 							<span>2</span>
 						</div>
 						<div class="grid_view_content_cell pdt_cell">
-							<span><input type="text" class="txt_box" readonly />
+							<span><input type="text" class="txt_box" readonly /></span>
 						</div>
 						<div class="grid_view_content_cell">
 							<span><input type="text" class="txt_box qty_input" /></span>
@@ -138,8 +118,3 @@
 	</div>
 </div>
 </div>
-				</div>
-			</div>
-		</div>
-	</body>
-</html>

@@ -1,145 +1,573 @@
 <!doctype html>
-<html>
+<html data-ng-app="theApp">
 	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta charset="utf-8">
 		<title>Restaurant: Home</title>
-		<link rel="stylesheet" href="../resources/thirdparty/fontawesome/css/font-awesome.css" />
+		<script src="../resources/thirdparty/js/angular/angular.min.js"></script>
+		<script src="../resources/thirdparty/js/angular/angular-route.js"></script>
+		<link rel="stylesheet" href="../resources/thirdparty/css/fontawesome/css/font-awesome.css" />
 		<link type="text/css" rel="stylesheet" href="../resources/css/layout.css" />
 		<link rel="stylesheet" href="../resources/css/forms.css" />
 		
 	</head>
 	<body>
+		<!--<div id="editModal">
+			<div class="modal-content">
+				<div class="modal-header"></div>
+				<div class="modal-body"></div>
+			</div>
+		</div>-->
 		<div id="app_container">
+			
 			<div id="header_content_box">
 				<div id="header_box"><h1>Header</h1></div>
 				<div id="user_box">
 					<span id="user_welcome">Hello User</span><span class="user_chevron"><i class="fa fa-chevron-circle-down"></i></span>
 					<ul id="user_lnks_box">
-						<li  class="user_lnks_lst"><a href="#">Account</a></li>
+						<li  class="user_lnks_lst"><a href="#!account" onclick="editTitle('Restaurant: Account')">Account</a></li>
 						<li  class="user_lnks_lst"><a href="#">Logout</a></li>
 					</ul>
 				</div>
 			</div>
 			<div id="top_nav_bar_box">
 				<ul id="nav_lnk_box">
-					<li class="nav_lnks_lst active_nav_link"><a href="#">Home</a></li>
-					<li class="nav_lnks_lst"><a href="#">Orders</a></li>
-					<li class="nav_lnks_lst"><a href="#">Requisitions</a></li>
-					<li class="nav_lnks_lst"><a href="#">Reports</a></li>
+					<li class="nav_lnks_lst active_nav_link"><a href="#!dashboard" onclick="editTitle('Restaurant: Home')">Home</a></li>
+					<li class="nav_lnks_lst"><a href="#!orders" onclick="editTitle('Restaurant: Orders')">Orders</a></li>
+					<li class="nav_lnks_lst"><a href="#!requisitions" onclick="editTitle('Restaurant: Requisitions')">Requisitions</a></li>
+					<li class="nav_lnks_lst"><a href="#!reports" onclick="editTitle('Restaurant: Reports')">Reports</a></li>
 				</ul>
 			</div>
-			<div id="main_content_box">
-				<div id="content_banner_box">
-					<h2 id="banner">Banner</h2>
-				</div>
-					
-				<div id="sub_content_box">
-				<div id="view_content">
-<div id="details_link_box">
-	<a href="#">Manage Requisitions</a>
-</div>
-<div id="details_box">	
-	<div id="details_header_box">
-		<h3>Edit Requisition</h3>
-	</div>
-	<div id="details_content_box">
-		<form id="details_form" name="order_form" novalidate>
-			<div id="form_header">
-				<div>
-					
-				</div>
+			<div id="main_content_box" data-ng-view>
 				
-				<div class="form_input_col">
-					<div class="form_input_row">
-						<label>Station:</label><input type="text" class="txt_box" readonly />
-					</div>
-					<div class="form_input_row">
-						<label>For:</label><input type="text" class="txt_box" readonly />
-					</div>
-				</div>
-			</div>
-			<div id="form_content">
-				<div id="grid_view">
-					<div id="grid_view_header">
-						<div class="grid_view_header_cell">
-							<span>#</span>
-						</div>
-						<div class="grid_view_header_cell pdt_cell">
-							<span>Item</span>
-						</div>
-						<div class="grid_view_header_cell">
-							<span>Qty</span>
-						</div>
-						<div class="grid_view_header_cell">
-							<span>Rate</span>
-						</div>
-						<div class="grid_view_header_cell">
-							<span>Total</span>
-						</div>
-						<div class="grid_view_header_cell action_cell">
-							<span><i class="fa fa-plus"></i></span>
-						</div>
-					</div>
-					
-					<div id="grid_view_content">
-						<div class="grid_view_content_cell">
-							<span>1</span>
-						</div>
-						<div class="grid_view_content_cell pdt_cell">
-							<span><input type="text" class="txt_box" readonly />
-						</div>
-						<div class="grid_view_content_cell">
-							<span><input type="text" class="txt_box qty_input" /></span>
-						</div>
-						<div class="grid_view_content_cell">
-							<span><input type="text" class="txt_box rate_input" readonly /></span>
-						</div>
-						<div class="grid_view_content_cell">
-							<span><input type="text" class="txt_box total_input" readonly /></span>
-						</div>
-						<div class="grid_view_content_cell action_cell">
-							<span><i class="fa fa-close"></i></span>
-						</div>
-					</div>
-					
-					<div id="grid_view_content">
-						<div class="grid_view_content_cell">
-							<span>2</span>
-						</div>
-						<div class="grid_view_content_cell pdt_cell">
-							<span><input type="text" class="txt_box" readonly />
-						</div>
-						<div class="grid_view_content_cell">
-							<span><input type="text" class="txt_box qty_input" /></span>
-						</div>
-						<div class="grid_view_content_cell">
-							<span><input type="text" class="txt_box rate_input" readonly /></span>
-						</div>
-						<div class="grid_view_content_cell">
-							<span><input type="text" class="txt_box total_input" readonly /></span>
-						</div>
-						<div class="grid_view_content_cell action_cell">
-							<span><i class="fa fa-close"></i></span>
-						</div>
-					</div>
-					
-					<div id="grid_view_footer">
-						<span>Total</span><span>14,000</span>
-					</div>
-				</div>
-			</div>
-			<div id="form_footer">
-				<div>
-					<input type="button" class="save_btn" value="Save" />
-					<input type="button" class="cancel_btn" value="Cancel" />
-				</div>
-			</div>
-		</form>
-	</div>
-</div>
-</div>
-				</div>
 			</div>
 		</div>
+		
+		<script>
+		
+			/** >>> 
+				Script to toggle user action section by clicking on chevron <<< 
+			**/
+			document.getElementsByClassName("user_chevron")[0].addEventListener("click", function(){
+				if(document.getElementById("user_lnks_box").style.display == "" || document.getElementById("user_lnks_box").style.display == "none"){
+					document.getElementById("user_lnks_box").style.display = "block";
+				}else{
+					document.getElementById("user_lnks_box").style.display = "none";
+				}	
+			});
+			
+			/** 
+				>>> Script to apply the active_nav_link class to a clicked navigation link <<< 
+			**/
+			var navlinks = document.getElementsByClassName("nav_lnks_lst");
+			
+			for(var i = 0; i < navlinks.length; i++){
+				navlinks[i].addEventListener("click", function(event){
+					for(var y = 0; y < navlinks.length; y++){
+						navlinks[y].className = navlinks[y].className.replace("active_nav_link", "");
+					}
+					
+					event.currentTarget.className += " active_nav_link";
+				});
+			}
+			
+			/* Fading out the response */
+			
+			 var fadeout = function(){
+				if(document.getElementById("response_box").style.display === "block"){
+					//document.getElementById("response_box").classList.add("fade_away_el");
+					document.getElementById("response_box").className = "fade_away_el";
+					document.getElementById("response_box").innerHTML = "";
+					
+				}
+			}
+	
+			/** 
+				>>> Angular Scripts <<< 
+			**/
+			
+			/** Initialise angular app **/
+			var theApp = angular.module("theApp",["ngRoute"]);
+			
+			/** Angular Routing **/
+			theApp.config(function($routeProvider){
+				$routeProvider
+					.when("/dashboard", {templateUrl: "../views/dashboard.html", controller: "dashboardCtlr"})
+					.when("/orders", {templateUrl: "../views/orders.html", controller: "ordersCtlr"})
+					.when("/requisitions", {templateUrl: "../views/requisitions.html", controller: "requisitionsCtlr"})
+					.when("/create_order", {templateUrl: "../views/create_order.html", controller: "create_orderCtlr"})
+					.when("/edit_order", {templateUrl: "../views/edit_order.html", controller: "edit_orderCtlr"})
+					.when("/order_payments", {templateUrl: "../views/order_payments.html", controller: "order_paymentsCtlr"})
+					.when("/new_payment", {templateUrl: "../views/order_payment.html", controller: "new_paymentCtlr"})
+					.when("/create_requisition", {templateUrl: "../views/create_requisition.html", controller: "create_requisitionCtlr"})
+					.when("/edit_requisition", {templateUrl: "../views/edit_requisition.html", controller: "edit_requisitionCtlr"})
+					.when("/account", {templateUrl: "../views/admin.html"})
+					.when("/products", {templateUrl: "../views/products.html", controller: "productsCtlr"})
+					.when("/create_product", {templateUrl: "../views/edit_product.html"})
+					/*.otherwise({redirectTo: "../views/dashboard.html"});*/
+			});
+			
+			/** Angular Controllers **/
+			theApp.controller("ordersCtlr", function($scope){
+				
+				/* Generating orders list */
+				
+				$scope.orders = [
+					{number: 1,table: "Table 2",time: "10:00 AM",status: "Pending",bill: "14,000",payment: "14,000"},
+					{number: 2,table: "Lower Western",time: "11:00 AM",status: "Delivered",bill: "13,000",payment: 0}
+				]
+				
+			/*	$scope.check = function(idx){
+					for(let t = 0; t<$scope.orders.length; t++){
+						if(idx === t){
+							if($scope.orders[t].status === "Pending"){
+								$scope.orders[t].status = "Delivered";
+							}
+						}
+					}
+				} */
+				
+			});
+			
+			theApp.controller("create_orderCtlr", function($scope, $timeout){
+				
+				$scope.station = "Restaurant";
+				
+				/* When user chooses delivery point */
+				$scope.changeTo = function(){
+					if($scope.to === "Table" /*|| $scope.to === "Room"*/){
+						$scope.show = true;
+						$scope.delvPnts = tables();
+					}else if($scope.to === "Room"){
+						$scope.show = true;
+						$scope.delvPnts = rooms();
+					}else{
+						$scope.show = false;
+					}
+				}
+				
+				/* When user chooses item, apply the rate */
+				$scope.itemRate = function(x, idx){
+					//console.log(x, idx);
+					let qty_input = document.getElementsByClassName("qty_input");
+					let rate_input = document.getElementsByClassName("rate_input");
+					for(let i = 0; i<rate_input.length; i++){
+						if(idx === i){
+							rate_input[i].value = x.rate;
+							
+							//Apply the total if the qty field is already filled
+							if(qty_input[i].value !== undefined){
+								let qty = qty_input[i].value;
+								$scope.computeTotal(qty,x,idx);
+							}
+						}
+					}
+					
+				}
+
+				
+				/* Computing the Item total from Qty */
+				$scope.computeTotal = function(qty,item, idx){
+					let total_input = document.getElementsByClassName("total_input");
+					if(item !== undefined && qty !== undefined ){
+						for(let x = 0; x < total_input.length; x++){
+							if(idx === x){
+								total_input[x].value = qty * item.rate;
+								//console.log(qty + " " + item);
+							}
+						}
+					}
+				}
+				
+				/* Generating the options of the Delivery points select tag */
+				function tables(){
+					table = [
+						
+							{pntName: "Table 1"}, 
+							{pntName: "Table 2"},
+							{pntName: "Lower Western"}
+							];
+					return table;
+				}
+				
+				function rooms(){
+					room = [
+						
+							{pntName: "Braxton"}, 
+							{pntName: "Parkers"}, 
+							{pntName: "Nic"}
+						];
+					return room;
+				}
+				/*$scope.delvPnts = [
+					{
+						table: [
+						
+							{pntName: "Table 1"}, 
+							{pntName: "Table 2"},
+							{pntName: "Lower Western"}
+							],
+							
+						room: [
+						
+							{pntName: "Braxton"}, 
+							{pntName: "Parkers"}, 
+							{pntName: "Nic"}
+						]
+					}
+				
+				]*/
+				
+				/* Generating the options of the Item select tag */
+				$scope.items = [
+								{label:	"Chicken", value: "PD101", rate: 7000},
+								{label:	"Chips", value: "PD102" , rate: 7000},
+								{label:	"Liver", value: "PD103", rate: 6000}
+				];
+				
+				/* Array to hold the number of rows of the orders details */
+				$scope.rows = [{ID:1}];
+				
+				/* Function to add a row to the orders details */
+				
+				$scope.addRow = function(){
+					let counter = $scope.rows.length + 1;
+					$scope.rows.push({ID: counter});
+					/*$scope.rows.push($scope.rows.length + 1);*/
+				}
+				
+				/* Function to reomve a row from the orders details */
+				
+				$scope.removeRow = function(index){
+					//alert(index);
+					if($scope.rows.length === 1){
+						alert("Order must have atleast one item");
+						/*var modal = document.getElementById("editModal");
+						var modal_header = document.getElementsByClassName("modal-header")[0];
+						var modal_body = document.getElementsByClassName("modal-body")[0];
+						
+						modal_header.innerHTML = 'Information <span class="modal_close_btn" onclick="closeModal()"><i class="fa fa-close"></i></span>';
+						modal_header.style.backgroundColor = "blue";
+						modal.style.borderColor = "blue";
+						modal_body.innerHTML = "Order must have atleast one item";
+						modal.style.display = "block";*/
+						
+					}else{
+						$scope.rows.splice(index, 1);
+					}
+				}
+				
+				
+				/* Validate Form Data and submit */
+				$scope.validate = function (){
+					var loader = document.getElementById("loader");
+					loader.style.display = "block";
+					
+					$timeout(function(){
+						loader.style.display = "none";
+						var response_box = document.getElementById("response_box");
+						response_box.innerHTML = "Order Succesfully Submitted";
+						response_box.style.display = "block";
+						response_box.style.backgroundColor = "green";
+						
+						//Fadeout response_box after 4sec
+						$timeout(fadeout, 4000);
+					}, 2000);
+				}
+			
+			});
+			
+			theApp.controller("order_paymentsCtlr", function($scope){
+				
+				var payments_page = [{"bill": "14,000",
+									  "payments_list": [
+							{number: 1,amount: "10,000",type: "Mobile Money", date: "12/11/2022 10:00 AM"},
+							{number: 2,amount: "4,000",type: "Cash", date: "12/11/2022 11:00 AM"}
+						]
+					}
+				]
+				
+				
+				$scope.bill = payments_page[0].bill;
+				/* Generating payments list */
+				$scope.payments = payments_page[0].payments_list;
+			
+			});
+			
+			theApp.controller("requisitionsCtlr", function($scope){
+				
+				/*Generating requisitions list */
+				
+				$scope.requisitions = [
+					{number: 1,date: "12/11/2022",category: "Eats",station: "Restaurant",status: "Submitted",staff: "John",amount: "120,000"},
+					{number: 2,date: "13/11/2022",category: "Drinks",station: "Hall",status: "Pending",staff: "Mary",amount: 0}
+				
+				];
+				
+			});
+			
+			theApp.controller("create_requisitionCtlr", function($scope, $timeout){
+				
+				$scope.station = "Restaurant";
+				
+				/* When user chooses item, apply the rate */
+				$scope.reqItemRate = function(x, idx){
+					//console.log(x, idx);
+					let qty_input = document.getElementsByClassName("qty_input");
+					let rate_input = document.getElementsByClassName("rate_input");
+					for(let i = 0; i<rate_input.length; i++){
+						if(idx === i){
+							rate_input[i].value = x.rate;
+							
+							//Apply the total if the qty field is already filled
+							if(qty_input[i].value !== undefined){
+								let qty = qty_input[i].value;
+								$scope.reqComputeTotal(qty,x,idx);
+							}
+						}
+					}
+					
+				}
+
+				
+				/* Computing the Item total from Qty */
+				$scope.reqComputeTotal = function(qty,item, idx){
+					let total_input = document.getElementsByClassName("total_input");
+					if(item !== undefined && qty !== undefined ){
+						for(let x = 0; x < total_input.length; x++){
+							if(idx === x){
+								total_input[x].value = qty * item.rate;
+								//console.log(qty + " " + item);
+							}
+						}
+					}
+				}
+				
+				/* Generating the options of the Item select tag */
+				$scope.items = [
+								
+								{label:	"Chicken", value: "PD101", rate: 3400},
+								{label:	"Chips", value: "PD102", rate: 2000},
+								{label:	"Liver", value: "PD102", rate: 1500}
+								
+				];
+				
+				/* Array to hold the number of rows of the orders details */
+				$scope.rows = [{ID:1}];
+				
+				/* Function to add a row to the orders details */
+				
+				$scope.addRow = function(){
+					let counter = $scope.rows.length + 1;
+					$scope.rows.push({ID: counter});
+					/*$scope.rows.push($scope.rows.length + 1);*/
+				}
+				
+				/* Function to reomve a row from the orders details */
+				
+				$scope.removeRow = function(index){
+					//alert(index);
+					if($scope.rows.length === 1){
+						alert("Order must have atleast one item");
+						/*var modal = document.getElementById("editModal");
+						var modal_header = document.getElementsByClassName("modal-header")[0];
+						var modal_body = document.getElementsByClassName("modal-body")[0];
+						
+						modal_header.innerHTML = 'Information <span class="modal_close_btn" onclick="closeModal()"><i class="fa fa-close"></i></span>';
+						modal_header.style.backgroundColor = "blue";
+						modal.style.borderColor = "blue";
+						modal_body.innerHTML = "Order must have atleast one item";
+						modal.style.display = "block";*/
+						
+					}else{
+						$scope.rows.splice(index, 1);
+					}
+				}
+				
+				
+				/* Validate Form Data and submit */
+				$scope.validate = function (){
+					var loader = document.getElementById("loader");
+					loader.style.display = "block";
+					
+					$timeout(function(){
+						loader.style.display = "none";
+						var response_box = document.getElementById("response_box");
+						response_box.innerHTML = "Requisition Succesfully Submitted";
+						response_box.style.display = "block";
+						response_box.style.backgroundColor = "green";
+						
+						//Fadeout response_box after 4sec
+						$timeout(fadeout, 4000);
+					}, 2000);
+				}
+			
+			});
+			
+			theApp.controller("edit_requisitionCtlr", function($scope){
+				let edit_requisitionPage = [{"station": "Reception",
+											"category": "Drinks",
+											"requisition_items": [
+							{"number": 1,"item": "Mountain Dew", "qty": 24,"rate": 770, "total": "19,500"},
+							{"number": 2,"item": "Coke", "qty": 24,"rate": 770, "total": "19,500"},
+							{"number": 3,"item": "Smirnoff Black", "qty": 25,"rate": 2250, "total": "69,000"}
+						]
+					}
+				]
+				
+				$scope.station = edit_requisitionPage[0].station;
+				$scope.category = edit_requisitionPage[0].category;
+				$scope.requisition_items = edit_requisitionPage[0].requisition_items;
+			});
+			
+			
+			theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval){
+				
+				var edit_ordersPage = [{"station": "Restaurant",
+										"to": "Table",
+										"delv_point": "Upper Western",
+										"order_items": [
+							{number: 1,item: "Chicken",qty: 1,rate: "7,000",total: "7,000"},
+							{number: 2,item: "Chips",qty: 1,rate: "7,000",total: "7,000"}
+						]
+					}					
+				]
+				
+				$scope.station = edit_ordersPage[0].station;
+				$scope.to = edit_ordersPage[0].to;
+				$scope.delv_point = edit_ordersPage[0].delv_point;
+				$scope.order_items = edit_ordersPage[0].order_items;
+				
+				$scope.deliver = function(){
+					document.getElementById("order_status").style.display = "none";
+					var loader = document.getElementById("loader");
+					loader.style.display = "block";
+					
+					$timeout(function(){
+						loader.style.display = "none";
+						var response_box = document.getElementById("response_box");
+						response_box.innerHTML = "Order is marked as Delivered";
+						response_box.style.display = "block";
+						response_box.style.backgroundColor = "green";
+						document.getElementsByClassName("deliver_btn_box")[0].style.display = "none";
+						
+						//Fadeout response_box after 4sec
+						$timeout(fadeout, 4000);
+					}, 2000);
+				}
+				
+				var date = new Date();
+				//$scope.ordertime = new Date().toLocaleTimeString();
+				//var start_hour = date.getHours();
+				//var start_minute = date.getMinutes();
+				//var n = 20;
+				/*function(){var start_time = new Date("12/31/2022 05:32:00");
+				var curr_time = new Date();$scope.ordertime = curr_time.getMinutes() - start_time.getMinutes();}*/
+				function timer(){
+					/*stop_timer();*/
+					var start_time = new Date("12/31/2022 22:46:58");
+					var curr_time = new Date();
+					var lead_time = 2;
+					var end_time = start_time.getMinutes() + lead_time;
+					var time_left_mins = end_time - curr_time.getMinutes();
+					var start_time_secs = start_time.getSeconds();
+					if(start_time_secs == 0){var end_time_secs = /*start_time_secs + */59}else{var end_time_secs = start_time_secs + (59 - start_time_secs);}
+					var time_left_secs = end_time_secs - curr_time.getSeconds();
+					var warning_time = lead_time * 0.5;
+					var critical_time = lead_time * 0.25;
+					
+					
+					var order_time_el = document.getElementById("order_time");
+					if(time_left_mins <= warning_time && time_left_mins > critical_time){
+						if(order_time_el.className !== "order_time_warning" || order_time_el.className === " "){
+							order_time_el.className = "order_time_warning";
+						}
+						$scope.ordertime = time_left_mins + " mins";
+					}
+					/*if(time_left_mins == critical_time){
+						order_time_el.style.color = "red";
+						$scope.ordertime = time_left_mins + " mins";
+					}*/
+					if(time_left_mins < critical_time){
+						//if(order_time_el.className !== "order_time_critical" /*|| order_time_el.className === " "*/){
+							order_time_el.className = "order_time_critical";
+						//}
+						$scope.ordertime = time_left_mins + " mins";
+					}
+					if(time_left_mins > 1){
+						$scope.ordertime = time_left_mins + " mins";
+					}else if(time_left_mins === 1){
+						$scope.ordertime = time_left_mins + " min";
+					}else{
+						$scope.ordertime = time_left_secs + " secs";
+					}
+					if(time_left_mins < 0){
+						stop_timer();
+						document.getElementById("order_timer_box").style.display = "none";
+						document.getElementById("late_order_label").style.display = "block";
+					}
+				}
+				//$scope.ordertime = curr_time.getMinutes() - start_time.getMinutes();
+				//$interval(function(){$scope.ordertime = new Date().getMinutes() +3 + ":"+ new Date().getSeconds()},1000);
+			//	var interval = $interval(timer, 1000);
+				
+				function stop_timer(){
+					$interval.cancel(interval);
+				}
+			});
+			
+			theApp.controller("new_paymentCtlr", function($scope, $timeout){
+				/* Validate Form Data and submit */
+				$scope.validate = function (){
+					var loader = document.getElementById("loader");
+					loader.style.display = "block";
+					
+					$timeout(function(){
+						loader.style.display = "none";
+						var response_box = document.getElementById("response_box");
+						response_box.innerHTML = "Payment Succesfully Added";
+						response_box.style.display = "block";
+						response_box.style.backgroundColor = "green";
+						
+						//Fadeout response_box after 4sec
+						$timeout(fadeout, 4000);
+					}, 2000);
+				}
+			});
+			
+			theApp.controller("productsCtlr", function($scope){
+				$scope.products = [
+					{ID: "PD101", description: "Chicken", category: "Eats", minstocklevel: 8, status: "Active"},
+					{ID: "PD110", description: "Mountain Dew", category: "Drinks", minstocklevel: 10, status: "Active"},
+					{ID: "PD145", description: "Nile Gold", category: "Drinks", minstocklevel: 2, status: "Discontinued"}
+				]
+			});
+			
+			function closeModal(){
+				//document.getElementsByClassName("modal_close_btn")[0].addEventListener("click", function(){
+					document.getElementById("editModal").style.display = "none";
+				//});
+			}
+			
+			/*theApp.controller("validateform", function($scope){
+				$scope.validate = function(form){
+					if(form.$valid){
+						alert("Nice");
+						document.getElementById("response_box").innerHTML = "Form Submitted";
+					}else{
+						alert("Nice");
+						document.getElementById("response_box").innerHTML = "Please fill the highlighted fields";
+					}
+					
+				}
+			});*/
+			
+			function editTitle(link){
+				var title = document.getElementsByTagName("title")[0];
+				//alert(title.innerHTML);
+				title.innerHTML = link;
+			}
+		</script>
+
 	</body>
 </html>

@@ -13,6 +13,11 @@ body{
 	margin-top: 2px;
 }
 
+a:link, a:visited{
+	text-decoration: none;
+	color: inherit;
+}
+
 /**
 	>>> Styling the Login page layout begins <<<
 
@@ -49,6 +54,47 @@ ul{
 	margin-top: 10px;
 	padding-bottom: 20px;
 	 box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.15), 0 6px 20px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Styling the modal */
+
+#editModal{
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	display: none;
+	/*border: 1px solid #ccc;
+	border-radius: 5px;
+	padding: 10px;*/
+	/*z-index: 50;*/
+	background-color: #ddd;
+	/*box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	animation: slideInTop 0.4s;*/
+	/*transition: all 0.5s ease-in-out;*/
+	
+}
+
+.modal-content{
+	z-index: 50;
+	position: absolute;
+	background-color: #fefefe;
+	width: 50%;
+	margin: auto;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	animation: slideInTop 0.4s;
+}
+
+@keyframes slideInTop{
+	from{top: -25%; opacity: 0}
+	to{top: 0; opacity: 1}
+}
+	
+.modal_close_btn{
+	float: right;
+	color: #fff;
 }
 
 #header_content_box{
@@ -96,6 +142,8 @@ ul{
 #user_lnks_box{
 	border: 1px solid white;
 	background-color: rgb(244,117,13);
+	display: none
+	
 }
 
 .user_lnks_lst a:link, .user_lnks_lst a:visited{
@@ -130,12 +178,17 @@ ul{
 }
 
 .nav_lnks_lst {
-	padding: 12px 0.4em;
+	padding: 12px 0.1em;
 
 }
 
-.active_nav_link{
+.active_nav_link {
 	border-bottom: 3px solid darkblue;
+	
+}
+
+.active_nav_link a{
+	color: #fff !important;
 }
 
 .nav_lnks_lst a:link, .nav_lnks_lst a:visited{
@@ -184,6 +237,28 @@ ul{
 	margin-bottom: 2px;
 	padding: 3px 12px 12px 12px;
 	background-color: #ccc
+}
+
+/** 
+	>>> Styling the loader begins <<<
+
+**/
+
+#loader{
+	position:absolute;
+	left: 50%;
+	width: 2em;
+	height: 2em;
+	border: 6px solid darkblue;
+	border-radius: 50%;
+	/*border-top: 6px solid rgb(244,117,13);/*#3498db*/
+	border-bottom: 6px solid rgb(244,117,13);/*#3498db*/
+	animation: spin 2s linear infinite;
+}
+
+@keyframes spin{
+	0%{transform: rotate(0deg);}
+	100%{transform: rotate(360deg);}
 }
 
 
@@ -377,6 +452,10 @@ ul{
 	flex-grow: 1
 }
 
+.pending_order{
+	background-color: red;
+}
+
 #grid_view_footer{
 	background-color: #e0e0e0;
 	color: darkblue;
@@ -386,4 +465,35 @@ ul{
 	border-bottom-right-radius: 4px;
 	display: flex;
 	justify-content:  space-between;
+}
+
+/** 
+	>>> Account view styling begins <<<
+
+**/
+
+#ac_link_box{
+	margin-top: 7px;
+	
+	/*height: 400px;*/
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	justify-content:stretch;
+	align-content: stretch;
+	align-items:stretch;
+}
+
+.ac_link_row{
+	display: flex;
+	justify-content: space-between
+}
+.ac_link{
+	border: 1px solid rgb(244,117,13);
+	color: darkblue !important;
+	padding: 5px;
+	/*margin-right: 10px;*/
+	margin-bottom: 10px;
+	width: 9em;
 }

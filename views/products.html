@@ -1,0 +1,82 @@
+<div id="content_banner_box">
+	<h2 id="banner">Products</h2>
+</div>
+	
+<div id="sub_content_box" data-ng-controller="productsCtlr">
+	<div id="view_content">
+		<div id="details_link_box">
+			<a href="#!create_product">Add Product</a>
+		</div>
+		<div id="details_box">	
+			<div id="details_header_box">
+				<h3>Manage Products</h3>
+			</div>
+			<div id="details_content_box">
+				<div style="margin: 20px 0 5px 0">
+					<label>Show By:</label>
+					<select class="select_box" style="width: 11em">
+						<option>Choose Category</option>
+						<option>Drinks</option>
+						<option>Eats</option>
+					</select>
+					<input type="text" placeholder="Search product..." class="txt_box" style="width:12em; float:right"/>
+				</div>
+				<div id="grid_view">
+					<div id="grid_view_header">
+						<div class="grid_view_header_cell">
+							<span>ID</span>
+						</div>
+						<div class="grid_view_header_cell pdt_cell">
+							<span>Description</span>
+						</div>
+						<div class="grid_view_header_cell">
+							<span>Category</span>
+						</div>
+						<div class="grid_view_header_cell" style="flex-grow: 2">
+							<span>Min Stock Level</span>
+						</div>
+						<div class="grid_view_header_cell">
+							<span>Status</span>
+						</div>
+						<!--<div class="grid_view_header_cell">
+							<span>Payment</span>
+						</div>
+						<div class="grid_view_header_cell delv_cell">
+							<span>Delivered</span>
+						</div>-->
+						<div class="grid_view_header_cell action_cell">
+							<span>Edit</span>
+						</div>
+					</div>
+					
+					<div id="grid_view_content" data-ng-repeat="pdt in products" data-ng-style="{'background-color':(pdt.status == 'Discontinued') ? 'red' : ''}">
+						<div class="grid_view_content_cell">
+							<span>{{::pdt.ID}}</span>
+						</div>
+						<div class="grid_view_content_cell pdt_cell">
+							<span>{{::pdt.description}}</span>
+						</div>
+						<div class="grid_view_content_cell">
+							<span>{{::pdt.category}}</span>
+						</div>
+						<div class="grid_view_content_cell" style="flex-grow: 2">
+							<span>{{::pdt.minstocklevel}}</span>
+						</div>
+						<div class="grid_view_content_cell">
+							<span>{{::pdt.status}}</span>
+						</div>
+						<!--<div class="grid_view_content_cell  paymt_cell">
+							<span>{{::pdt.payment}}</span>
+						</div>
+						<div class="grid_view_content_cell  delv_cell">
+							<span>{{::order.delvstatus}}</span>
+						</div>-->
+						<div class="grid_view_content_cell  action_cell">
+							<span><a href="#!edit_product"><i class="fa fa-edit"></i></a></span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>	

@@ -1,0 +1,76 @@
+<div id="content_banner_box">
+	<h2 id="banner">Orders</h2>
+</div>
+	
+<div id="sub_content_box" data-ng-controller="new_paymentCtlr">
+	<div id="view_content">
+		<div id="details_link_box">
+			<a href="#!order_payments">Manage Payments</a>
+		</div>
+		<div id="details_box">	
+			<div id="details_header_box">
+				<h3>Add Payment</h3>
+			</div>
+			<div id="details_content_box">
+				<form id="details_form" name="payment_form" novalidate>
+					<div id="loader" style="display:none"></div>
+					<div id="response_box" style="display:none"></div>
+					<div id="pymnt_form_content">
+						<div class="labels">
+							<div class="col25"><label>Order #:</label></div>
+							<div class="col25"><label>Date:</label></div>
+							<div class="col25"><label>Amount:</label></div>
+							<div class="col25"><label>Type:</label></div>
+						</div>
+						<div class="inputs">
+							<div class="col75"><label>ORD101</label></div>
+							<div class="col75"><input class="txt_box" type="date" name="pdate" data-ng-model="pdate" required /></div>
+							<div class="col75"><input class="txt_box" type="text" name="pamnt" data-ng-model="pamnt" required /></div>
+							<div class="col75">
+								<select class="select_box" name="ptype" data-ng-model="ptype" required>
+									<option value="">Choose Payment Type</option>
+									<option value="MTN">MTN Mobile Money</option>
+									<option value="Airtel">Airtel Money</option>
+									<option value="Cash">Cash</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div id="form_footer">
+						<div>
+							<input type="button" class="save_btn" value="Save" data-ng-click="validate()" data-ng-disabled="payment_form.$invalid" />
+							<input type="button" class="cancel_btn" value="Cancel" onclick="history.back()"/>
+						</div>
+						<span data-ng-show="payment_form.$dirty && payment_form.$invalid"><pre class="form_error_note">*All fields are required</pre></span>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<!--
+<div id="form_content">
+						<div class="form_input_row">
+							<div class="col25"><label>Order #:</label></div>
+							<div class="col75"><label>ORD101</label></div>
+						</div>
+						<div class="form_input_row">
+							<div class="col25"><label>Date:</label></div>
+							<div class="col75"><input class="txt_box" type="date" required /></div>
+						</div>
+						<div class="form_input_row">
+							<div class="col25"><label>Amount:</label></div>
+							<div class="col75"><input class="txt_box" type="text" required /></div>
+						</div>
+						<div class="form_input_row">
+							<div class="col25"><label>Type:</label></div>
+							<div class="col75">
+								<select class="select_box">
+									<option value="">Choose Payment Type</option>
+									<option>MTN Mobile Money</option>
+									<option>Airtel Money</option>
+									<option>Cash</option>
+								</select>
+							</div>
+						</div>
+					</div>-->

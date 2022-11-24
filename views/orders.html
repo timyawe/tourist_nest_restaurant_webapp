@@ -1,91 +1,70 @@
-<div id="view_content">
-	<div id="details_link_box">
-		<a href="#">Add Order</a>
-	</div>
-	<div id="details_box">	
-		<div id="details_header_box">
-			<h3>Manage Orders</h3>
+<div id="content_banner_box">
+	<h2 id="banner">Orders</h2>
+</div>
+	
+<div id="sub_content_box" data-ng-controller="ordersCtlr">
+	<div id="view_content">
+		<div id="details_link_box">
+			<a href="#!create_order">Add Order</a>
 		</div>
-		<div id="details_content_box">
-			<div id="grid_view">
-				<div id="grid_view_header">
-					<div class="grid_view_header_cell">
-						<span>#</span>
+		<div id="details_box">	
+			<div id="details_header_box">
+				<h3>Manage Orders</h3>
+			</div>
+			<div id="details_content_box">
+				<div id="grid_view">
+					<div id="grid_view_header">
+						<div class="grid_view_header_cell">
+							<span>#</span>
+						</div>
+						<div class="grid_view_header_cell table_cell">
+							<span>Table</span>
+						</div>
+						<div class="grid_view_header_cell time_cell">
+							<span>Time</span>
+						</div>
+						<div class="grid_view_header_cell status_cell">
+							<span>Status</span>
+						</div>
+						<div class="grid_view_header_cell bill_cell">
+							<span>Bill</span>
+						</div>
+						<div class="grid_view_header_cell paymt_cell">
+							<span>Payment</span>
+						</div>
+						<!--<div class="grid_view_header_cell delv_cell">
+							<span>Delivered</span>
+						</div>-->
+						<div class="grid_view_header_cell action_cell">
+							<span>Edit</span>
+						</div>
 					</div>
-					<div class="grid_view_header_cell table_cell">
-						<span>Table</span>
-					</div>
-					<div class="grid_view_header_cell time_cell">
-						<span>Time</span>
-					</div>
-					<div class="grid_view_header_cell status_cell">
-						<span>Status</span>
-					</div>
-					<div class="grid_view_header_cell bill_cell">
-						<span>Bill</span>
-					</div>
-					<div class="grid_view_header_cell paymt_cell">
-						<span>Payment</span>
-					</div>
-					<div class="grid_view_header_cell delv_cell">
-						<span>Delivered</span>
-					</div>
-					<div class="grid_view_header_cell action_cell">
-						<span>Edit</span>
-					</div>
-				</div>
-				
-				<div id="grid_view_content">
-					<div class="grid_view_content_cell">
-						<span>1</span>
-					</div>
-					<div class="grid_view_content_cell table_cell">
-						<span>Table 2</span>
-					</div>
-					<div class="grid_view_content_cell time_cell">
-						<span>11:00 AM</span>
-					</div>
-					<div class="grid_view_content_cell  status_cell">
-						<span>Pending</span>
-					</div>
-					<div class="grid_view_content_cell  bill_cell">
-						<span>1,000,000</span>
-					</div>
-					<div class="grid_view_content_cell  paymt_cell">
-						<span>0</span>
-					</div>
-					<div class="grid_view_content_cell  delv_cell">
-						<span>No</span>
-					</div>
-					<div class="grid_view_content_cell  action_cell">
-						<span><i class="fa fa-edit"></i></span>
-					</div>
-				</div>
-				
-				<div id="grid_view_content">
-					<div class="grid_view_content_cell">
-						<span>2</span>
-					</div>
-					<div class="grid_view_content_cell table_cell">
-						<span>Lower Western</span>
-					</div>
-					<div class="grid_view_content_cell time_cell">
-						<span>10:00 AM</span>
-					</div>
-					<div class="grid_view_content_cell status_cell">
-						<span>Delivered</span>
-					</div>
-					<div class="grid_view_content_cell bill_cell">
-						<span>13,000</span>
-					</div>
-					<div class="grid_view_content_cell paymt_cell">
-						<span>0</span>
-					</div>
-					<div class="grid_view_content_cell delv_cell">
-						<span>No</span>
-					</div>
-					<div class="grid_view_content_cell  action_cell">
-						<span><i class="fa fa-edit"></i></span>
+					
+					<div id="grid_view_content" data-ng-class="order_status" data-ng-repeat="order in orders" data-ng-style="{'background-color':(order.status == 'Pending') ? 'red' : ''}">
+						<div class="grid_view_content_cell">
+							<span>{{$index +1}}</span>
+						</div>
+						<div class="grid_view_content_cell table_cell" ng-click="check($index)">
+							<span>{{::order.table}}</span>
+						</div>
+						<div class="grid_view_content_cell time_cell">
+							<span>{{::order.time}}</span>
+						</div>
+						<div class="grid_view_content_cell status_cell">
+							<span class="status_val">{{::order.status}}</span>
+						</div>
+						<div class="grid_view_content_cell  bill_cell">
+							<span>{{::order.bill}}</span>
+						</div>
+						<div class="grid_view_content_cell  paymt_cell">
+							<span>{{::order.payment}}</span>
+						</div>
+						<!--<div class="grid_view_content_cell  delv_cell">
+							<span>{{::order.delvstatus}}</span>
+						</div>-->
+						<div class="grid_view_content_cell  action_cell">
+							<span><a href="#!edit_order"><i class="fa fa-edit"></i></a></span>
+						</div>
 					</div>
 				</div>
 			</div>

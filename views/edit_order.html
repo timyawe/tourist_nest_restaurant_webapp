@@ -1,120 +1,108 @@
-<div id="view_content">
-<div id="details_link_box">
-	<a href="#">Manage Orders</a>
+<div id="content_banner_box">
+	<h2 id="banner">Orders</h2>
 </div>
-<div id="details_box">	
-	<div id="details_header_box">
-		<h3>Edit Order</h3>
+	
+<div id="sub_content_box" data-ng-controller="edit_orderCtlr">
+	<div id="view_content">
+	<div id="details_link_box">
+		<a href="#!orders">Manage Orders</a>
 	</div>
-	<div id="details_content_box">
-		<form id="details_form" name="order_form" novalidate>
-			<div id="response_box">
-				Order was saved succesfully Order was saved
-				
-			</div>
-			<div id="form_header">
-				<div>
-					<input type="button" class="pymt_btn" value="Payments" />
-				</div>
+	<div id="details_box">	
+		<div id="details_header_box">
+			<h3>Edit Order</h3>
+		</div>
+		<div id="details_content_box">
+			<form id="details_form" name="order_form" novalidate>
+				<div id="loader" style="display:none"></div>
+				<div id="response_box" style="display:none"></div>
+				<div id="form_header">
+					<div>
+						<a href="#!order_payments" class="pymt_btn">Payments</a>
+					</div>
 
-				<div id="order_status">
-					<!--<p>Not Delivered</p>-->
-					<div>Order Timer</div>
-					<span>10:05</span>
-				</div>
-				
-				<div class="form_input_col">
-					<div class="form_input_row">
-						<label>Station:</label><input type="text" class="txt_box" readonly />
-					</div>
-					<div class="form_input_row">
-						<label>To:</label><input type="text" class="txt_box" readonly />
-					</div>
-					<div class="delvier_btn_box">
-						<button>Deliver Now</button>
-					</div>
-					<div class="form_input_row">
-					<label>Verify:</label><select class="select_box"><option>Not Verified</option><option>Verified</option></select>
-					</div>
-				</div>
-			</div>
-			<div id="form_content">
-				<div id="grid_view">
-					<div id="grid_view_header">
-						<div class="grid_view_header_cell">
-							<span>#</span>
-						</div>
-						<div class="grid_view_header_cell pdt_cell">
-							<span>Item</span>
-						</div>
-						<div class="grid_view_header_cell">
-							<span>Qty</span>
-						</div>
-						<div class="grid_view_header_cell">
-							<span>Rate</span>
-						</div>
-						<div class="grid_view_header_cell">
-							<span>Total</span>
-						</div>
-						<div class="grid_view_header_cell action_cell">
-							<span><i class="fa fa-plus"></i></span>
+					<div id="order_status">
+						<p id="late_order_label" style="display:none">Order is late, Deliver Now!!</p>
+						<div id="order_timer_box">
+							<div id="order_time_label">Order Timer</div>
+							<span id="order_time">{{ordertime}}</span>
 						</div>
 					</div>
 					
-					<div id="grid_view_content">
-						<div class="grid_view_content_cell">
-							<span>1</span>
+					<div class="form_input_col">
+						<div class="form_input_row">
+							<label>Station:</label><input type="text" class="txt_box" value="{{::station}}" readonly />
 						</div>
-						<div class="grid_view_content_cell pdt_cell">
-							<span><input type="text" class="txt_box" readonly /></span>
+						<div class="form_input_row">
+							<label>To:</label><input type="text" class="txt_box" value="{{::to}}" readonly />
 						</div>
-						<div class="grid_view_content_cell">
-							<span><input type="text" class="txt_box qty_input" readonly /></span>
+						<div class="form_input_row">
+							<label style="width:12em">Delivery Point:</label><input type="text" class="txt_box" value="{{::delv_point}}" readonly />
 						</div>
-						<div class="grid_view_content_cell">
-							<span><input type="text" class="txt_box rate_input" readonly /></span>
+						<div class="deliver_btn_box">
+							<button data-ng-click="deliver()">Deliver Now</button>
 						</div>
-						<div class="grid_view_content_cell">
-							<span><input type="text" class="txt_box total_input" readonly /></span>
+						<div class="form_input_row">
+						<label>Verify:</label><select class="select_box"><option>Not Verified</option><option>Verified</option></select>
 						</div>
-						<div class="grid_view_content_cell action_cell">
-							<span><i class="fa fa-close"></i></span>
-						</div>
-					</div>
-					
-					<div id="grid_view_content">
-						<div class="grid_view_content_cell">
-							<span>2</span>
-						</div>
-						<div class="grid_view_content_cell pdt_cell">
-							<span><input type="text" class="txt_box" readonly /></span>
-						</div>
-						<div class="grid_view_content_cell">
-							<span><input type="text" class="txt_box qty_input" /></span>
-						</div>
-						<div class="grid_view_content_cell">
-							<span><input type="text" class="txt_box rate_input" readonly /></span>
-						</div>
-						<div class="grid_view_content_cell">
-							<span><input type="text" class="txt_box total_input" readonly /></span>
-						</div>
-						<div class="grid_view_content_cell action_cell">
-							<span><i class="fa fa-close"></i></span>
-						</div>
-					</div>
-					
-					<div id="grid_view_footer">
-						<span>Total</span><span>14,000</span>
 					</div>
 				</div>
-			</div>
-			<div id="form_footer">
-				<div>
-					<input type="button" class="save_btn" value="Save" />
-					<input type="button" class="cancel_btn" value="Cancel" />
+				<div id="form_content">
+					<div id="grid_view">
+						<div id="grid_view_header">
+							<div class="grid_view_header_cell">
+								<span>#</span>
+							</div>
+							<div class="grid_view_header_cell pdt_cell">
+								<span>Item</span>
+							</div>
+							<div class="grid_view_header_cell">
+								<span>Qty</span>
+							</div>
+							<div class="grid_view_header_cell">
+								<span>Rate</span>
+							</div>
+							<div class="grid_view_header_cell">
+								<span>Total</span>
+							</div>
+							<!--<div class="grid_view_header_cell action_cell">
+								<span><i class="fa fa-plus"></i></span>
+							</div>-->
+						</div>
+						
+						<div id="grid_view_content" data-ng-repeat="order_item in order_items">
+							<div class="grid_view_content_cell">
+								<span>{{::order_item.number}}</span>
+							</div>
+							<div class="grid_view_content_cell pdt_cell">
+								<span><input type="text" class="txt_box" value="{{::order_item.item}}" readonly /></span>
+							</div>
+							<div class="grid_view_content_cell">
+								<span><input type="text" class="txt_box qty_input" value="{{::order_item.qty}}" readonly /></span>
+							</div>
+							<div class="grid_view_content_cell">
+								<span><input type="text" class="txt_box rate_input" value="{{::order_item.rate}}" readonly /></span>
+							</div>
+							<div class="grid_view_content_cell">
+								<span><input type="text" class="txt_box total_input" value="{{::order_item.total}}" readonly /></span>
+							</div>
+							<!--<div class="grid_view_content_cell action_cell">
+								<span><i class="fa fa-close"></i></span>
+							</div>-->
+						</div>
+						
+						<div id="grid_view_footer">
+							<span>Total</span><span>14,000</span>
+						</div>
+					</div>
 				</div>
-			</div>
-		</form>
+				<div id="form_footer">
+					<div>
+						<input type="button" class="save_btn" value="Save" />
+						<input type="button" class="cancel_btn" value="Cancel" onclick="history.back()"/>
+					</div>
+				</div>
+			</form>
+		</div>
 	</div>
-</div>
+	</div>
 </div>

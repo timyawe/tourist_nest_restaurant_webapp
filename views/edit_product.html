@@ -1,0 +1,50 @@
+<div id="content_banner_box">
+	<h2 id="banner">Products</h2>
+</div>
+	
+<div id="sub_content_box" data-ng-controller="productsCtlr">
+	<div id="view_content">
+		<div id="details_link_box">
+			<a href="#!products">Manage Products</a>
+		</div>
+		<div id="details_box">	
+			<div id="details_header_box">
+				<h3>Add Product</h3>
+			</div>
+			<div id="details_content_box">
+				<form id="details_form" name="product_form" novalidate>
+					<div id="loader" style="display:none"></div>
+					<div id="response_box" style="display:none"></div>
+					<div id="pdt_form_content">
+						<div class="left-panel">
+							<div><label>Description</label><input class="txt_box" type="text" required /></div>
+							<div><label>Category</label>
+							<select class="select_box" required>
+								<option>Choose Category</option>
+								<option>Drinks</option>
+								<option>Drinks</option>
+								</select></div>
+							<div><label>Min Stock Level</label><input class="txt_box" type="number" required /></div>
+						</div>
+						<div class="right-panel">
+							<div><label>Cost Price/Unit</label><input class="txt_box" type="text" required /></div>
+							<div><label>Sale Price/Unit</label><input class="txt_box" type="text" required /></div>
+							<div><label>Status</label>
+							<select class="select_box">
+								<option>Active</option>
+								<option>Discontinued</option>
+							</select></div>
+						</div>
+					</div>
+					<div id="form_footer">
+						<div>
+							<input type="button" class="save_btn" value="Save" data-ng-click="validate()" data-ng-disabled="product_form.$invalid" />
+							<input type="button" class="cancel_btn" value="Cancel" onclick="history.back()"/>
+						</div>
+					<span data-ng-show="product_form.$dirty && product_form.$invalid"><pre class="form_error_note">*Highlited fields are required</pre></span>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,104 +1,89 @@
-<div id="view_content">
-<div id="details_link_box">
-	<a href="#">Manage Requisitions</a>
+<div id="content_banner_box">
+	<h2 id="banner">Requisitions</h2>
 </div>
-<div id="details_box">	
-	<div id="details_header_box">
-		<h3>Edit Requisition</h3>
+	
+<div id="sub_content_box" data-ng-controller="edit_requisitionCtlr">
+	<div id="view_content">
+		<div id="details_link_box">
+			<a href="#!requisitions">Manage Requisitions</a>
+		</div>
+		<div id="details_box">	
+			<div id="details_header_box">
+				<h3>Edit Requisition</h3>
+			</div>
+			<div id="details_content_box">
+				<form id="details_form" name="requisition_form" novalidate>
+					<div id="form_header">
+						<div>
+							
+						</div>
+						
+						<div class="form_input_col">
+							<div class="form_input_row">
+								<label>Station:</label><input type="text" class="txt_box" value="{{::station}}" readonly />
+							</div>
+							<div class="form_input_row">
+								<label>For:</label><input type="text" class="txt_box" value="{{::category}}" readonly />
+							</div>
+						</div>
+					</div>
+					<div id="form_content">
+						<div id="grid_view">
+							<div id="grid_view_header">
+								<div class="grid_view_header_cell">
+									<span>#</span>
+								</div>
+								<div class="grid_view_header_cell pdt_cell">
+									<span>Item</span>
+								</div>
+								<div class="grid_view_header_cell">
+									<span>Qty</span>
+								</div>
+								<div class="grid_view_header_cell">
+									<span>Rate</span>
+								</div>
+								<div class="grid_view_header_cell">
+									<span>Total</span>
+								</div>
+								<!--<div class="grid_view_header_cell action_cell">
+									<span><i class="fa fa-plus"></i></span>
+								</div>-->
+							</div>
+							
+							<div id="grid_view_content" data-ng-repeat="request_item in requisition_items">
+								<div class="grid_view_content_cell">
+									<span>{{::request_item.number}}</span>
+								</div>
+								<div class="grid_view_content_cell pdt_cell">
+									<span><input type="text" class="txt_box" value="{{::request_item.item}}" readonly />
+								</div>
+								<div class="grid_view_content_cell">
+									<span><input type="text" class="txt_box qty_input" value="{{request_item.qty}}"/></span>
+								</div>
+								<div class="grid_view_content_cell">
+									<span><input type="text" class="txt_box rate_input" value="{{::request_item.rate}}" readonly /></span>
+								</div>
+								<div class="grid_view_content_cell">
+									<span><input type="text" class="txt_box total_input" value="{{::request_item.total}}" readonly /></span>
+								</div>
+								<!--<div class="grid_view_content_cell action_cell">
+									<span><i class="fa fa-close"></i></span>
+								</div>-->
+							</div>
+							
+							<div id="grid_view_footer">
+								<span>Total</span><span>14,000</span>
+							</div>
+						</div>
+					</div>
+					<div id="form_footer">
+						<div>
+							<input type="button" class="save_btn" value="Save" />
+							<input type="button" class="cancel_btn" value="Cancel" onclick="history.back()" />
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
 	</div>
-	<div id="details_content_box">
-		<form id="details_form" name="order_form" novalidate>
-			<div id="form_header">
-				<div>
-					
-				</div>
-				
-				<div class="form_input_col">
-					<div class="form_input_row">
-						<label>Station:</label><input type="text" class="txt_box" readonly />
-					</div>
-					<div class="form_input_row">
-						<label>For:</label><input type="text" class="txt_box" readonly />
-					</div>
-				</div>
-			</div>
-			<div id="form_content">
-				<div id="grid_view">
-					<div id="grid_view_header">
-						<div class="grid_view_header_cell">
-							<span>#</span>
-						</div>
-						<div class="grid_view_header_cell pdt_cell">
-							<span>Item</span>
-						</div>
-						<div class="grid_view_header_cell">
-							<span>Qty</span>
-						</div>
-						<div class="grid_view_header_cell">
-							<span>Rate</span>
-						</div>
-						<div class="grid_view_header_cell">
-							<span>Total</span>
-						</div>
-						<div class="grid_view_header_cell action_cell">
-							<span><i class="fa fa-plus"></i></span>
-						</div>
-					</div>
-					
-					<div id="grid_view_content">
-						<div class="grid_view_content_cell">
-							<span>1</span>
-						</div>
-						<div class="grid_view_content_cell pdt_cell">
-							<span><input type="text" class="txt_box" readonly />
-						</div>
-						<div class="grid_view_content_cell">
-							<span><input type="text" class="txt_box qty_input" /></span>
-						</div>
-						<div class="grid_view_content_cell">
-							<span><input type="text" class="txt_box rate_input" readonly /></span>
-						</div>
-						<div class="grid_view_content_cell">
-							<span><input type="text" class="txt_box total_input" readonly /></span>
-						</div>
-						<div class="grid_view_content_cell action_cell">
-							<span><i class="fa fa-close"></i></span>
-						</div>
-					</div>
-					
-					<div id="grid_view_content">
-						<div class="grid_view_content_cell">
-							<span>2</span>
-						</div>
-						<div class="grid_view_content_cell pdt_cell">
-							<span><input type="text" class="txt_box" readonly />
-						</div>
-						<div class="grid_view_content_cell">
-							<span><input type="text" class="txt_box qty_input" /></span>
-						</div>
-						<div class="grid_view_content_cell">
-							<span><input type="text" class="txt_box rate_input" readonly /></span>
-						</div>
-						<div class="grid_view_content_cell">
-							<span><input type="text" class="txt_box total_input" readonly /></span>
-						</div>
-						<div class="grid_view_content_cell action_cell">
-							<span><i class="fa fa-close"></i></span>
-						</div>
-					</div>
-					
-					<div id="grid_view_footer">
-						<span>Total</span><span>14,000</span>
-					</div>
-				</div>
-			</div>
-			<div id="form_footer">
-				<div>
-					<input type="button" class="save_btn" value="Save" />
-					<input type="button" class="cancel_btn" value="Cancel" />
-				</div>
-			</div>
-		</form>
-	</div>
-</div>
 </div>

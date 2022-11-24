@@ -91,15 +91,9 @@ label{
 	background-color: #d0d0d0;
 }
 
-@keyframes pulsate{
-	0%{outline: none;}
-	50%{background-color: rgba(255, 5, 5, 0.8);}
-	100%{background-color: rgba(244, 12, 12, 0.55); outline: solid rgba(204, 51, 51, 0.15); font-size: 1.2em;}
-}
-
 #response_box{
-	background-color: green;
 	width: 50%;
+	height: 2em;
 	margin:  auto;
 	padding: 8px;
 	border-radius: 3px;
@@ -109,8 +103,26 @@ label{
 	color: #fff;
 	font-family: "Calibri" , sans-serif;
 	letter-spacing: 0.03em;
-	/*animation: pulsate 1s infinite*/
+	transition: height 2s, padding 2s ease-in-out;
 }
+
+#response_box.fade_away_el{
+	padding: 0;
+	height: 0px;
+}
+
+.form_error_note{
+	color: red; 
+	margin-bottom: 0;
+}
+
+/*.response_box_error{
+	background-color: red;
+}
+
+.response_box_success{
+	background-color: green;
+}*/
 
 #form_header{
 	margin-bottom: 10px;
@@ -119,7 +131,7 @@ label{
 }
 
 
-.pymt_btn{
+.pymt_btn, .editorder_btn{
 	background-color: #ddd;
 	padding: 3px 10px;
 	border: 1px solid rgb(244,117,13);
@@ -129,7 +141,7 @@ label{
 	font-family: "Trebuchet MS", sans-serif;
 }
 
-.pymt_btn:hover{
+.pymt_btn:hover, .editorder_btn:hover{
 	background-image: linear-gradient(orange,rgb(244,117,13));
 	color: #ffffff;
 	border-color: #ffffff;
@@ -146,16 +158,52 @@ label{
 	transform: scale(1.03,1.03);
 }*/
 
+@keyframes pulsate{
+	0%{outline: none;}
+	50%{background-color: rgba(255, 5, 5, 0.8);}
+	100%{background-color: rgba(244, 12, 12, 0.55); outline: solid rgba(204, 51, 51, 0.15); font-size: 1.2em;}
+}
+
 #order_status p {
 	border-radius: 3px;
 	margin: 0 auto;
 	text-align: center;
 	padding: 12px;
 	width: fit-content;
+	color: #ffffff;
 	animation: pulsate 1s infinite;
 }
 
-.delvier_btn_box button{
+#order_time_label{
+	width: fit-content;
+	margin:  auto;
+	text-decoration: underline 2px;
+	letter-spacing: 0.03em;
+	color: slategrey;
+}
+
+#order_time{
+	color: slategrey;
+	font-size: 3em;
+	font-weight: 500;
+}
+
+#order_time.order_time_warning{
+	color: orange;
+}
+
+@keyframes order_critical{
+	0%{font-size: 3em;}
+	50%{font-size: 3.2em;}
+	100%{font-size: 3.4em;}
+}
+
+#order_time.order_time_critical{
+	color: red;
+	animation: order_critical 1s infinite;
+}
+
+.deliver_btn_box button{
 	padding: 7px;
 	margin-top: 5px;
 	margin-bottom: 2px;
@@ -165,20 +213,6 @@ label{
 	border-radius: 4px;
 	letter-spacing: 0.04em;
 	color: rgb(244,117,13);
-}
-
-#order_status div{
-	width: fit-content;
-	margin:  auto;
-	text-decoration: underline 2px;
-	letter-spacing: 0.03em;
-	color: slategrey;
-}
-
-#order_status span{
-	color: slategrey;
-	font-size: 3em;
-	font-weight: 500;
 }
 
 #payment_bill{
@@ -211,6 +245,22 @@ label{
 #grid_view_content pdt_cell{
 	display: inline-flex;
 }
+
+
+.animate_repeat.ng-move, .animate_repeat.ng-enter, .animate_repeat.ng-leave{
+	transition: all linear 0.5s;
+}
+
+.animate_repeat.ng-leave.ng-leave-active, .animate_repeat.ng-enter, .animate_repeat.ng-move{
+	opacity: 0;
+	max-height: 0;
+}
+
+.animate_repeat.ng-leave, .animate_repeat.ng-enter.ng-enter-active, .animate_repeat.ng-move.ng-move-active{
+	opacity: 1;
+	
+}
+
 
 .pdt_cell span{
 	width: 100%
@@ -269,27 +319,54 @@ label{
 	float: right;
 }
 
+/**
+	>>> Payment Form Styling begins <<<
 
-/*.pdt_select{
-	background-color: red;
-}
-.pdt_cell{
-	width: 30%
-}
+**/
 
-.qty_cell{
-	
-	width: 20%
-}
-
-.rate_cell{
-	width: 20%
+#pymnt_form_content{
+	display: flex;
+	gap: 1em;
+	margin-bottom: 10px;
+	margin-top: 10px;
 }
 
-.total_cell{
-	width: 20%
+.labels, .inputs{
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	justify-content:space-between;
 }
 
-.action_cell{
-	width: 2em;
+.col75, .col25{
+	margin-bottom: 3px
+}
+
+/**
+	>>> Product Form Styling begins <<<
+
+**/
+
+.left-panel, .right-panel{
+	/*width: 50%;
+	float: left;*/
+	display: flex;
+	flex-direction: column;
+}
+
+/*#pdt_form_content input, #pdt_form_content select{
+	width: 50%;
+}
+
+#pdt_form_content label{
+	width: 20em;
 }*/
+
+/**
+	>>> Form Validation Styling begins <<<
+
+**/
+
+#details_form input.ng-invalid.ng-touched, select.ng-invalid.ng-touched{
+	outline: solid rgba(244, 5, 5, 0.6);
+}

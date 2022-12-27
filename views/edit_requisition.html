@@ -52,7 +52,7 @@
 							
 							<div id="grid_view_content" data-ng-repeat="request_item in requisition_items">
 								<div class="grid_view_content_cell">
-									<span>{{::request_item.number}}</span>
+									<span>{{$index+1}}</span>
 								</div>
 								<div class="grid_view_content_cell pdt_cell">
 									<span><input type="text" class="txt_box" value="{{::request_item.item}}" readonly />
@@ -72,7 +72,7 @@
 							</div>
 							
 							<div id="grid_view_footer">
-								<span>Total</span><span>14,000</span>
+								<span>Total</span><span>{{getGrandTotal}}</span>
 							</div>
 						</div>
 					</div>

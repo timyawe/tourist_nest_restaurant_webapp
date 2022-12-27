@@ -2,14 +2,14 @@
 	<h2 id="banner">Orders</h2>
 </div>
 	
-<div id="sub_content_box" data-ng-controller="new_paymentCtlr">
+<div id="sub_content_box" data-ng-controller="OrdpaymentCtlr">
 	<div id="view_content">
 		<div id="details_link_box">
-			<a href="#!order_payments">Manage Payments</a>
+			<a href="#!order_payments/{{::ordNo}}">Manage Payments</a>
 		</div>
 		<div id="details_box">	
 			<div id="details_header_box">
-				<h3>Add Payment</h3>
+				<h3>{{::pgtitle}} Payment</h3>
 			</div>
 			<div id="details_content_box">
 				<form id="details_form" name="payment_form" novalidate>
@@ -20,17 +20,17 @@
 							<div class="col25"><label>Order #:</label></div>
 							<div class="col25"><label>Date:</label></div>
 							<div class="col25"><label>Amount:</label></div>
-							<div class="col25"><label>Type:</label></div>
+							<div class="col25"><label>Method:</label></div>
 						</div>
 						<div class="inputs">
-							<div class="col75"><label>ORD101</label></div>
-							<div class="col75"><input class="txt_box" type="date" name="pdate" data-ng-model="pdate" required /></div>
-							<div class="col75"><input class="txt_box" type="text" name="pamnt" data-ng-model="pamnt" required /></div>
+							<div class="col75"><!--<input class="txt_box" type="text" ng-model="ordNo" />--><label>{{::ordNo}}</label></div>
+							<div class="col75"><input class="txt_box" type="date" data-ng-model="pdate" name="paymentdate" required /></div>
+							<div class="col75"><input class="txt_box" type="text" data-ng-model="pamnt" name="amount" required /></div>
 							<div class="col75">
-								<select class="select_box" name="ptype" data-ng-model="ptype" required>
-									<option value="">Choose Payment Type</option>
-									<option value="MTN">MTN Mobile Money</option>
-									<option value="Airtel">Airtel Money</option>
+								<select class="select_box" data-ng-model="ptype" name="paymentmethod" required>
+									<option value="">Choose Method</option>
+									<option value="Mobile Money(MTN)">MTN Mobile Money</option>
+									<option value="Mobile Money(Airtel)">Airtel Money</option>
 									<option value="Cash">Cash</option>
 								</select>
 							</div>
@@ -38,10 +38,10 @@
 					</div>
 					<div id="form_footer">
 						<div>
-							<input type="button" class="save_btn" value="Save" data-ng-click="validate()" data-ng-disabled="payment_form.$invalid" />
+							<input type="button" class="save_btn" value="Save" data-ng-click="validate()" data-ng-disabled="payment_form.$invalid || !payment_form.$dirty && payment_form.$valid" />
 							<input type="button" class="cancel_btn" value="Cancel" onclick="history.back()"/>
 						</div>
-						<span data-ng-show="payment_form.$dirty && payment_form.$invalid"><pre class="form_error_note">*All fields are required</pre></span>
+						<span data-ng-hide="payment_form.$dirty && payment_form.$valid"><pre class="form_error_note">*All fields are required</pre></span>
 					</div>
 				</form>
 			</div>

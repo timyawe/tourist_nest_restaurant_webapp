@@ -15,11 +15,19 @@
 				<form id="details_form" name="_form" novalidate>
 					<div id="form_header">
 						<div>
-							<a href="#!new_payment" class="pymt_btn">Add Payment</a>
+							<a href="#!new_payment/{{::ordNo}}" class="pymt_btn" data-ng-show="!isFullyPaid">Add Payment</a>
 						</div>
 						
-						<div id="payment_bill">
-							<span>Bill: {{::bill}}</span>
+						<div style="display: flex; gap: 0.5em">
+							<div id="payment_bill">
+								<span>Bill: {{::bill}}</span>
+							</div>
+							<div id="payment_bill">
+								<span>Paid: {{::paid}}</span>
+							</div>
+							<div id="payment_bill">
+								<span>Bal: {{::bal}}</span>
+							</div>
 						</div>
 						<div>
 							<input type="button" class="cancel_btn" value="Cancel" onclick="history.back()"/>
@@ -35,10 +43,10 @@
 									<span>Amount</span>
 								</div>
 								<div class="grid_view_header_cell pymt_typ_cell">
-									<span>Type</span>
+									<span>Method</span>
 								</div>
 								<div class="grid_view_header_cell pymt_date_cell">
-									<span>Time</span>
+									<span>Date</span>
 								</div>
 								<div class="grid_view_header_cell action_cell">
 									<span>Edit</span>
@@ -47,19 +55,19 @@
 							
 							<div id="grid_view_content" data-ng-repeat="payment in payments">
 								<div class="grid_view_content_cell">
-									<span>{{::payment.number}}</span>
+									<span>{{$index+1}}</span>
 								</div>
 								<div class="grid_view_content_cell pymt_amt_cell">
 									<span>{{::payment.amount}}</span>
 								</div>
 								<div class="grid_view_content_cell pymt_typ_cell">
-									<span>{{::payment.type}}</span>
+									<span>{{::payment.method}}</span>
 								</div>
 								<div class="grid_view_content_cell pymt_date_cell">
-									<span>{{::payment.date}}</span>
+									<span>{{::payment.date | date: 'dd/MM/yyyy'}}</span>
 								</div>
 								<div class="grid_view_content_cell action_cell">
-									<span><i class="fa fa-edit"></i></span>
+									<span><a href="#!edit_ordpayment/{{::payment.paymtID}}"><i class="fa fa-edit"></a></i></span>
 								</div>
 							</div>
 							
@@ -83,7 +91,7 @@
 							</div>
 							-->
 							<div id="grid_view_footer">
-								<span>Total</span><span>14,000</span>
+								<span>Total</span><span>{{getGrandTotal}}</span>
 							</div>
 						</div>
 					</div>

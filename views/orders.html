@@ -17,8 +17,11 @@
 						<div class="grid_view_header_cell">
 							<span>#</span>
 						</div>
+						<div class="grid_view_header_cell delv_cell">
+							<span>Station</span>
+						</div>
 						<div class="grid_view_header_cell table_cell">
-							<span>Table</span>
+							<span>To</span>
 						</div>
 						<div class="grid_view_header_cell time_cell">
 							<span>Time</span>
@@ -40,15 +43,18 @@
 						</div>
 					</div>
 					
-					<div id="grid_view_content" data-ng-class="order_status" data-ng-repeat="order in orders" data-ng-style="{'background-color':(order.status == 'Pending') ? 'red' : ''}">
+					<div id="grid_view_content" data-ng-repeat="order in orders" data-ng-style="{'background-color':(order.status == 'Pending') ? 'red' : ''}">
 						<div class="grid_view_content_cell">
 							<span>{{$index +1}}</span>
 						</div>
+						<div class="grid_view_content_cell  delv_cell">
+							<span>{{::order.station}}</span>
+						</div>
 						<div class="grid_view_content_cell table_cell" ng-click="check($index)">
-							<span>{{::order.table}}</span>
+							<span>{{::order.to}}</span>
 						</div>
 						<div class="grid_view_content_cell time_cell">
-							<span>{{::order.time}}</span>
+							<span>{{::order.time | date: 'dd/MM/yyyy'}}</span><!-- filter not working -->
 						</div>
 						<div class="grid_view_content_cell status_cell">
 							<span class="status_val">{{::order.status}}</span>
@@ -63,7 +69,7 @@
 							<span>{{::order.delvstatus}}</span>
 						</div>-->
 						<div class="grid_view_content_cell  action_cell">
-							<span><a href="#!edit_order"><i class="fa fa-edit"></i></a></span>
+							<span><a href="#!edit_order/{{order.ordNo}}"><i class="fa fa-edit"></i></a></span>
 						</div>
 					</div>
 				</div>

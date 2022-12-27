@@ -5,7 +5,7 @@ form{
 }
 
 label{
-	color: darkblue;
+	color: steelblue;
 	letter-spacing: 0.025em;
 	width: 50%;
 	text-align: right;
@@ -89,6 +89,8 @@ label{
 	border-radius: 4px;
 	padding: 10px;
 	background-color: #d0d0d0;
+	display: flex;
+	flex-direction:column
 }
 
 #response_box{
@@ -216,10 +218,10 @@ label{
 }
 
 #payment_bill{
-	padding: .25em 1.5em;
+	padding: .25em 1em;
 	border: 1px solid rgb(244,117,13);
 	color: darkblue;
-	font-size: 1.5em;
+	font-size: 1.1em;
 }
 
 #form_content #grid_view_header{
@@ -346,14 +348,36 @@ label{
 	>>> Product Form Styling begins <<<
 
 **/
-
-.left-panel, .right-panel{
-	/*width: 50%;
-	float: left;*/
+/*#pdt_form_content{
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
+	justify-content: space-around;
+}*/
+
+.row{
+	display: flex;
+	flex-direction: colomn; 
+	margin-bottom: 7px
 }
 
+.col25{
+	text-align: left;
+}
+
+.left-panel .col75{
+	width: 62%
+}
+
+.left-panel, .right-panel{
+	width: 48%;
+	float: left;
+	/*display: flex;
+	flex-direction: column;*/
+}
+
+.left-panel{
+	margin-right: 4%
+}
 /*#pdt_form_content input, #pdt_form_content select{
 	width: 50%;
 }
@@ -361,6 +385,20 @@ label{
 #pdt_form_content label{
 	width: 20em;
 }*/
+
+.item_sold_check_box{
+	text-align: center;
+	font-size: 0.75em;
+	padding: 5px;
+	margin-bottom: 10px;
+}
+
+.item_sold_check_box label{
+	color: crimson;
+	
+}
+
+
 
 /**
 	>>> Form Validation Styling begins <<<

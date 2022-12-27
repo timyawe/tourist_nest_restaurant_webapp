@@ -42,10 +42,10 @@
 					
 					<div id="grid_view_content" data-ng-repeat="requisition in requisitions">
 						<div class="grid_view_content_cell">
-							<span>{{::requisition.number}}</span>
+							<span>{{$index+1}}</span>
 						</div>
 						<div class="grid_view_content_cell">
-							<span>{{::requisition.date}}</span>
+							<span>{{::requisition._date}}</span>
 						</div>
 						<div class="grid_view_content_cell">
 							<span>{{::requisition.category}}</span>
@@ -63,7 +63,7 @@
 							<span>{{::requisition.amount}}</span>
 						</div>
 						<div class="grid_view_content_cell action_cell">
-							<span><a href="#!edit_requisition"><i class="fa fa-edit"></i></a></span>
+							<span><a href="#!edit_requisition/{{requisition.reqNo}}"><i class="fa fa-edit"></i></a></span>
 						</div>
 					</div>
 				</div>

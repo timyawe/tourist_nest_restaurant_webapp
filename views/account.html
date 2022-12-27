@@ -1,0 +1,22 @@
+<div data-ng-controller="accountCtlr">
+<div id="content_banner_box">
+	<h2 id="banner">{{::acc_banner}} Panel</h2>
+</div>
+	
+<div id="sub_content_box">
+	<div id="view_content">
+		<div id="ac_link_box">
+			<div class="ac_link_row">
+				<a href="#" class="ac_link" ng-if="isAdmin">Manage Users</a>
+				<a href="#!tables" class="ac_link" ng-if="isAdmin">Manage Tables</a>
+				<a href="#" class="ac_link">Summary Report...</a>
+			</div>
+			<div class="ac_link_row">
+				<a href="#!products" class="ac_link" ng-if="isAdmin">Manage Products</a>
+				<a href="#" class="ac_link" ng-if="isAdmin">Manage Sections</a>
+				<a href="#" class="ac_link">Change Password</a>
+			</div>
+		</div>
+	</div>
+</div>
+</div>

@@ -28,8 +28,8 @@
 								<label>For:</label>
 								<select class="select_box" name="category" data-ng-model="category" required>
 									<option value="">Choose Category</option>
-									<option value="eats">Eats</option>
-									<option value="drinks">Drinks</option>
+									<option value="Eats">Eats</option>
+									<option value="Drinks">Drinks</option>
 								</select>
 							</div>
 						</div>
@@ -57,25 +57,25 @@
 								</div>
 							</div>
 							
-							<div id="grid_view_content" data-ng-repeat="row in rows">
+							<div id="grid_view_content" data-ng-repeat="row in rows track by $index">
 								<div class="grid_view_content_cell">
 									<span>{{$index +1}}</span>
 								</div>
 								<div class="grid_view_content_cell pdt_cell">
 									<span>
-										<select class="select_box" data-ng-options="item.label for item in items" name="item[]" data-ng-model="row.item" data-ng-change="reqItemRate(row.item, $index)" required>
+										<select class="select_box" data-ng-options="item.label for item in items | filter:category" data-ng-model="row.item" data-ng-change="reqItemRate(row.item, $index)" required>
 											<option value="">Choose Item</option>
 										</select>
 									</span>
 								</div>
 								<div class="grid_view_content_cell">
-									<span><input type="number" class="txt_box qty_input" name="qty[]" data-ng-model="$parent.qty[row.ID]" data-ng-blur="reqComputeTotal(qty[row.ID],row.item,$index)" required /></span>
+									<span><input type="number" class="txt_box qty_input" data-ng-model="$parent.qty[row.ID]" data-ng-blur="reqComputeSubTotal(qty[row.ID],row.item,$index)" required /></span>
 								</div>
 								<div class="grid_view_content_cell">
-									<span><input type="text" class="txt_box rate_input" name="rate[]" readonly /></span>
+									<span><input type="text" class="txt_box rate_input" readonly /></span>
 								</div>
 								<div class="grid_view_content_cell">
-									<span><input type="text" class="txt_box total_input" name="total[]" readonly /></span>
+									<span><input type="text" class="txt_box total_input" readonly /></span>
 								</div>
 								<div class="grid_view_content_cell action_cell">
 									<span data-ng-click="removeRow($index)"><i class="fa fa-close"></i></span>
@@ -83,7 +83,7 @@
 							</div>
 							
 							<div id="grid_view_footer">
-								<span>Total</span><span>14,000</span>
+								<span>Total</span><span>{{getGrandTotal()}}</span>
 							</div>
 						</div>
 					</div>

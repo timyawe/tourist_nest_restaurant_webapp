@@ -1,0 +1,50 @@
+<div id="content_banner_box">
+	<h2 id="banner">Tables</h2>
+</div>
+	
+<div id="sub_content_box" data-ng-controller="edit_tableCtlr">
+	<div id="view_content">
+		<div id="details_link_box">
+			<a href="#!tables">Manage Tables</a>
+		</div>
+		<div id="details_box">	
+			<div id="details_header_box">
+				<h3>{{::pgtitle}} Table</h3>
+			</div>
+			<div id="details_content_box">
+				<form id="details_form" name="table_form" novalidate>
+					<div id="loader" style="display:none"></div>
+					<div id="response_box" style="display:none"></div>
+					<div id="pdt_form_content">
+						<div class="left-panel">
+							<div class="row"><label class="col25">Description:</label><input class="txt_box col75" name="desc" data-ng-model="desc" type="text" required /></div>
+							<div class="row"><label class="col25">Capacity:</label><input class="txt_box col75" name="cap" data-ng-model="cap" type="number" required /></div>
+						</div>
+						<div class="right-panel">
+							<div class="row"><label class="col25">Location:</label>
+								<select class="select_box col75" name="loc" data-ng-model="loc" required>
+									<option value="">Choose Location</option>
+									<option value="Restaurant">Restaurant</option>
+									<option value="Garden">Garden</option>
+									<option value="Hall">Hall</option>
+								</select>
+							</div>
+							<div class="row"><label class="col25">Status:</label>
+							<select class="select_box col75" name="status" data-ng-model="status">
+								<option value="1">In Use</option>
+								<option value="0">Out of Use</option>
+							</select></div>
+						</div>
+					</div>
+					<div id="form_footer">
+						<div>
+							<input type="button" class="save_btn" value="Save" data-ng-click="validate()" data-ng-disabled="table_form.$invalid || !table_form.$dirty && table_form.$valid" />
+							<input type="button" class="cancel_btn" value="Cancel" onclick="history.back()"/>
+						</div>
+					<span data-ng-show="table_form.$dirty && table_form.$invalid"><pre class="form_error_note">*All fields are required</pre></span>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

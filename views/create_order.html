@@ -17,16 +17,16 @@
 					<div id="response_box" style="display:none"></div>
 					<div id="form_header">
 						<div>
-							<a href="#!edit_order" class="editorder_btn">View Order</a>
+							<a href="#!edit_order/{{ordNo}}" class="editorder_btn" data-ng-show="showEditBtn">View Order</a>
 						</div>
 						
 						<div class="form_input_col">
 							<div class="form_input_row">
-								<label>Station:</label><input type="text" class="txt_box" name="station" value="{{::station}}" readonly />
+								<label>Station:</label><input type="text" class="txt_box" value="{{::station}}" readonly />
 							</div>
 							<div class="form_input_row">
 								<label>To:</label>
-								<select class="select_box" name="to" data-ng-model="to" data-ng-change="changeTo()" required>
+								<select class="select_box" data-ng-model="to" data-ng-change="changeTo()" required>
 									<option value="">Choose Delivery Point</option>
 									<option value="Table">Table</option>
 									<option value="Room">Room</option>
@@ -36,9 +36,9 @@
 											<option value="">Choose Item</option>
 										</select>-->
 							</div>
-							<div class="form_input_row" data-ng-show="show">
+							<div class="form_input_row" data-ng-if="show">
 								<label>{{to}}:</label>
-								<select class="select_box" name="delv_point" data-ng-options="delvPnt.pntName as delvPnt.pntName for delvPnt in delvPnts" data-ng-model="delv_point">
+								<select class="select_box" data-ng-options="delvPnt.pntName as delvPnt.pntName for delvPnt in delvPnts" data-ng-model="delv_point" ng-change="q()" data-ng-required="show">
 									<option value="">Choose {{to}}</option>
 									<!--<option>Table 1</option>
 									<option>Braxton</option>
@@ -76,23 +76,27 @@
 								</div>
 								<div class="grid_view_content_cell pdt_cell">
 									<span>
-										<select class="select_box item" data-ng-options="item.label for item in items track by item.value" name="item[]" data-ng-model="row.item" data-ng-change="itemRate(row.item,$index)" required>
+										<select class="select_box item" data-ng-options="item.label for item in items track by item.value" data-ng-model="row.item" data-ng-change="itemRate(row.item,$index)" required>
 											<option value="">Choose Item</option>
 										</select>
 									</span>
 								</div>
 								<div class="grid_view_content_cell">
-									<span><input type="number" class="txt_box qty_input" name="qty[]" data-ng-model="$parent.qty[row.ID]" data-ng-blur="computeTotal(qty[row.ID],row.item,$index)" required /></span>
+									<span><input type="number" class="txt_box qty_input" data-ng-model="$parent.qty[row.ID]" data-ng-blur="computeSubTotal(qty[row.ID],row.item,$index)" required /></span>
 								</div>
 								<div class="grid_view_content_cell">
-									<span><input type="text" class="txt_box rate_input" name="rate[]" ng-model="$parent.rate[row.ID]" readonly /><!--value="{{row.item.rate}}"--> </span>
+									<span><input type="text" class="txt_box rate_input" data-ng-model="$parent.rate[row.ID]" readonly /><!--value="{{row.item.rate}}"--> </span>
 								</div>
 								<div class="grid_view_content_cell">
-									<span><input type="text" class="txt_box total_input" name="total[]" readonly /><!--value="{{qty[row.ID]*rate[row.ID]}}" value="{{total()[row.ID]}}"--></span>
+									<span><input type="text" class="txt_box total_input" readonly /><!--value="{{qty[row.ID]*rate[row.ID]}}" value="{{total()[row.ID]}}"--></span>
 								</div>
 								<div class="grid_view_content_cell action_cell">
 									<span data-ng-click="removeRow($index)"><i class="fa fa-close"></i></span>
 								</div>
+							</div>
+							
+							<div id="grid_view_footer">
+								<span>Total</span><span>{{getGrandTotal()}}</span>
 							</div>
 						</div>
 					</div>

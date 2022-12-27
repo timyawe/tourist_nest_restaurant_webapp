@@ -2,46 +2,51 @@
 	<h2 id="banner">Products</h2>
 </div>
 	
-<div id="sub_content_box" data-ng-controller="productsCtlr">
+<div id="sub_content_box" data-ng-controller="edit_productCtlr">
 	<div id="view_content">
 		<div id="details_link_box">
 			<a href="#!products">Manage Products</a>
 		</div>
 		<div id="details_box">	
 			<div id="details_header_box">
-				<h3>Add Product</h3>
+				<h3>{{::pgtitle}} Product</h3>
 			</div>
 			<div id="details_content_box">
 				<form id="details_form" name="product_form" novalidate>
 					<div id="loader" style="display:none"></div>
 					<div id="response_box" style="display:none"></div>
 					<div id="pdt_form_content">
+						<div class="item_sold_check_box"><label>Check to indicate if item is only sold and not bought</label><input data-ng-model="item_sold_check" name="item_sold_check" type="checkbox" /></div>
 						<div class="left-panel">
-							<div><label>Description</label><input class="txt_box" type="text" required /></div>
-							<div><label>Category</label>
-							<select class="select_box" required>
-								<option>Choose Category</option>
-								<option>Drinks</option>
-								<option>Drinks</option>
-								</select></div>
-							<div><label>Min Stock Level</label><input class="txt_box" type="number" required /></div>
+							<div class="row"><label class="col25">Description:</label><input class="txt_box col75" data-ng-model="desc" name="descriprion" type="text" required /></div>
+							<div class="row"><label class="col25">Sale Name:</label><input class="txt_box col75" data-ng-model="sale_name" name="salename" type="text" placeholder="If sold different e.g. Irish & Chips" /></div>
+							<div class="row"><label class="col25">Sale Price/Unit:</label><input class="txt_box col75" data-ng-model="sale_price" name="unitsaleprice" type="text" required /></div>
+							<div class="row" ng-if="!item_sold_check"><label class="col25">Cost Price/Unit:</label><input class="txt_box col75" data-ng-model="cost_price" name="unitcostprice" type="text" required /></div>
+							<div class="row" ng-if="!item_sold_check"><label class="col25">Min Stock Level:</label><input class="txt_box col75" data-ng-model="min_stock" name="stocklevel" type="number" required /></div>
 						</div>
 						<div class="right-panel">
-							<div><label>Cost Price/Unit</label><input class="txt_box" type="text" required /></div>
-							<div><label>Sale Price/Unit</label><input class="txt_box" type="text" required /></div>
-							<div><label>Status</label>
-							<select class="select_box">
-								<option>Active</option>
-								<option>Discontinued</option>
+							<div class="row"><label class="col25">Category:</label>
+							<select class="select_box col75" data-ng-model="cat" name="category" required>
+								<option value="">Choose Category</option>
+								<option value="Drinks">Drinks</option>
+								<option value="Eats">Eats</option>
+							</select></div>
+							<div class="row"><label class="col25">Measure Sold:</label><input class="txt_box col75" data-ng-model="mesr_sold" name="measuresold" type="text" placeholder="Default is 1" /></div>
+							<div class="row" ng-if="!item_sold_check"><label class="col25">Prep Time:</label><input class="txt_box col75" data-ng-model="preptime" name="preptime" type="number" placeholder="Prep time in mins e.g 10" /></div>
+							<div class="row" ng-if="!item_sold_check"><label class="col25">Unit Qty:</label><input class="txt_box col75" data-ng-model="untqty" name="unitqty" type="text" placeholder="E.g. 300ml/bottle or 20pcs/box" required /></div>
+							<div class="row"><label class="col25">Status:</label>
+							<select class="select_box col75" data-ng-model="status" name="status">
+								<option value="Active">Active</option>
+								<option value="Discontinued">Discontinued</option>
 							</select></div>
 						</div>
 					</div>
 					<div id="form_footer">
 						<div>
-							<input type="button" class="save_btn" value="Save" data-ng-click="validate()" data-ng-disabled="product_form.$invalid" />
+							<input type="button" class="save_btn" value="Save" data-ng-click="validate()" data-ng-disabled="product_form.$invalid || !product_form.$dirty && product_form.$valid" />
 							<input type="button" class="cancel_btn" value="Cancel" onclick="history.back()"/>
 						</div>
-					<span data-ng-show="product_form.$dirty && product_form.$invalid"><pre class="form_error_note">*Highlited fields are required</pre></span>
+					<span data-ng-show="product_form.$dirty && product_form.$invalid"><pre class="form_error_note">*All fields are required</pre></span>
 					</div>
 				</form>
 			</div>

@@ -17,7 +17,7 @@
 				<div id="response_box" style="display:none"></div>
 				<div id="form_header">
 					<div>
-						<a href="#!order_payments" class="pymt_btn">Payments</a>
+						<a href="#!order_payments/{{::ordNo}}" class="pymt_btn">Payments</a>
 					</div>
 
 					<div id="order_status">
@@ -38,10 +38,10 @@
 						<div class="form_input_row">
 							<label style="width:12em">Delivery Point:</label><input type="text" class="txt_box" value="{{::delv_point}}" readonly />
 						</div>
-						<div class="deliver_btn_box">
+						<div class="deliver_btn_box" ng-if="showDeliverBtn">
 							<button data-ng-click="deliver()">Deliver Now</button>
 						</div>
-						<div class="form_input_row">
+						<div class="form_input_row" ng-if="showVerify">
 						<label>Verify:</label><select class="select_box"><option>Not Verified</option><option>Verified</option></select>
 						</div>
 					</div>
@@ -71,7 +71,7 @@
 						
 						<div id="grid_view_content" data-ng-repeat="order_item in order_items">
 							<div class="grid_view_content_cell">
-								<span>{{::order_item.number}}</span>
+								<span>{{$index+1}}</span>
 							</div>
 							<div class="grid_view_content_cell pdt_cell">
 								<span><input type="text" class="txt_box" value="{{::order_item.item}}" readonly /></span>
@@ -91,7 +91,7 @@
 						</div>
 						
 						<div id="grid_view_footer">
-							<span>Total</span><span>14,000</span>
+							<span>Total</span><span>{{getGrandTotal}}</span>
 						</div>
 					</div>
 				</div>

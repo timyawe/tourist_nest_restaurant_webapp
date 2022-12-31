@@ -36,13 +36,10 @@
 											<option value="">Choose Item</option>
 										</select>-->
 							</div>
-							<div class="form_input_row" data-ng-if="show">
+							<div class="form_input_row" data-ng-show="show">
 								<label>{{to}}:</label>
 								<select class="select_box" data-ng-options="delvPnt.pntName as delvPnt.pntName for delvPnt in delvPnts" data-ng-model="delv_point" ng-change="q()" data-ng-required="show">
 									<option value="">Choose {{to}}</option>
-									<!--<option>Table 1</option>
-									<option>Braxton</option>
-									<option>Upper Western</option>-->
 								</select>						
 							</div>
 						</div>
@@ -85,10 +82,10 @@
 									<span><input type="number" class="txt_box qty_input" data-ng-model="$parent.qty[row.ID]" data-ng-blur="computeSubTotal(qty[row.ID],row.item,$index)" required /></span>
 								</div>
 								<div class="grid_view_content_cell">
-									<span><input type="text" class="txt_box rate_input" data-ng-model="$parent.rate[row.ID]" readonly /><!--value="{{row.item.rate}}"--> </span>
+									<span><input type="text" class="txt_box rate_input" data-ng-model="$parent.rate[row.ID]" readonly /></span>
 								</div>
 								<div class="grid_view_content_cell">
-									<span><input type="text" class="txt_box total_input" readonly /><!--value="{{qty[row.ID]*rate[row.ID]}}" value="{{total()[row.ID]}}"--></span>
+									<span><input type="text" class="txt_box total_input" readonly /></span>
 								</div>
 								<div class="grid_view_content_cell action_cell">
 									<span data-ng-click="removeRow($index)"><i class="fa fa-close"></i></span>

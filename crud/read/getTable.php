@@ -10,5 +10,5 @@ $tblID = $clean_data['tblID'];
 $sql = "SELECT * FROM `Tables` WHERE Table_ID = '$tblID'";
 
 require_once $_SERVER['DOCUMENT_ROOT'].'/db/conn.php';
-echo dbConn($sql, array(), "select");
+echo dbConn($sql, array(), 'select');
 ?>

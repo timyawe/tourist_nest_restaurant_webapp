@@ -26,8 +26,11 @@ if(!empty($pdt_fields)){
 	
 	if(!empty($pdtfinal_arr)){
 		$pdtfields_arr = array_keys($pdtfinal_arr);
+		
 		array_unshift($pdtfinal_arr, createBindTypes($pdtfinal_arr));
+		
 		$pdt_res = json_decode(dbConn(createUpdateSql($pdtfields_arr, 'Products', 'Product_No', $pdtID),$pdtfinal_arr, 'update'));
+		
 		if($pdt_res->status === 1){
 			$isPdtEdited = 1;
 			$pdtEdtMsg = $pdt_res->message;
@@ -46,8 +49,11 @@ if(!empty($itms_bought_fields)){
 	
 	if(!empty($pdt_bght_final_arr)){
 		$pdt_bght_fields_arr = array_keys($pdt_bght_final_arr);
+		
 		array_unshift($pdt_bght_final_arr, createBindTypes($pdt_bght_final_arr));
+		
 		$pdt_bght_res = json_decode(dbConn(createUpdateSql($pdt_bght_fields_arr, 'Items_Bought', 'ProductNo', $pdtID),$pdt_bght_final_arr, 'update'));
+		
 		if($pdt_bght_res->status === 1){
 			$isPdtBghtEdited = 1;
 			$pdtBghtEdtMsg = $pdt_bght_res->message;
@@ -65,8 +71,11 @@ if(!empty($itms_sld_fields)){
 	
 	if(!empty($pdt_sld_final_arr)){
 		$pdt_sld_fields_arr = array_keys($pdt_sld_final_arr);
+		
 		array_unshift($pdt_sld_final_arr, createBindTypes($pdt_sld_final_arr));
+		
 		$pdt_sld_res = json_decode(dbConn(createUpdateSql($pdt_sld_fields_arr, 'Items_Sold', 'ProductNo', $pdtID),$pdt_sld_final_arr, 'update'));
+		
 		if($pdt_sld_res->status === 1){
 			$isPdtSldEdited = 1;
 			$pdtSldEdtMsg = $pdt_sld_res->message;
@@ -107,10 +116,4 @@ function createFields($genarr, $temparr){
 	return $fieldsarr;
 }
 
-/*function comparisonRecord($field, $table, $criteria_v){
-	$sql = "SELECT * FROM $table WHERE $field = '$criteria_v'";
-	$res_obj = json_decode(dbConn($sql, array(), "select"))->message[0];
-	$res_arr = json_decode(json_encode($res_obj),true);//turns object to assoc array
-	return $res_arr;
-}*/
 ?>

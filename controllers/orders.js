@@ -2,22 +2,22 @@ theApp.controller("ordersCtlr", function($scope, $http, userDetails){
 	$scope.ID = userDetails.getUserID();
 	$http.get("../crud/read/getOrders.php", {params: {station: userDetails.getStation()}}).then(function(response){
 		$scope.orders = response.data;/* Generating orders list */
-		console.log(response.data);
+		//console.log(response.data);
 	},function(response){
 		console.log(response.data);
 	});
 
 });
 
-theApp.controller("create_orderCtlr", function($scope, $timeout, $http, userDetails){
+theApp.controller("create_orderCtlr", function($scope, $timeout, $http, userDetails, lineDetails){
 
 	$scope.station = userDetails.getStation();
 	$scope.showEditBtn = false;
 	/* When user chooses delivery point */
 	$scope.changeTo = function(){
-		if($scope.to === "Table" /*|| $scope.to === "Room"*/){
+		if($scope.to === "Table"){
 			$scope.show = true;
-			$scope.delvPnts = tables();
+			tables().then(res => $scope.delvPnts = res);
 		}else if($scope.to === "Room"){
 			$scope.show = true;
 			$scope.delvPnts = rooms();
@@ -29,7 +29,7 @@ theApp.controller("create_orderCtlr", function($scope, $timeout, $http, userDeta
 
 	let order_details = [];//to contain order details for form submission
 
-	/* Generate Requisition details Grand Total */
+	/* Generate Order details Grand Total */
 	$scope.getGrandTotal = function() {
 		let grandtotal = 0;
 		if(order_details.length !== 0){
@@ -41,65 +41,28 @@ theApp.controller("create_orderCtlr", function($scope, $timeout, $http, userDeta
 	}
 
 	/* When user chooses item, apply the rate */
-	$scope.itemRate = function(x, idx){
-		//console.log(x, idx);
-		let qty_input = document.getElementsByClassName("qty_input");
-		let rate_input = document.getElementsByClassName("rate_input");
-		for(let i = 0; i<rate_input.length; i++){
-			if(idx === i){
-				rate_input[i].value = x.rate;
-				
-				order_details[idx] = {pdtNo:x.value/*, item:x.label*/};//adding the order details' objects to array by the current index
-				
-				//Apply the total if the qty field is already filled
-				if(qty_input[i].value !== undefined){
-					let qty = qty_input[i].value;
-					$scope.computeSubTotal(qty,x,idx);
-				}
-			}
-		}
-		
-	}
-
-
+	//$scope.itemRate = function(item, index){ applyRate(item, index, order_details,$scope);}
+	$scope.itemRate = function(item, index)  {lineDetails.applyRate(item, index, order_details, $scope.rows);}
+	
 	/* Computing the Item total from Qty */
-	$scope.computeSubTotal = function(qty,item, idx){
-		let total_input = document.getElementsByClassName("total_input");
-		if(item !== undefined && qty !== undefined ){
-			for(let x = 0; x < total_input.length; x++){
-				if(idx === x){
-					total_input[x].value = qty * item.rate;
-					
-					//adding the requisition details' objects' properties by the current index
-					order_details[idx].qty = qty;
-					order_details[idx].rate = item.rate;
-					order_details[idx].subtotal = qty * item.rate;
-				}
-			}
-		}
-	}
+	//$scope.computeSubTotal = function(qty,item, idx){ computeSubTotal(qty,item, idx, order_details); }
+	$scope.computeSubTotal = function(qty,item, idx) {lineDetails.computeSubTotal(qty,item, idx, order_details);} 
 
 	$scope.q = function(){
 		console.log($scope.delv_point)
 	}
 	
 	/* Generating the options of the Delivery points select tag */
-	$http.get("../crud/read/getTableDelvPoints.php").then(function(response){
-		//tables = () => response.data.message;//Arrow function declaration
-		console.log(tables(), "Danku");
-	},function(response){
-		console.log(response.data);
-	});
-	
 	
 	function tables(){
-		table = [
-			
-				{pntName: "Table 1"}, 
-				{pntName: "Table 2"},
-				{pntName: "Lower Western"}
-				];
-		return table;
+		return $http.get("../crud/read/getTableDelvPoints.php").then(function(response){
+			//tables = () => response.data.message;//Arrow function declaration
+			//console.log(tables(), "Danku");
+			return response.data.message;
+		},function(response){
+			console.log(response.data);
+		});
+		
 	}
 
 	function rooms(){
@@ -111,55 +74,26 @@ theApp.controller("create_orderCtlr", function($scope, $timeout, $http, userDeta
 			];
 		return room;
 	}
-	/*$scope.delvPnts = [
-		{
-			table: [
-			
-				{pntName: "Table 1"}, 
-				{pntName: "Table 2"},
-				{pntName: "Lower Western"}
-				],
-				
-			room: [
-			
-				{pntName: "Braxton"}, 
-				{pntName: "Parkers"}, 
-				{pntName: "Nic"}
-			]
-		}
 
-	]*/
 
 	/* Generating the options of the Item select tag */
-	$http.get("../crud/read/getOrdItemsList.php").then(function(response){
-		$scope.items = response.data;
-	});
-
+	//$scope.items = lineDetails.getItems("../crud/read/getOrdItemsList.php");
+	lineDetails.getItems("../crud/read/getOrdItemsList.php").then(res => $scope.items =res);
+	
 	/* Array to hold the number of rows of the orders details */
 	$scope.rows = [{ID:1}];
 
 	/* Function to add a row to the orders details */
-	$scope.addRow = function(){
-		let counter = $scope.rows.length + 1;
-		$scope.rows.push({ID: counter});
-	}
+	$scope.addRow = () => {lineDetails.addRow_create($scope.rows, order_details);}
 
 	/* Function to reomve a row from the orders details */
-	$scope.removeRow = function(index){
-		if($scope.rows.length === 1){
-			alert("Order must have atleast one item");
-		}else{
-			$scope.rows.splice(index, 1);
-		}
-	}
+	$scope.removeRow = (index) => lineDetails.removeRow_create($scope.rows, index, "Order must have atleast one item", order_details);
 
 	/* Validate Form Data and submit */
 	$scope.validate = function (){
 
 		let form_values = {station:$scope.station, to:$scope.to, delv_point:$scope.delv_point, details:order_details, userID: userDetails.getUserID()};
-		//console.log(form_values);
-		//for(let prop in form_values){console.log(form_values[prop])};
-		//for(let z=0; z<req_details.length; z++){console.log(req_details[z])}
+		
 		$http.post("../crud/create/add_order.php", form_values).then(function(response){
 			
 			toggleLoader("block");
@@ -192,6 +126,60 @@ theApp.controller("create_orderCtlr", function($scope, $timeout, $http, userDeta
 
 });
 
+/*function getItems(http){
+	return http.get("../crud/read/getOrdItemsList.php").then(function(response){
+		return response.data;
+	});/*fetch("../crud/read/getOrdItemsList.php").then(function(response){
+		return response.json();
+	}).then(function(data){
+		return data.message;
+	});*/
+//}
+
+/*function applyRate(x, idx, line_details_arr, scope){
+	//console.log(x, idx);
+	let qty_input = document.getElementsByClassName("qty_input");
+	let rate_input = document.getElementsByClassName("rate_input");
+	let total_input = document.getElementsByClassName("total_input");
+	for(let i = 0; i<rate_input.length; i++){
+		if(idx === i){
+			if(x !== undefined){
+				rate_input[i].value = x.rate;
+				
+				line_details_arr[idx] = {pdtNo:x.value};//adding the order details' objects to array by the current index
+				
+				//Apply the total if the qty field is already filled
+				if(qty_input[i].value !== undefined){
+					let qty = qty_input[i].value;
+					scope.computeSubTotal(qty,x,idx);
+				}
+			}else{
+				qty_input[i].value = "";
+				rate_input[i].value = "";
+				total_input[i].value = "";
+			}
+		}
+	}
+	
+}
+
+function computeSubTotal(qty,item, idx, line_details_arr){
+	let total_input = document.getElementsByClassName("total_input");
+	if(item !== undefined && qty !== "" ){
+		for(let x = 0; x < total_input.length; x++){
+			if(idx === x){
+				total_input[x].value = qty * item.rate;
+				
+				//adding the requisition details' objects' properties by the current index
+				line_details_arr[idx].qty = qty;
+				line_details_arr[idx].rate = item.rate;
+				line_details_arr[idx].subtotal = qty * item.rate;
+				console.log(line_details_arr);
+			}
+		}
+	}
+}*/
+
 let ordPreptime = (arr) => {
 	let newarr = [];
 	for(let v of arr){
@@ -200,17 +188,26 @@ let ordPreptime = (arr) => {
 	return Math.max(...newarr);
 }
 
-theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http, $routeParams, userDetails){
+theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http, $routeParams, $q, userDetails, httpResponse, lineDetails){
 	let odrStartTime;
 	let ordMaxTime;
 	let ordStatus;
+	let editorder_details = [];//to contain order details for form submission
+	let deleted_order_lines = [];//to contain order details deleted for form submission
+	let promisesArr = [];
 	
 	if(userDetails.getUserLevel() === "Level2"){
 		$scope.showVerify = true;
 	}
 	
+	/*Pre-select icon class for the delete action of order details*/
+	//let del_icon = "fa fa-trash";
+	//let undo_icon = "fa fa-undo";
+	//$scope.iconClass = function(id){ return del_icon;}
+	//console.log(icon.length);//.classList.add(del_icon);
+	
 	$http.post("../crud/read/getOrder.php", {ordNo: $routeParams.ordNo}).then (function(response){
-		/*var edit_ordersPage = response.data;*/
+		
 		$scope.ordNo = $routeParams.ordNo;
 		$scope.station = response.data.order[0].Station;
 		$scope.to = response.data.order[0].To;
@@ -218,9 +215,10 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 		odrStartTime = response.data.order[0].OrderDate;
 		ordMaxTime = ordPreptime(response.data.ord_details);
 		ordStatus = response.data.order[0].OrderStatus;
+		angular.forEach(response.data.ord_details, function(v)  {v.deleted = false})//Add deleted property for toggling deleted class in ngRepeat
 		$scope.order_items = response.data.ord_details;//edit_ordersPage[0].order_items;
 		$scope.getGrandTotal = gTotal(response.data.ord_details);
-		
+		console.log($scope.order_items);
 		if(ordStatus === "Pending"){
 			$scope.showDeliverBtn = true;
 		}
@@ -228,20 +226,7 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 		console.log(response.data);
 	});
 	
-	/*var edit_ordersPage = [{"station": "Restaurant",
-							"to": "Table",
-							"delv_point": "Upper Western",
-							"order_items": [
-				{number: 1,item: "Chicken",qty: 1,rate: "7,000",total: "7,000"},
-				{number: 2,item: "Chips",qty: 1,rate: "7,000",total: "7,000"}
-			]
-		}					
-	]
-	$scope.station = edit_ordersPage[0].station;
-	$scope.to = edit_ordersPage[0].to;
-	$scope.delv_point = edit_ordersPage[0].delv_point;
-	$scope.order_items = edit_ordersPage[0].order_items;*/
-
+	
 	$scope.deliver = function(){
 		stop_timer();
 		document.getElementById("order_status").style.display = "none";
@@ -284,7 +269,7 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 		
 		/*stop_timer();*/
 		if(ordStatus === "Pending"){
-			if(ordMaxTime !== 0){
+			if(ordMaxTime !== 0){//When order items dont require preparation time e.g drinks
 				var start_time = new Date(/*"12/31/2022 17:52:58"*/odrStartTime);
 				let start_time_in_secs = Math.floor(start_time.getTime()/1000);
 				
@@ -348,7 +333,7 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 			document.getElementById("order_timer_box").style.display = "none";
 			stop_timer();
 		}
-	}//console.log($scope.ordertime);
+	}
 	//$scope.ordertime = curr_time.getMinutes() - start_time.getMinutes();
 	//$interval(function(){$scope.ordertime = new Date().getMinutes() +3 + ":"+ new Date().getSeconds()},1000);
 	
@@ -357,6 +342,109 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 	function stop_timer(){
 		$interval.cancel(interval);
 	}
+	
+	/* Generating the options of the Item select tag */
+	//getItems($http).then(res => $scope.items =res);
+	lineDetails.getItems("../crud/read/getOrdItemsList.php").then(res => $scope.items =res);
+	
+	/* When user chooses item, apply the rate */
+	$scope.itemRate = function(item, index){ lineDetails.applyRate(item, index, editorder_details, $scope.rows);}
+	
+	/* Computing the Item total from Qty */
+	$scope.computeSubTotal = function(qty,item, idx){ lineDetails.computeSubTotal(qty,item, idx, editorder_details); }
+	
+	/* Array to hold the number of rows of the orders details */
+	$scope.rows = [/*{ID:1}*/];
+
+	/* Function to add a row to the orders details */
+	$scope.addRow = /*() => lineDetails.addRow_edit($scope.rows, $scope.showEditDetails, $scope.order_items);*/function(){
+		let counter = ($scope.rows.length + 1) + $scope.order_items.length;
+		if(!$scope.showEditDetails){
+			$scope.showEditDetails = true;
+			$scope.rows.push({ID: counter});
+		}else{
+			$scope.rows.push({ID: counter});
+		}
+	}
+
+	/* Function to reomve a temporary row from the orders details */
+	$scope.removeRow = function(index){
+		$scope.rows.splice(index, 1);
+		editorder_details.splice(index,1);
+		if($scope.rows.length === 0){
+			$scope.showEditDetails = false;
+		}
+		console.log($scope.rows);
+	}
+	
+	/* Function to delete a existing record from the orders details */
+	$scope.deleteLineItem = function(detailsID, index){
+		if($scope.order_items[index].deleted === false){
+			$scope.order_items[index].deleted = true;
+			deleted_order_lines.push({detailsID, index});
+		}else{
+			$scope.order_items[index].deleted = false;
+			deleted_order_lines.splice(index,1);
+		}
+		//console.log(deleted_order_lines, $scope.order_items[index]);
+	}
+	
+	//Delete Order Line Promise
+	function deletePromise(_data){
+		return $http.get("../crud/delete/deleteOrderLine.php", {params: _data});
+	}
+	
+	//Add Order Line Promise
+	function addPromise(_data){
+		return $http.post("../crud/create/addOrderLine.php", _data);
+	}
+	
+	function collectPromises(){
+		let collected = false;
+		
+		if(deleted_order_lines.length !== 0){
+			promisesArr.push(deletePromise({deletedLines: deleted_order_lines}));
+			collected = true;
+		}
+		
+		if(editorder_details.length !== 0){
+			promisesArr.push(addPromise({ordNo: $routeParams.ordNo, addedLines: editorder_details}));
+			collected = true;
+		}
+		
+		return collected;
+	}
+	
+	$scope.validate = function (){ 
+		if(collectPromises()){
+			//console.log(promisesArr);
+			$q.all(promisesArr).then(function(response){
+				if(collectPromises.length === 2){
+					if(response[0].data.status === 1 && response[1].data.status === 1){
+						httpResponse.success(1, "Updated Succesfuly");
+					}else if(response[0].data.status === 0 || response[1].data.status === 0){
+						httpResponse.success(0, "One or both operations failed, check and try again");
+					}
+				}else{
+					if(response[0].data.status === 1){
+						httpResponse.success(1, "Updated Succesfuly");
+					}else{
+						httpResponse.success(0, "The operation failed, Please try again");
+					}
+				}
+				//console.log(response[0].data);
+			},function(response){
+				httpResponse.error(0, response.data);
+				//console.log(response);
+			});
+			
+		}else{
+			httpResponse.success(2, "Nothing was Edited");
+			//console.log("Nothing colected");
+		}
+		//console.log("Hado #33: Sokatsui", editorder_details, deleted_order_lines);
+	}
+
 });
 
 theApp.controller("order_paymentsCtlr", function($scope, $http, $routeParams){
@@ -379,22 +467,10 @@ theApp.controller("order_paymentsCtlr", function($scope, $http, $routeParams){
 	}, function(response){
 		console.log(response.data);
 	});
-	
-	/*var payments_page = [{"bill": "14,000",
-						  "payments_list": [
-				{pymtID: 1,amount: "10,000",type: "Mobile Money", date: "12/11/2022 10:00 AM"},
-				{pymtID: 2,amount: "4,000",type: "Cash", date: "12/11/2022 11:00 AM"}
-			]
-		}
-	]*/
-	
-	
-	//$scope.bill = payments_page[0].bill;
-	//$scope.payments = payments_page[0].payments_list;
 
 });
 
-theApp.controller("OrdpaymentCtlr", function($scope, $timeout, $http, $routeParams){
+theApp.controller("OrdpaymentCtlr", function($scope, $timeout, $http, $routeParams, httpResponse){
 	$scope.ordNo = $routeParams.ordNo;
 	
 	if($routeParams.pymtID === undefined){
@@ -423,31 +499,11 @@ theApp.controller("OrdpaymentCtlr", function($scope, $timeout, $http, $routePara
 		let pdate = new Date($scope.pdate/*'2022-12-24 04:00:13'*/).toLocaleDateString();
 		let form_values = {pdate:pdate, pamnt:$scope.pamnt, ptype:$scope.ptype, ordNo:$scope.ordNo/*, status:$scope.status*/};
 		
-		//for(let prop in form_values){console.log(form_values[prop])};
 		if($routeParams.pymtID === undefined){
 			$http.post("../crud/create/add_orderpayment.php", form_values).then(function(response){
-				
-				toggleLoader("block");
-				
-				$timeout(function(){
-					if(response.data.status === 1){
-						displayResponseBox(true, response.data.message);
-					}else{
-						displayResponseBox(false, response.data.message);
-					}
-					//Fadeout response_box after 4sec
-					$timeout(fadeout, 4000);
-				}, 2000);
-				
+				httpResponse.success(1, response.data.message);
 			}, function(response){
-				
-				toggleLoader("block");
-				
-				$timeout(function(){
-					displayResponseBox(false);
-					//Fadeout response_box after 4sec
-					$timeout(fadeout, 4000);
-				}, 2000);
+				httpResponse.error(0, response.data);
 				//document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
 			});
 			//console.log($scope.pdate, pdate);
@@ -462,30 +518,12 @@ theApp.controller("OrdpaymentCtlr", function($scope, $timeout, $http, $routePara
 			});
 			
 			$http.post("../crud/update/setOrderPayment.php", editedfields).then(function(response){
-				toggleLoader("block");
-				
-				$timeout(function(){
-					if(response.data.status === 1){
-						displayResponseBox(1, response.data.message);
-					}else if(response.data.status === 0){
-						displayResponseBox(0, response.data.message);
-					}else{
-						displayResponseBox(2, response.data.message);
-					}
-					//Fadeout response_box after 4sec
-					$timeout(fadeout, 4000);
-				}, 2000);
+				httpResponse.success(1, response.data.message);
 				//console.log(response.data);
 			}, function(response){
-				toggleLoader("block");
-				
-				$timeout(function(){
-					displayResponseBox(0);
-					//Fadeout response_box after 4sec
-					$timeout(fadeout, 4000);
-				}, 2000);
+				httpResponse.error(0, response.data);
 				//document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
-				console.log(response.data);
+				//console.log(response.data);
 			});
 		}
 	}

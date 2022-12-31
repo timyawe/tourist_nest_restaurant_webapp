@@ -15,9 +15,9 @@ if(isset($_GET['station'])){
 
 
 
-$allord_res_records = json_decode(dbConn($allords_sql, array(), "select"));
-$delvords_res_records = json_decode(dbConn($delvords_sql, array(), "select"));
-$pendords_res_records = json_decode(dbConn($pendords_sql, array(), "select"));
+$allord_res_records = json_decode(dbConn($allords_sql, array(), 'select'));
+$delvords_res_records = json_decode(dbConn($delvords_sql, array(), 'select'));
+$pendords_res_records = json_decode(dbConn($pendords_sql, array(), 'select'));
 
 if($allord_res_records->status === 1 || $allord_res_records->status === 2){
 	$ords_res->allorders = $allord_res_records->numrows;

@@ -64,12 +64,12 @@
 							<div class="grid_view_header_cell">
 								<span>Total</span>
 							</div>
-							<!--<div class="grid_view_header_cell action_cell">
-								<span><i class="fa fa-plus"></i></span>
-							</div>-->
+							<div class="grid_view_header_cell action_cell">
+								<span><button type="button" class="add_row_btn" data-ng-click="addRow()"><i class="fa fa-plus"></i></button></span>
+							</div>
 						</div>
 						
-						<div id="grid_view_content" data-ng-repeat="order_item in order_items">
+						<div id="grid_view_content" data-ng-repeat="order_item in order_items" ng-class="{item_deleted: order_item.deleted}">
 							<div class="grid_view_content_cell">
 								<span>{{$index+1}}</span>
 							</div>
@@ -77,17 +77,41 @@
 								<span><input type="text" class="txt_box" value="{{::order_item.item}}" readonly /></span>
 							</div>
 							<div class="grid_view_content_cell">
-								<span><input type="text" class="txt_box qty_input" value="{{::order_item.qty}}" readonly /></span>
+								<span><input type="text" class="txt_box" value="{{::order_item.qty}}" readonly /></span>
 							</div>
 							<div class="grid_view_content_cell">
-								<span><input type="text" class="txt_box rate_input" value="{{::order_item.rate}}" readonly /></span>
+								<span><input type="text" class="txt_box" value="{{::order_item.rate | number:0}}" readonly /></span>
 							</div>
 							<div class="grid_view_content_cell">
-								<span><input type="text" class="txt_box total_input" value="{{::order_item.total}}" readonly /></span>
+								<span><input type="text" class="txt_box" value="{{::order_item.total | number:0}}" readonly /></span>
 							</div>
-							<!--<div class="grid_view_content_cell action_cell">
-								<span><i class="fa fa-close"></i></span>
-							</div>-->
+							<div class="grid_view_content_cell action_cell">
+								<span data-ng-click="deleteLineItem(order_item.Details_No, $index)"><i ng-class="(!order_item.deleted)? 'fa fa-trash' : 'fa fa-undo'"></i></span><!--class="icon"-->
+							</div>
+						</div>
+						<div id="grid_view_content" class="animate_repeat" data-ng-repeat="row in rows" ng-if="showEditDetails">
+							<div class="grid_view_content_cell">
+								<span>{{row.ID}}</span>
+							</div>
+							<div class="grid_view_content_cell pdt_cell">
+								<span>
+									<select class="select_box item" data-ng-options="item.label for item in items track by item.value" data-ng-model="row.item" data-ng-change="itemRate(row.item,$index)" required>
+										<option value="">Choose Item</option>
+									</select>
+								</span>
+							</div>
+							<div class="grid_view_content_cell">
+								<span><input type="number" class="txt_box qty_input" data-ng-model="$parent.qty[row.ID]" data-ng-blur="computeSubTotal(qty[row.ID],row.item,$index)" required /></span>
+							</div>
+							<div class="grid_view_content_cell">
+								<span><input type="text" class="txt_box rate_input" data-ng-model="$parent.rate[row.ID]" readonly /></span>
+							</div>
+							<div class="grid_view_content_cell">
+								<span><input type="text" class="txt_box total_input" readonly /></span>
+							</div>
+							<div class="grid_view_content_cell action_cell">
+								<span data-ng-click="removeRow($index)"><i class="fa fa-close"></i></span>
+							</div>
 						</div>
 						
 						<div id="grid_view_footer">
@@ -97,9 +121,10 @@
 				</div>
 				<div id="form_footer">
 					<div>
-						<input type="button" class="save_btn" value="Save" />
+						<input type="button" class="save_btn" value="Save" data-ng-click="validate()" data-ng-disabled="order_form.$invalid"/><!-- || !order_form.$dirty && order_form.$valid"/>-->
 						<input type="button" class="cancel_btn" value="Cancel" onclick="history.back()"/>
 					</div>
+					<span data-ng-show="order_form.$dirty && order_form.$invalid"><pre class="form_error_note">*Highlited fields are required</pre></span>
 				</div>
 			</form>
 		</div>

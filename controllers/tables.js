@@ -5,16 +5,10 @@ theApp.controller("tablesCtlr", function($scope, $http){
 	}, function(response){
 		console.log(response.data);
 	});
-		/*$scope.tables = [
-			{ID: "GRD101", description: "Upper Western", capacity: 7, location: "Garden", status: "In Use"},
-			{ID: "RES101", description: "Table 10", capacity: 4, location: "Restaurant", status: "In Use"},
-			{ID: "HAL101", description: "Table 2", capacity: 6, location: "Hall", status: "In Use"},
-			{ID: "GRD101", description: "Lower Eastern", capacity: 7, location: "Garden", status: "Out of Use"}
-		]*/
 
 });
 
-theApp.controller("edit_tableCtlr", function($scope, $timeout, $http, $routeParams){
+theApp.controller("edit_tableCtlr", function($scope, $timeout, $http, $routeParams, httpResponse){
 	/* Pre-select the Status field */
 	$scope.status = "1";
 	
@@ -36,7 +30,7 @@ theApp.controller("edit_tableCtlr", function($scope, $timeout, $http, $routePara
 		
 	}else{
 		$scope.pgtitle = "Add";
-		console.log($routeParams.tblID);
+		//console.log($routeParams.tblID);
 	}
 	
 	/* Validate Form Data and submit */
@@ -49,32 +43,12 @@ theApp.controller("edit_tableCtlr", function($scope, $timeout, $http, $routePara
 		//console.log(form_values);
 		if($routeParams.tblID === undefined){
 			$http.post("../crud/create/add_table.php", form_values).then(function(response){
-				
-				toggleLoader("block");
-				
-				$timeout(function(){
-					if(response.data.status === 1){
-						displayResponseBox(1, response.data.message);
-					}else{
-						displayResponseBox(0, response.data.message);
-					}
-					
-					//Fadeout response_box after 4sec
-					$timeout(fadeout, 4000);
-				}, 2000);
-				
+				httpResponse.success(1, response.data.message);	
 			}, function(response){
-				
-				toggleLoader("block");
-				
-				$timeout(function(){
-					displayResponseBox(false);
-					//Fadeout response_box after 4sec
-					$timeout(fadeout, 4000);
-				}, 2000);
+				httpResponse.error(0, response.data);
 				//document.getElementsByClassName("save_btn")[0].
 			});	
-			console.log("Bakudo #81: Danku");
+			//console.log("Bakudo #81: Danku");
 		}else{
 			/*angular.forEach($scope.table_form, function(k, v){
 				if(k[0] == '$'){return;}
@@ -111,33 +85,11 @@ theApp.controller("edit_tableCtlr", function($scope, $timeout, $http, $routePara
 			}
 			
 			$http.post("../crud/update/setTable.php", editedfields).then(function(response){
-				toggleLoader("block");
-				
-				$timeout(function(){
-					if(response.data.status === 1){
-						displayResponseBox(1, response.data.message);
-					}else if(response.data.status === 0){
-						displayResponseBox(0, response.data.message);
-					}else{
-						displayResponseBox(2, response.data.message);
-					}
-					
-					//Fadeout response_box after 4sec
-					$timeout(fadeout, 4000);
-				}, 2000);
-				
+				httpResponse.success(1, response.data.message);
 			}, function(response){
-				
-				toggleLoader("block");
-				
-				$timeout(function(){
-					displayResponseBox(false);
-					//Fadeout response_box after 4sec
-					$timeout(fadeout, 4000);
-				}, 2000);
-				//document.getElementsByClassName("save_btn")[0].
+				httpResponse.error(0, response.data);
 			});
-			console.log(editedfields);
+			//console.log(editedfields);
 			//console.log("Hado #33: Soikatsui", $routeParams.tblID);
 		}
 		

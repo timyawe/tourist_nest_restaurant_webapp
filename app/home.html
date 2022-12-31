@@ -89,29 +89,7 @@
 			
 			/** Initialise angular app **/
 			var theApp = angular.module("theApp",["ngRoute"]);
-			
-			//Create Angular custom service for user details
-			theApp.service("userDetails", function(){
-				this.getUserID = function(){
-					return user.ID;
-				};
 				
-				this.getUserType = function(){
-					return user.UserType;
-				};
-				
-				this.getUserLevel = function(){
-					return user.AccessLevel;
-				};
-				
-				//if(user.Station !== undefined){
-					this.getStation = function(){
-						return user.Station;
-					};
-				//}
-			
-			});
-			
 			/** Angular Routing **/
 			theApp.config(function($routeProvider){
 				$routeProvider
@@ -206,6 +184,9 @@
 		<script src="../controllers/products.js"></script>
 		<script src="../controllers/tables.js"></script>
 		<script src="../controllers/account.js"></script>
+		<script src="../services/userDetails.js"></script>
+		<script src="../services/httpResponse.js"></script>
+		<script src="../services/lineDetails.js"></script>
 
 	</body>
 </html>

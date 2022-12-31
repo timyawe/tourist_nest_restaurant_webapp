@@ -10,7 +10,7 @@ function dbConn ($sql,$bind_args, $sqltype){
 		$json_response->message = $dbconn->connect_error;
 		//return json_encode($json_response);
 	}else{
-		if($sqltype === "insert"){
+		if($sqltype === 'insert'){
 			$p_stmt = $dbconn->prepare($sql);
 			if($p_stmt){
 				//$p_stmt->bind_param($bind_types, $id,$desc,$cap,$loc,$status);
@@ -37,7 +37,7 @@ function dbConn ($sql,$bind_args, $sqltype){
 			}
 			//return json_encode($json_response);
 			
-		}else if($sqltype === "select"){
+		}else if($sqltype === 'select'){
 			$result = $dbconn->query($sql);
 			if($result){
 				if($result->num_rows > 0){
@@ -59,7 +59,7 @@ function dbConn ($sql,$bind_args, $sqltype){
 				$json_response->status = 0;
 				$json_response->message = $result->error;
 			}
-		}else if($sqltype === "update"){
+		}else if($sqltype === 'update'){
 			$p_stmt = $dbconn->prepare($sql);
 			if($p_stmt){
 				
@@ -78,6 +78,15 @@ function dbConn ($sql,$bind_args, $sqltype){
 				$json_response->status = 0;
 				$json_response->message = $p_stmt->error;
 			}
+		}else if($sqltype === 'delete'){
+			$result = $dbconn->query($sql);
+			if($result){
+				$json_response->status = 1;
+				$json_response->message = "Deleted Succesfully";
+			}else{
+				$json_response->status = 0;
+				$json_response->message = $result->error;
+			}				
 		}
 	}
 	return json_encode($json_response);

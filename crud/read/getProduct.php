@@ -14,10 +14,10 @@ $purch_sql = "SELECT UnitCostPrice, UnitQty, StockLevel FROM Items_Bought WHERE 
 $sales_sql = "SELECT UnitSalePrice, SaleName, MeasureSold, PrepTime FROM Items_Sold WHERE ProductNo = '$pdtID'";
 
 
-$pdt_res = json_decode(dbConn($pdt_sql, array(), "select"))->message[0];
-$p_res = json_decode(dbConn($purch_sql, array(), "select"));
+$pdt_res = json_decode(dbConn($pdt_sql, array(), 'select'))->message[0];
+$p_res = json_decode(dbConn($purch_sql, array(), 'select'));
 if($p_res->status === 1){$purch_res = $p_res->message[0];}
-$s_res = json_decode(dbConn($sales_sql, array(), "select"));
+$s_res = json_decode(dbConn($sales_sql, array(), 'select'));
 if($s_res->status === 1){$sales_res = $s_res->message[0];}
 
 $pdt_res_arr = json_decode(json_encode($pdt_res),true);
@@ -31,11 +31,6 @@ if(isset($sales_res)){
 }else{
 	$sales_res_arr = [];
 }
-
-//print_r ($pdt_res_arr/*->message[0]*/);
-//print_r ($purch_res_arr/*->message[0]*/);
-//print_r ($sales_res_arr/*->message[0]*/);
-//print_r (array_merge($pdt_res_arr,$purch_res_arr,$sales_res_arr));
 
 $json_res = new stdClass();
 $json_res->status = 1;

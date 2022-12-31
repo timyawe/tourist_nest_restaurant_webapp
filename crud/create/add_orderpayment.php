@@ -1,5 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'].'/functions/funcSanitise.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/db/conn.php';
 
 $json_post_file = file_get_contents('php://input');
 $json_data = json_decode($json_post_file, true);
@@ -26,11 +27,6 @@ foreach($clean_data as $k => $v){
 		unset($clean_data['ordNo']);
 	}
 }
-
-//echo $ordNo;
-//print_r($clean_data);
-
-require_once $_SERVER['DOCUMENT_ROOT'].'/db/conn.php';
 
 $pymtconn_res = new stdClass();
 $pymtIn_res = new stdClass();

@@ -4,5 +4,5 @@ $res_records = new stdClass();
 
 $sql = "SELECT Description as pntName FROM `Tables` WHERE Status = 1";
 
-echo dbConn($sql, array(), "select");
+echo dbConn($sql, array(), 'select');
 ?>

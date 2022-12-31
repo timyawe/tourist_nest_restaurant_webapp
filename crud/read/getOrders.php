@@ -9,7 +9,7 @@ if(isset($_GET['station'])){
 	$sql = "SELECT * FROM OrdersExtended";
 }
 
-$res_records = json_decode(dbConn($sql, array(), "select"));
+$res_records = json_decode(dbConn($sql, array(), 'select'));
 if($res_records->status === 1){
 	foreach($res_records->message as $v){
 		$v->bill = number_format($v->bill);

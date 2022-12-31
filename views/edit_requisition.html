@@ -13,6 +13,8 @@
 			</div>
 			<div id="details_content_box">
 				<form id="details_form" name="requisition_form" novalidate>
+					<div id="loader" style="display:none"></div>
+					<div id="response_box" style="display:none"></div>
 					<div id="form_header">
 						<div>
 							
@@ -23,7 +25,7 @@
 								<label>Station:</label><input type="text" class="txt_box" value="{{::station}}" readonly />
 							</div>
 							<div class="form_input_row">
-								<label>For:</label><input type="text" class="txt_box" value="{{::category}}" readonly />
+								<label>For:</label><input type="text" class="txt_box" data-ng-model="category" readonly />
 							</div>
 						</div>
 					</div>
@@ -45,12 +47,12 @@
 								<div class="grid_view_header_cell">
 									<span>Total</span>
 								</div>
-								<!--<div class="grid_view_header_cell action_cell">
-									<span><i class="fa fa-plus"></i></span>
-								</div>-->
+								<div class="grid_view_header_cell action_cell">
+									<span><button type="button" class="add_row_btn" data-ng-click="addRow()"><i class="fa fa-plus"></i></button></span>
+								</div>
 							</div>
 							
-							<div id="grid_view_content" data-ng-repeat="request_item in requisition_items">
+							<div id="grid_view_content" data-ng-repeat="request_item in requisition_items"  ng-class="{item_deleted: request_item.deleted}"> 
 								<div class="grid_view_content_cell">
 									<span>{{$index+1}}</span>
 								</div>
@@ -58,17 +60,42 @@
 									<span><input type="text" class="txt_box" value="{{::request_item.item}}" readonly />
 								</div>
 								<div class="grid_view_content_cell">
-									<span><input type="text" class="txt_box qty_input" value="{{request_item.qty}}"/></span>
+									<span><input type="text" class="txt_box" value="{{request_item.qty}}"/></span>
 								</div>
 								<div class="grid_view_content_cell">
-									<span><input type="text" class="txt_box rate_input" value="{{::request_item.rate}}" readonly /></span>
+									<span><input type="text" class="txt_box" value="{{::request_item.rate | number:0}}" readonly /></span>
 								</div>
 								<div class="grid_view_content_cell">
-									<span><input type="text" class="txt_box total_input" value="{{::request_item.total}}" readonly /></span>
+									<span><input type="text" class="txt_box" value="{{::request_item.total | number:0}}" readonly /></span>
 								</div>
-								<!--<div class="grid_view_content_cell action_cell">
-									<span><i class="fa fa-close"></i></span>
-								</div>-->
+								<div class="grid_view_content_cell action_cell">
+									<span data-ng-click="deleteLineItem(request_item.Details_No, $index)"><i ng-class="(!request_item.deleted)? 'fa fa-trash' : 'fa fa-undo'"></i></span>
+								</div>
+							</div>
+							
+							<div id="grid_view_content" data-ng-repeat="row in rows track by $index" ng-if="showEditDetails">
+								<div class="grid_view_content_cell">
+									<span>{{row.ID}}</span>
+								</div>
+								<div class="grid_view_content_cell pdt_cell">
+									<span>
+										<select class="select_box" data-ng-options="item.label for item in items | filter:category" data-ng-model="row.item" data-ng-change="reqItemRate(row.item, $index)" required>
+											<option value="">Choose Item</option>
+										</select>
+									</span>
+								</div>
+								<div class="grid_view_content_cell">
+									<span><input type="number" class="txt_box qty_input" data-ng-model="$parent.qty[row.ID]" data-ng-blur="reqComputeSubTotal(qty[row.ID],row.item,$index)" required /></span>
+								</div>
+								<div class="grid_view_content_cell">
+									<span><input type="text" class="txt_box rate_input" readonly /></span>
+								</div>
+								<div class="grid_view_content_cell">
+									<span><input type="text" class="txt_box total_input" readonly /></span>
+								</div>
+								<div class="grid_view_content_cell action_cell">
+									<span data-ng-click="removeRow($index)"><i class="fa fa-close"></i></span>
+								</div>
 							</div>
 							
 							<div id="grid_view_footer">
@@ -78,9 +105,10 @@
 					</div>
 					<div id="form_footer">
 						<div>
-							<input type="button" class="save_btn" value="Save" />
+							<input type="button" class="save_btn" value="Submit" data-ng-click="validate()" data-ng-disabled="requisition_form.$invalid" />
 							<input type="button" class="cancel_btn" value="Cancel" onclick="history.back()" />
 						</div>
+						<span data-ng-show="requisition_form.$dirty && requisition_form.$invalid"><pre class="form_error_note">*Highlited fields are required</pre></span>
 					</div>
 				</form>
 			</div>

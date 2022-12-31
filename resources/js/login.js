@@ -54,13 +54,13 @@ loginBtn.addEventListener("click", function(){
 		let form_values = {usrNm: usrNm.value, pwd: pwd.value};
 			
 		loginRequest(form_values).then(res => { //Since fetch returns a promise, use then() here to access the data returned in promise
-			//console.log(res);
+			if(res !== undefined){
 			if(loginBtn.value === "Login"){
 				
 				if(res.AccessLevel === "Level1"){ //require user to choose station
 					usrNm.setAttribute("readonly", true); //to prevent user from changing login details
 					pwd.setAttribute("readonly", true); //to prevent user from changing login details
-					staBox.style.display = "block";
+					staBox.style.display = "flex";
 					loginBtn.value = "Continue";
 				}else{
 					sessionStorage.setItem("user", JSON.stringify(res));
@@ -79,7 +79,7 @@ loginBtn.addEventListener("click", function(){
 					resBox.style.display = "block";
 				}
 			}
-			
+			}
 		});
 		
 	}
@@ -104,7 +104,7 @@ function loginRequest(_data){
 			resBox.innerHTML = "Error: Data Access Failed. Try again later";
 			resBox.style.display = "block";
 		}else if(data.status === 2){
-			resBox.innerHTML = "User doesn't exist. Please try again";
+			resBox.innerHTML = "Username/Password is Incorrect. Please try again";
 			resBox.style.display = "block";
 		}else{
 			resBox.innerHTML = "";

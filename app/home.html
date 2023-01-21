@@ -43,6 +43,7 @@
 					<li class="nav_lnks_lst active_nav_link"><a href="#!dashboard" onclick="editTitle('Restaurant: Home')">Home</a></li>
 					<li class="nav_lnks_lst"><a href="#!orders" onclick="editTitle('Restaurant: Orders')">Orders</a></li>
 					<li class="nav_lnks_lst"><a href="#!requisitions" onclick="editTitle('Restaurant: Requisitions')">Requisitions</a></li>
+					<li class="nav_lnks_lst"><a href="#!extras" onclick="editTitle('Restaurant: Extras')">Extras</a></li>
 					<li class="nav_lnks_lst"><a href="#!reports" onclick="editTitle('Restaurant: Reports')">Reports</a></li>
 				</ul>
 			</div>
@@ -103,6 +104,9 @@
 					.when("/edit_ordpayment/:pymtID", {templateUrl: "../views/order_payment.html", controller: "OrdpaymentCtlr"})
 					.when("/create_requisition", {templateUrl: "../views/create_requisition.html", controller: "create_requisitionCtlr"})
 					.when("/edit_requisition/:reqNo", {templateUrl: "../views/edit_requisition.html", controller: "edit_requisitionCtlr"})
+					.when("/recieve_items/:reqNo/:type/:category",{templateUrl: "../views/recieve_items.html"})
+					.when("/approve_requisition/:reqNo/:type/:category", {templateUrl: "../views/recieve_items.html"})
+					//.when("/approve_requisition/:reqNo/:category", {templateUrl: "../views/recieve_items.html"})
 					.when("/account", {templateUrl: "../views/account.html", controller: "accountCtlr"})
 					.when("/products", {templateUrl: "../views/products.html", controller: "productsCtlr"})
 					.when("/create_product", {templateUrl: "../views/edit_product.html", controller: "edit_productCtlr"})
@@ -110,7 +114,11 @@
 					.when("/tables", {templateUrl: "../views/tables.html", controller: "tablesCtlr"})
 					.when("/create_table", {templateUrl: "../views/edit_table.html", controller: "edit_tableCtlr"})
 					.when("/edit_table/:tblID", {templateUrl: "../views/edit_table.html", controller: "edit_tableCtlr"})
-					/*.otherwise({redirectTo: "../views/dashboard.html"});*/
+					.when("/extras/", {templateUrl: "/views/extras.html"})
+					.when("/extras/:category", {templateUrl: "/views/manage_extras.html", controller: "manage_extrasCtlr"})
+					.when("/create_extra/:category", {templateUrl: "/views/create_extra.html", controller: "create_extraCtlr"})
+					.when("/edit_extra/:category/:ID", {templateUrl: "/views/edit_extra.html", controller: "create_extraCtlr"})
+					.otherwise({redirectTo: "/dashboard"});
 			});
 			
 			let displayResponseBox = function(success, response){
@@ -184,6 +192,7 @@
 		<script src="../controllers/products.js"></script>
 		<script src="../controllers/tables.js"></script>
 		<script src="../controllers/account.js"></script>
+		<script src="../controllers/extras.js"></script>
 		<script src="../services/userDetails.js"></script>
 		<script src="../services/httpResponse.js"></script>
 		<script src="../services/lineDetails.js"></script>

@@ -1,0 +1,77 @@
+<div id="content_banner_box">
+	<h2 id="banner">Extras</h2>
+</div>
+
+<div id="sub_content_box" data-ng-controller="create_extraCtlr">
+	<div id="view_content">
+		<div id="details_link_box">
+			<a href="#!extras/{{::category}}">Manage {{::category}}</a>
+		</div>
+		<div id="details_box">	
+			<div id="details_header_box">
+				<h3>View {{::category}}</h3>
+			</div>
+			<div id="details_content_box">
+				<form id="details_form" name="extras_form" novalidate>
+					<div id="loader" style="display:none"></div>
+					<div id="response_box" style="display:none"></div>
+					<div id="form_header">
+						<div>
+							<!--<a href="#!edit_order/{{ordNo}}" class="editorder_btn" data-ng-show="showEditBtn">View Order</a>-->
+						</div>
+						
+						<div class="form_input_col">
+							<div class="form_input_row">
+								<label>Station:</label><input type="text" class="txt_box" data-ng-model="station" readonly />
+							</div>
+							<div class="form_input_row">
+								<label>Category:</label><input type="text" class="txt_box" data-ng-model="category" readonly />
+							</div>
+							<div ng-if="show" class="form_input_row">
+								<label>To:</label><input type="text" class="txt_box" data-ng-model="to" readonly />
+							</div>
+						</div>
+					</div>
+					
+					<div id="form_content">
+						<div id="grid_view">
+							<div id="grid_view_header">
+								<div class="grid_view_header_cell">
+									<span>#</span>
+								</div>
+								<div class="grid_view_header_cell pdt_cell">
+									<span>Item</span>
+								</div>
+								<div class="grid_view_header_cell">
+									<span>Qty</span>
+								</div>
+								<!--<div class="grid_view_header_cell action_cell">
+									<span><button type="button" class="add_row_btn" data-ng-click="addRow()"><i class="fa fa-plus"></i></button></span>
+								</div>-->
+							</div>
+						</div>
+						
+						<div id="grid_view_content" class="animate_repeat" data-ng-repeat="extra in extras">
+							<div class="grid_view_content_cell">
+								<span>{{$index +1}}</span>
+							</div>
+							<div class="grid_view_content_cell pdt_cell">
+								<span><input type="text" class="txt_box" value="{{::extra.item}}" readonly /></span>
+							</div>
+							<div class="grid_view_content_cell">
+								<span><input type="text" class="txt_box num_field" value="{{::extra.qty}}" readonly /></span>
+							</div>
+						</div>
+						
+						<div id="form_footer">
+							<div>
+								<!--<input type="button" class="save_btn" value="Save" data-ng-click="validate()" data-ng-disabled="extras_form.$invalid" />-->
+								<input type="button" class="cancel_btn" value="Cancel" onclick="history.back()"/>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

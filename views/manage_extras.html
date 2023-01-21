@@ -1,0 +1,73 @@
+<div id="content_banner_box">
+	<h2 id="banner">Extras</h2>
+</div>
+
+<div id="sub_content_box" data-ng-controller="manage_extrasCtlr">
+	<div id="view_content">
+		<div id="details_link_box">
+			<a href="#!create_extra/{{::category}}">Add {{::category}}</a>
+		</div>
+		<div id="details_box">	
+			<div id="details_header_box">
+				<h3>Manage {{::category}}</h3>
+			</div>
+			<div id="details_content_box">
+				<div id="grid_view">
+					<div id="grid_view_header">
+						<div class="grid_view_header_cell">
+							<span>#</span>
+						</div>
+						<div class="grid_view_header_cell">
+							<span>Date</span>
+						</div>
+						<div ng-if="show" class="grid_view_header_cell">
+							<span>For</span>
+						</div>
+						<div class="grid_view_header_cell">
+							<span>Station</span>
+						</div>
+						<!--<div class="grid_view_header_cell">
+							<span>Status</span>
+						</div>-->
+						<div class="grid_view_header_cell">
+							<span>Staff</span>
+						</div>
+						<!--<div class="grid_view_header_cell">
+							<span>Amount</span>
+						</div>-->
+						<div class="grid_view_header_cell  action_cell">
+							<span>Action</span>
+						</div>
+					</div>
+						
+					<div id="grid_view_content" data-ng-repeat="extra in extras">
+						<div class="grid_view_content_cell">
+							<span>{{$index+1}}</span>
+						</div>
+						<div class="grid_view_content_cell">
+							<span>{{::extra._date}}</span>
+						</div>
+						<div ng-if="show" class="grid_view_content_cell">
+							<span>{{::extra.RecipientCategory}}</span>
+						</div>
+						<div class="grid_view_content_cell">
+							<span>{{::extra.station}}</span>
+						</div>
+						<!--<div class="grid_view_content_cell">
+							<span>{{::requisition.status}}</span>
+						</div>-->
+						<div class="grid_view_content_cell">
+							<span>{{::extra.staff}}</span>
+						</div>
+						<!--<div class="grid_view_content_cell">
+							<span>{{::requisition.amount}}</span>
+						</div>-->
+						<div class="grid_view_content_cell action_cell">
+							<span><a href="#!edit_extra/{{::category}}/{{extra.ID}}"><i class="fa fa-eye"></i></a></span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

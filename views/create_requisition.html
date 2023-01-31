@@ -26,7 +26,8 @@
 							</div>
 							<div class="form_input_row">
 								<label>For:</label>
-								<select class="select_box" name="category" data-ng-model="category" required>
+								<!--A filter on the items array is applied when the scope of category changes from drinks to eats -->
+								<select class="select_box" name="category" data-ng-model="category" ng-change="categoryChanged()" required>
 									<option value="">Choose Category</option>
 									<option value="Eats">Eats</option>
 									<option value="Drinks">Drinks</option>
@@ -46,43 +47,50 @@
 								<div class="grid_view_header_cell">
 									<span>Qty</span>
 								</div>
-								<div class="grid_view_header_cell">
+								<div ng-if="showAmounts" class="grid_view_header_cell">
 									<span>Rate</span>
 								</div>
-								<div class="grid_view_header_cell">
+								<div ng-if="showAmounts" class="grid_view_header_cell">
 									<span>Total</span>
+								</div>
+								<div ng-if="showAmounts" class="grid_view_header_cell">
+									<span>Purchase Amount</span>
 								</div>
 								<div class="grid_view_header_cell action_cell">
 									<span><button data-ng-click="addRow()" type="button" class="add_row_btn"><i class="fa fa-plus"></i></button></span>
 								</div>
 							</div>
 							
-							<div id="grid_view_content" data-ng-repeat="row in rows track by $index">
+							<div id="grid_view_content" data-ng-repeat="row in rows track by $index" class="animate_repeat">
 								<div class="grid_view_content_cell">
 									<span>{{$index +1}}</span>
 								</div>
 								<div class="grid_view_content_cell pdt_cell">
 									<span>
-										<select class="select_box" data-ng-options="item.label for item in items | filter:category" data-ng-model="row.item" data-ng-change="reqItemRate(row.item, $index)" required>
+										<!--A filter on the items array is applied when the scope of category changes from drinks to eats -->
+										<select class="select_box" data-ng-options="item.label for item in items | filter:category" data-ng-model="row.item" data-ng-change="reqChangeItem(row, $index)" ng-disabled="category === undefined" required>
 											<option value="">Choose Item</option>
 										</select>
 									</span>
 								</div>
 								<div class="grid_view_content_cell">
-									<span><input type="number" class="txt_box qty_input" data-ng-model="$parent.qty[row.ID]" data-ng-blur="reqComputeSubTotal(qty[row.ID],row.item,$index)" required /></span>
+									<span><input type="number" class="txt_box qty_input" data-ng-model="row.qty" data-ng-blur="reqComputeSubTotal(row,$index)" ng-readonly="category === undefined || row.item === undefined" required /></span>
 								</div>
-								<div class="grid_view_content_cell">
-									<span><input type="text" class="txt_box rate_input" readonly /></span>
+								<div ng-if="showAmounts" class="grid_view_content_cell">
+									<span><input type="text" class="txt_box rate_input" data-ng-model="row.item.rate" readonly /></span>
 								</div>
-								<div class="grid_view_content_cell">
-									<span><input type="text" class="txt_box total_input" readonly /></span>
+								<div ng-if="showAmounts" class="grid_view_content_cell">
+									<span><input type="text" class="txt_box total_input" data-ng-model="row.total" readonly /></span>
+								</div>
+								<div ng-if="showAmounts" class="grid_view_content_cell">
+									<span><input type="text" class="txt_box " data-ng-model="row.purchaseAmount" data-ng-blur="updPurchAmnt(row, $index)" ng-readonly="row.item === undefined"/></span>
 								</div>
 								<div class="grid_view_content_cell action_cell">
 									<span data-ng-click="removeRow($index)"><i class="fa fa-close"></i></span>
 								</div>
 							</div>
 							
-							<div id="grid_view_footer">
+							<div ng-if="showAmounts" id="grid_view_footer">
 								<span>Total</span><span>{{getGrandTotal()}}</span>
 							</div>
 						</div>

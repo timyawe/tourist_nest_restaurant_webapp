@@ -36,7 +36,7 @@
 							<span>Amount</span>
 						</div>
 						<div class="grid_view_header_cell  action_cell">
-							<span>Edit</span>
+							<span>Action</span>
 						</div>
 					</div>
 					
@@ -63,7 +63,20 @@
 							<span>{{::requisition.amount}}</span>
 						</div>
 						<div class="grid_view_content_cell action_cell">
-							<span><a href="#!edit_requisition/{{requisition.reqNo}}"><i class="fa fa-edit"></i></a></span>
+							<span>
+								<a ng-show="!{{activeStation}} && requisition.status == 'Approved'" href="">
+									<i ng-class="{'fa fa-ban':!{{activeStation}} && requisition.status == 'Approved', 'fa fa-check-circle':!{{activeStation}} && requisition.status == 'Submitted', 'fa fa-download':{{activeStation}} && requisition.status == 'Approved', 'fa fa-edit':{{activeStation}} && requisition.status == 'Submitted' }"></i>
+								</a>
+								<a ng-show="!{{activeStation}} && requisition.status == 'Submitted'" href="#!approve_requisition/{{requisition.reqNo}}/{{requisition.type}}/{{requisition.category}}">
+									<i ng-class="{'fa fa-ban':!{{activeStation}} && requisition.status == 'Approved', 'fa fa-check-circle':!{{activeStation}} && requisition.status == 'Submitted', 'fa fa-download':{{activeStation}} && requisition.status == 'Approved', 'fa fa-edit':{{activeStation}} && requisition.status == 'Submitted' }"></i>
+								</a>
+								<a ng-show="{{activeStation}} && requisition.status == 'Approved'" href="#!recieve_items/{{requisition.reqNo}}/{{requisition.type}}/{{requisition.category}}">
+									<i ng-class="{'fa fa-ban':!{{activeStation}} && requisition.status == 'Approved', 'fa fa-check-circle':!{{activeStation}} && requisition.status == 'Submitted', 'fa fa-download':{{activeStation}} && requisition.status == 'Approved', 'fa fa-edit':{{activeStation}} && requisition.status == 'Submitted' }"></i>
+								</a>
+								<a ng-show="{{activeStation}} && requisition.status == 'Submitted'" href="#!edit_requisition/{{requisition.reqNo}}/{{requisition.type}}">
+									<i ng-class="{'fa fa-ban':!{{activeStation}} && requisition.status == 'Approved', 'fa fa-check-circle':!{{activeStation}} && requisition.status == 'Submitted', 'fa fa-download':{{activeStation}} && requisition.status == 'Approved', 'fa fa-edit':{{activeStation}} && requisition.status == 'Submitted' }"></i>
+								</a>
+							</span>
 						</div>
 					</div>
 				</div>

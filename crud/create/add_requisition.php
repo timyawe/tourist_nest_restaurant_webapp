@@ -12,29 +12,53 @@ $json_data_post = file_get_contents('php://input');
 $json_data = json_decode($json_data_post, true);
 
 $clean_data = array_map('funcSanitise', $json_data);
-$req_tmplt = array('station', 'category');
+$req_tmplt = array('station', 'category', 'requisitiontype' );
 $req_fields = createFields($json_data, $req_tmplt);
 $req_det_fields = $clean_data['details'];//The array is accessed and saved in variable
 
-$req_sql = "INSERT INTO PurchaseOrder (Purchase_No, PurchaseStatus, Category, Station, UserID) VALUES (?,?,?,?,?)";
-$req_details_sql = "INSERT INTO PurchaseDetails (ProductNo, Qty, Rate, StandardCost, PurchaseNo) VALUES (?,?,?,?,?)";
+$req_sql = "INSERT INTO PurchaseOrder (Purchase_No, PurchaseStatus, Category, Station, RequisitionType, UserID) VALUES (?,?,?,?,?,?)";
+$reqbind_types = "sssssi";
+
+if($clean_data['requisitiontype'] == 'External'){
+	$req_details_sql = "INSERT INTO PurchaseDetails (ProductNo, Qty, Rate, StandardCost, PurchaseNo) VALUES (?,?,?,?,?)";
+	$req_detbind_types = "sidds";
+}else{
+	$req_details_sql = "INSERT INTO PurchaseDetails (ProductNo, Qty, PurchaseNo) VALUES (?,?,?)";
+	$req_detbind_types = "sis";
+}
+
+$given_sql = "INSERT INTO InternalRequisition_Given (DetailsNo) VALUES (?)";
+
 $p_key = genPK('PurchaseOrder', 'Purchase_No', 'REQ');
 $req_status = "Submitted";
 $usrID = $clean_data['userID'];
 
-$reqbind_types = "ssssi";
-$req_detbind_types = "sidds";
-
 array_unshift($req_fields, $reqbind_types, $p_key, $req_status);
 $req_fields['usrID'] = $usrID;
+//print_r($json_data);print_r($req_fields);
+$res = new stdClass();
+$details_added = [];
 
-$reqconn_res = new stdClass();
-
-$reqconn_res = json_decode(dbConn($req_sql, $req_fields));
+$reqconn_res = json_decode(dbConn($req_sql, $req_fields, 'insert'));
 if($reqconn_res->status === 1){
-	echo mutateOrderDetails($req_det_fields,$req_detbind_types,$p_key,$req_details_sql);
+	//echo mutateOrderDetails($req_det_fields,$req_detbind_types,$p_key,$req_details_sql);
+	foreach($req_det_fields as $outerV){
+		array_unshift($outerV, $req_detbind_types);
+		$outerV['fkey'] = $p_key;
+		$ord_detconn_res = json_decode(dbConn($req_details_sql, $outerV, 'insert'));
+		if($ord_detconn_res->status === 1){
+			dbConn($given_sql, array('i', $ord_detconn_res->insertID), 'insert');
+			array_push($details_added, $ord_detconn_res->insertID);
+		}
+	}
 }else{
 	echo $reqconn_res;
+}
+
+if(!empty($details_added)){
+	$res->status = 1;
+	$res->message = "Updated Successfully";
+	echo json_encode($res);
 }
 
 function createFields($genarr, $temparr){

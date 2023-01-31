@@ -95,19 +95,19 @@
 							</div>
 							<div class="grid_view_content_cell pdt_cell">
 								<span>
-									<select class="select_box item" data-ng-options="item.label for item in items track by item.value" data-ng-model="row.item" data-ng-change="itemRate(row.item,$index)" required>
+									<select class="select_box item" data-ng-options="item.label for item in items track by item.value" data-ng-model="row.item" data-ng-change="changeItem(row,$index)" required>
 										<option value="">Choose Item</option>
 									</select>
 								</span>
 							</div>
 							<div class="grid_view_content_cell">
-								<span><input type="number" class="txt_box qty_input" data-ng-model="$parent.qty[row.ID]" data-ng-blur="computeSubTotal(qty[row.ID],row.item,$index)" required /></span>
+								<span><input type="number" class="txt_box qty_input" data-ng-model="row.qty" data-ng-blur="computeSubTotal(row,$index)" ng-readonly="row.item === undefined" required /></span>
 							</div>
 							<div class="grid_view_content_cell">
-								<span><input type="text" class="txt_box rate_input" data-ng-model="$parent.rate[row.ID]" readonly /></span>
+								<span><input type="text" class="txt_box rate_input" data-ng-model="row.item.rate" readonly /></span>
 							</div>
 							<div class="grid_view_content_cell">
-								<span><input type="text" class="txt_box total_input" readonly /></span>
+								<span><input type="text" class="txt_box total_input" data-ng-model="row.total" readonly /></span>
 							</div>
 							<div class="grid_view_content_cell action_cell">
 								<span data-ng-click="removeRow($index)"><i class="fa fa-close"></i></span>

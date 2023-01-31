@@ -1,0 +1,111 @@
+<div id="content_banner_box">
+	<h2 id="banner">Requisitions</h2>
+</div>
+<div id="sub_content_box" data-ng-controller="recv_requisitionCtlr">
+	<div id="view_content">
+		<div id="details_link_box">
+			<a href="#!requisitions">Manage Requisitions</a>
+		</div>
+		<div id="details_box">	
+			<div id="details_header_box">
+				<h3>{{::state}}</h3>
+			</div>
+			<div id="details_content_box">
+				<form id="details_form" name="requisition_form" novalidate>
+					<div id="loader" style="display:none"></div>
+					<div id="response_box" style="display:none"></div>
+					<div id="form_header">
+						<div>
+							
+						</div>
+						
+						<div class="form_input_col">
+							<div class="form_input_row">
+								<label>Station:</label><input type="text" class="txt_box" value="{{::station}}" readonly />
+							</div>
+							<div class="form_input_row">
+								<label>For:</label><input type="text" class="txt_box" data-ng-model="category" readonly />
+							</div>
+							<div ng-if="showApprove" class="form_input_row">
+								<label>Approve:</label>
+								<select class="select_box" data-ng-model="$parent.approve">
+									<option value="">Not Approved</option>
+									<option value="Approved">Approved</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div id="form_content">
+						<div id="grid_view">
+							<div id="grid_view_header">
+								<div class="grid_view_header_cell">
+									<span>#</span>
+								</div>
+								<div class="grid_view_header_cell" style="flex-grow: 2">
+									<span>Item</span>
+								</div>
+								<div class="grid_view_header_cell" style="flex-grow: 1">
+									<span>Qty Reqst'd</span>
+								</div>
+								
+								<div ng-if="showGiven()" class="grid_view_header_cell" style="flex-grow: 0">
+									<span>Given</span>
+								</div>
+								<div ng-if="showQtyGiven()" class="grid_view_header_cell" style="flex-grow: 1">
+									<span>Qty Given</span>
+								</div>
+								
+								<div ng-if="showRcvd()" class="grid_view_header_cell" style="flex-grow: 0">
+									<span>Recv'd</span>
+								</div>
+								<div ng-if="showQtyRcvd()" class="grid_view_header_cell" style="flex-grow: 0">
+									<span>Qty Recv'd</span>
+								</div>
+								<div ng-if="showFinalAmount()" class="grid_view_header_cell" style="flex-grow: 0">
+									<span>Final Amount</span>
+								</div>
+								
+							</div>
+						
+							<div id="grid_view_content" data-ng-repeat="request_item in requisition_items">
+								<div class="grid_view_content_cell">
+									<span>{{$index+1}}</span>
+								</div>
+								<div class="grid_view_content_cell" style="flex-grow: 2">
+									<span><input type="text" class="txt_box" ng-model="request_item.item" readonly />
+								</div>
+								<div class="grid_view_content_cell" style="flex-grow: 1">
+									<span><input type="text" class="txt_box qty_reqstd num_field" ng-model="request_item.qty" readonly /></span>
+								</div>
+		
+								<div ng-if="showGiven()" class="grid_view_content_cell" style="flex-grow: 0">
+									<span><input type="checkbox" style="-webkit-transform: scale(1.5);" ng-model="request_item.isGiven" ng-change="giveItem(requisition_items, $index)" ng-disabled="request_item.isDisabledGvn"/></span>
+								</div>
+								<div ng-if="showQtyGiven()" class="grid_view_content_cell" style="flex-grow: 1">
+									<span><input type="number" class="txt_box num_field" ng-model="request_item.QtyGiven" ng-readonly="!request_item.isGiven || request_item.isDisabledGvn" ng-blur="updQtyGvn(requisition_items, $index)"/></span>
+								</div>
+								
+								<div ng-if="showRcvd()" class="grid_view_content_cell" style="flex-grow: 0">
+									<!-- Take entire row in function arguments using the array(requisition_items) to access the cells as needed -->
+									<span><input type="checkbox" class="check" style="-webkit-transform: scale(1.5);" ng-model="request_item.isChecked" ng-change="recieveItem(requisition_items, $index)" ng-disabled="request_item.isDisabledRcv"/></span>
+								</div>
+								<div ng-if="showQtyRcvd()" class="grid_view_content_cell" style="flex-grow: 0">
+									<span><input type="number" class="txt_box num_field" ng-model="request_item.qty_recvd" ng-readonly="!request_item.isChecked || request_item.isDisabledRcv" ng-blur="updQtyRcvd(requisition_items, $index)" /></span>
+								</div>
+								<div ng-if="showFinalAmount()" class="grid_view_content_cell" style="flex-grow: 0">
+									<span><input type="text" class="txt_box curr_field" ng-model="request_item.FinalAmount" ng-readonly="!request_item.isChecked || request_item.isDisabledRcv" ng-blur="updFinAmnt(requisition_items, $index)"/></span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id="form_footer">
+						<div>
+							<input type="button" class="save_btn" value="Submit" data-ng-click="validate()" data-ng-disabled="requisition_form.$invalid" />
+							<input type="button" class="cancel_btn" value="Cancel" onclick="history.back()" />
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

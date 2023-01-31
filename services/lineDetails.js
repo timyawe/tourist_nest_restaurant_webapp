@@ -7,8 +7,40 @@ theApp.service("lineDetails", function($http){
 		});
 	}
 	
-	this.applyRate = function(x, idx, line_details_arr, rows_arr){
-		let qty_input = document.getElementsByClassName("qty_input");
+	this.applyRate = function(row, idx, line_details_arr, rows_arr){//x
+		if(row.item !== undefined){
+			if(line_details_arr.length > 0){
+				if(!comparePdts(row.item, line_details_arr)){
+					line_details_arr[idx] = {pdtNo:row.item.value};//adding the order details' objects to array by the current index
+					
+					//Apply the total if the qty field is already filled
+					if(row.qty !== null){
+						this.computeSubTotal(row,idx,line_details_arr);
+					}
+					console.log(line_details_arr);
+				}else{
+					alert("Item is already selected, adjust its Qty instead");
+					rows_arr.splice(idx, 1);
+					line_details_arr.splice(idx, 1);
+					console.log(line_details_arr);
+				}
+			}else{
+				line_details_arr[idx] = {pdtNo:row.item.value};//adding the order details' objects to array by the current index
+				
+				//Apply the total if the qty field is already filled
+				if(row.qty !== null){
+					this.computeSubTotal(row,idx,line_details_arr);
+				}
+				console.log(line_details_arr);
+			}
+		}else{
+			row.qty = null;
+			row.rate = null;
+			row.total = null;
+			row.purchaseAmount = null;
+			line_details_arr.splice(idx, 1);
+		}
+		/*let qty_input = document.getElementsByClassName("qty_input");
 		let rate_input = document.getElementsByClassName("rate_input");
 		let total_input = document.getElementsByClassName("total_input");
 		
@@ -21,7 +53,7 @@ theApp.service("lineDetails", function($http){
 							rate_input[i].value = x.rate;
 					
 							line_details_arr[idx] = {pdtNo:x.value};//adding the order details' objects to array by the current index
-							
+							console.log(line_details_arr);
 							//Apply the total if the qty field is already filled
 							if(qty_input[i].value !== undefined){
 								let qty = qty_input[i].value;
@@ -55,7 +87,7 @@ theApp.service("lineDetails", function($http){
 					total_input[i].value = "";
 				}
 			}
-		}
+		}*/
 	}
 	
 	/*this.comparePdts = */function comparePdts(item_sel, arr_to_comp){
@@ -82,10 +114,25 @@ theApp.service("lineDetails", function($http){
 		}*/
 	}
 	
-	this.computeSubTotal = function(qty,item, idx, line_details_arr){
-		let total_input = document.getElementsByClassName("total_input");
-		if(item !== undefined && qty !== "" ){
-			for(let x = 0; x < total_input.length; x++){
+	this.computeSubTotal = function(/*qty,item*/row, idx, line_details_arr){
+		//let total_input = document.getElementsByClassName("total_input");
+		let item = row.item;
+		let qty = row.qty;
+		
+		if(item !== undefined && qty !== null ){
+			if(qty > 0){
+				row.total = qty * item.rate;
+				
+				//adding the requisition details' objects' properties by the current index
+				line_details_arr[idx].qty = qty;
+				line_details_arr[idx].rate = item.rate;
+				line_details_arr[idx].subtotal = qty * item.rate;
+				console.log(line_details_arr);
+			}else{
+				alert("Qty should atleast be 1");
+				row.qty = null;
+			}
+			/*for(let x = 0; x < total_input.length; x++){
 				if(idx === x){
 					total_input[x].value = qty * item.rate;
 					
@@ -95,7 +142,7 @@ theApp.service("lineDetails", function($http){
 					line_details_arr[idx].subtotal = qty * item.rate;
 					console.log(line_details_arr);
 				}
-			}
+			}*/
 		}
 	}
 	
@@ -104,7 +151,7 @@ theApp.service("lineDetails", function($http){
 		if(arr.length != items_arr.length){
 			alert("Fill available rows before adding another");
 		}else{
-			arr.push({ID: counter});
+			arr.push({ID: counter, item: undefined, qty:null, rate:null, total:null, purchaseAmount:null, itemSelected: false});
 		}
 	}
 	

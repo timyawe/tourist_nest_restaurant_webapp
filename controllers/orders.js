@@ -42,11 +42,11 @@ theApp.controller("create_orderCtlr", function($scope, $timeout, $http, userDeta
 
 	/* When user chooses item, apply the rate */
 	//$scope.itemRate = function(item, index){ applyRate(item, index, order_details,$scope);}
-	$scope.itemRate = function(item, index)  {lineDetails.applyRate(item, index, order_details, $scope.rows);}
+	$scope.changeItem = function(row, index)  {console.log(row); lineDetails.applyRate(row, index, order_details, $scope.rows);}
 	
 	/* Computing the Item total from Qty */
 	//$scope.computeSubTotal = function(qty,item, idx){ computeSubTotal(qty,item, idx, order_details); }
-	$scope.computeSubTotal = function(qty,item, idx) {lineDetails.computeSubTotal(qty,item, idx, order_details);} 
+	$scope.computeSubTotal = function(/*qty,item*/row, idx) {lineDetails.computeSubTotal(/*qty,item*/row, idx, order_details);} 
 
 	$scope.q = function(){
 		console.log($scope.delv_point)
@@ -81,7 +81,7 @@ theApp.controller("create_orderCtlr", function($scope, $timeout, $http, userDeta
 	lineDetails.getItems("../crud/read/getOrdItemsList.php").then(res => $scope.items =res);
 	
 	/* Array to hold the number of rows of the orders details */
-	$scope.rows = [{ID:1}];
+	$scope.rows = [{ID:1, item: undefined, qty:null, rate:null, total:null, itemSelected: false}];
 
 	/* Function to add a row to the orders details */
 	$scope.addRow = () => {lineDetails.addRow_create($scope.rows, order_details);}
@@ -348,10 +348,10 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 	lineDetails.getItems("../crud/read/getOrdItemsList.php").then(res => $scope.items =res);
 	
 	/* When user chooses item, apply the rate */
-	$scope.itemRate = function(item, index){ lineDetails.applyRate(item, index, editorder_details, $scope.rows);}
+	$scope.changeItem = function(row, index){ lineDetails.applyRate(row, index, editorder_details, $scope.rows);}
 	
 	/* Computing the Item total from Qty */
-	$scope.computeSubTotal = function(qty,item, idx){ lineDetails.computeSubTotal(qty,item, idx, editorder_details); }
+	$scope.computeSubTotal = function(/*qty,item*/row, idx){ lineDetails.computeSubTotal(/*qty,item*/row, idx, editorder_details); }
 	
 	/* Array to hold the number of rows of the orders details */
 	$scope.rows = [/*{ID:1}*/];
@@ -361,9 +361,9 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 		let counter = ($scope.rows.length + 1) + $scope.order_items.length;
 		if(!$scope.showEditDetails){
 			$scope.showEditDetails = true;
-			$scope.rows.push({ID: counter});
+			$scope.rows.push({ID: counter, item: undefined, qty:null, rate:null, total:null, itemSelected: false});
 		}else{
-			$scope.rows.push({ID: counter});
+			$scope.rows.push({ID: counter, item: undefined, qty:null, rate:null, total:null, itemSelected: false});
 		}
 	}
 

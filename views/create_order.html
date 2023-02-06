@@ -17,7 +17,7 @@
 					<div id="response_box" style="display:none"></div>
 					<div id="form_header">
 						<div>
-							<a href="#!edit_order/{{ordNo}}" class="editorder_btn" data-ng-show="showEditBtn">View Order</a>
+							<a href="#!edit_order/{{ordNo}}" class="editorder_btn animate_show" data-ng-show="showEditBtn">View Order</a>
 						</div>
 						
 						<div class="form_input_col">
@@ -36,7 +36,7 @@
 											<option value="">Choose Item</option>
 										</select>-->
 							</div>
-							<div class="form_input_row" data-ng-show="show">
+							<div class="form_input_row animate_show" data-ng-show="show">
 								<label>{{to}}:</label>
 								<select class="select_box" data-ng-options="delvPnt.pntName as delvPnt.pntName for delvPnt in delvPnts" data-ng-model="delv_point" ng-change="q()" data-ng-required="show">
 									<option value="">Choose {{to}}</option>
@@ -102,7 +102,7 @@
 							<input type="button" class="save_btn" value="Save" data-ng-click="validate()" data-ng-disabled="order_form.$invalid" />
 							<input type="button" class="cancel_btn" value="Cancel" onclick="history.back()"/>
 						</div>
-						<span data-ng-show="order_form.$dirty && order_form.$invalid"><pre class="form_error_note">*Highlited fields are required</pre></span>
+						<span data-ng-show="order_form.$dirty && order_form.$invalid" class="animate_show"><pre class="form_error_note">*Highlited fields are required</pre></span>
 					</div>
 				</form>
 			</div>

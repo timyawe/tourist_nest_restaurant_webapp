@@ -45,6 +45,17 @@ theApp.controller("edit_productCtlr", function($scope, $timeout, $http, $routePa
 				
 		let form = document.getElementsByName("product_form")[0];
 		let formInputs = new FormData(form);
+		for(let [name, value] of formInputs){
+			if(name === 'description'){
+				formInputs.set(name, capitaliseFirstLetter(value));
+			}
+			
+			if(name === 'salename'){
+				if(value !== ' '){
+					formInputs.set(name, capitaliseFirstLetter(value));
+				}
+			}
+		}
 		let form_values = Object.fromEntries(formInputs);
 		
 		//console.log(form_values);
@@ -71,10 +82,14 @@ theApp.controller("edit_productCtlr", function($scope, $timeout, $http, $routePa
 			//* Use this method as one that works to only choose the edited fields
 			angular.forEach($scope.product_form, function(v, k){
 				if(typeof v === 'object' && v.hasOwnProperty('$modelValue') && v.$dirty){
-					editedfields[k] = v.$modelValue;
+					if(k === 'description' || k === 'salename'){
+						editedfields[k] = capitaliseFirstLetter(v.$modelValue);
+					}else{
+						editedfields[k] = v.$modelValue;
+					}
 				}
 			});
-			
+			//console.log(editedfields);
 			$http.post("../crud/update/setProduct.php", editedfields).then(function(response){
 				httpResponse.success(1, response.data.message);
 				//console.log(response.data);

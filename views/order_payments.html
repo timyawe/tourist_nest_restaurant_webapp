@@ -15,7 +15,7 @@
 				<form id="details_form" name="_form" novalidate>
 					<div id="form_header">
 						<div>
-							<a href="#!new_payment/{{::ordNo}}" class="pymt_btn" data-ng-show="!isFullyPaid">Add Payment</a>
+							<a href="#!new_payment/{{::ordNo}}" class="pymt_btn animate_show" data-ng-show="!isFullyPaid">Add Payment</a>
 						</div>
 						
 						<div style="display: flex; gap: 0.5em">
@@ -53,7 +53,7 @@
 								</div>
 							</div>
 							
-							<div id="grid_view_content" data-ng-repeat="payment in payments">
+							<div id="grid_view_content" data-ng-repeat="payment in payments" class="animate_repeat">
 								<div class="grid_view_content_cell">
 									<span>{{$index+1}}</span>
 								</div>

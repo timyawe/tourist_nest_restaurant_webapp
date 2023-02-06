@@ -49,7 +49,7 @@
 							<span>Edit</span>
 						</div>
 					</div>	
-					<div id="grid_view_content" data-ng-repeat="table in tables" data-ng-style="{'background-color':(table.Status == 'Out of Use') ? 'red' : ''}">
+					<div id="grid_view_content" data-ng-repeat="table in tables" class="animate_repeat" data-ng-style="{'background-color':(table.Status == 'Out of Use') ? 'red' : ''}">
 						<div class="grid_view_content_cell">
 							<span>{{::table.Table_ID}}</span>
 						</div>

@@ -47,13 +47,13 @@
 								<div class="grid_view_header_cell">
 									<span>Qty</span>
 								</div>
-								<div ng-if="showAmounts" class="grid_view_header_cell">
+								<div ng-if="showAmounts" class="grid_view_header_cell animate_if">
 									<span>Rate</span>
 								</div>
-								<div ng-if="showAmounts" class="grid_view_header_cell">
+								<div ng-if="showAmounts" class="grid_view_header_cell animate_if">
 									<span>Total</span>
 								</div>
-								<div ng-if="showAmounts" class="grid_view_header_cell">
+								<div ng-if="showAmounts" class="grid_view_header_cell animate_if">
 									<span>Purchase Amount</span>
 								</div>
 								<div class="grid_view_header_cell action_cell">
@@ -76,13 +76,13 @@
 								<div class="grid_view_content_cell">
 									<span><input type="number" class="txt_box qty_input" data-ng-model="row.qty" data-ng-blur="reqComputeSubTotal(row,$index)" ng-readonly="category === undefined || row.item === undefined" required /></span>
 								</div>
-								<div ng-if="showAmounts" class="grid_view_content_cell">
+								<div ng-if="showAmounts" class="grid_view_content_cell animate_if">
 									<span><input type="text" class="txt_box rate_input" data-ng-model="row.item.rate" readonly /></span>
 								</div>
-								<div ng-if="showAmounts" class="grid_view_content_cell">
+								<div ng-if="showAmounts" class="grid_view_content_cell animate_if">
 									<span><input type="text" class="txt_box total_input" data-ng-model="row.total" readonly /></span>
 								</div>
-								<div ng-if="showAmounts" class="grid_view_content_cell">
+								<div ng-if="showAmounts" class="grid_view_content_cell animate_if">
 									<span><input type="text" class="txt_box " data-ng-model="row.purchaseAmount" data-ng-blur="updPurchAmnt(row, $index)" ng-readonly="row.item === undefined"/></span>
 								</div>
 								<div class="grid_view_content_cell action_cell">
@@ -90,7 +90,7 @@
 								</div>
 							</div>
 							
-							<div ng-if="showAmounts" id="grid_view_footer">
+							<div ng-if="showAmounts" id="grid_view_footer" class="animate_if">
 								<span>Total</span><span>{{getGrandTotal()}}</span>
 							</div>
 						</div>
@@ -100,7 +100,7 @@
 							<input type="button" class="save_btn" value="Submit" data-ng-click="validate()" data-ng-disabled="requisition_form.$invalid" />
 							<input type="button" class="cancel_btn" value="Cancel" onclick="history.back()"/>
 						</div>
-						<span data-ng-show="requisition_form.$dirty && requisition_form.$invalid"><pre class="form_error_note">*Highlited fields are required</pre></span>
+						<span data-ng-show="requisition_form.$dirty && requisition_form.$invalid" class="animate_show"><pre class="form_error_note">*Highlited fields are required</pre></span>
 					</div>
 				</form>
 			</div>

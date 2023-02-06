@@ -43,7 +43,7 @@
 						</div>
 					</div>
 					
-					<div id="grid_view_content" data-ng-repeat="order in orders" data-ng-style="{'background-color':(order.status == 'Pending') ? 'red' : ''}">
+					<div id="grid_view_content" data-ng-repeat="order in orders" class="animate_repeat" data-ng-style="{'background-color':(order.status == 'Pending') ? 'red' : ''}">
 						<div class="grid_view_content_cell">
 							<span>{{$index +1}}</span>
 						</div>

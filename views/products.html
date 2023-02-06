@@ -49,7 +49,7 @@
 						</div>
 					</div>
 					
-					<div id="grid_view_content" data-ng-repeat="pdt in products" data-ng-style="{'background-color':(pdt.Status == 'Discontinued') ? 'red' : ''}">
+					<div id="grid_view_content" data-ng-repeat="pdt in products" class="animate_repeat" data-ng-style="{'background-color':(pdt.Status == 'Discontinued') ? 'red' : ''}">
 						<div class="grid_view_content_cell">
 							<span>{{::pdt.Product_No}}</span>
 						</div>

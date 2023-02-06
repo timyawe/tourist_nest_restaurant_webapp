@@ -4,11 +4,13 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta charset="utf-8">
 		<title>Restaurant: Home</title>
-		<script src="../resources/thirdparty/js/angular/angular.min.js"></script>
-		<script src="../resources/thirdparty/js/angular/angular-route.js"></script>
+		<script src="../resources/thirdparty/js/angular/v1.8.2/angular.min.js"></script>
+		<script src="../resources/thirdparty/js/angular/v1.8.2/angular-route.js"></script>
+		<script src="../resources/thirdparty/js/angular/v1.8.2/angular-animate.js"></script>
 		<link rel="stylesheet" href="../resources/thirdparty/css/fontawesome/css/font-awesome.css" />
 		<link type="text/css" rel="stylesheet" href="../resources/css/layout.css" />
 		<link rel="stylesheet" href="../resources/css/forms.css" />
+		<link rel="stylesheet" href="../resources/css/ngAnimateStyles.css" />
 		
 	</head>
 	<body>
@@ -47,7 +49,7 @@
 					<li class="nav_lnks_lst"><a href="#!reports" onclick="editTitle('Restaurant: Reports')">Reports</a></li>
 				</ul>
 			</div>
-			<div id="main_content_box" data-ng-view>
+			<div id="main_content_box" data-ng-view class="animate_view">
 				
 			</div>
 		</div>
@@ -89,7 +91,7 @@
 			**/
 			
 			/** Initialise angular app **/
-			var theApp = angular.module("theApp",["ngRoute"]);
+			var theApp = angular.module("theApp",["ngRoute","ngAnimate"]);
 				
 			/** Angular Routing **/
 			theApp.config(function($routeProvider){
@@ -103,7 +105,7 @@
 					.when("/new_payment/:ordNo", {templateUrl: "../views/order_payment.html", controller: "OrdpaymentCtlr"})
 					.when("/edit_ordpayment/:pymtID", {templateUrl: "../views/order_payment.html", controller: "OrdpaymentCtlr"})
 					.when("/create_requisition", {templateUrl: "../views/create_requisition.html", controller: "create_requisitionCtlr"})
-					.when("/edit_requisition/:reqNo", {templateUrl: "../views/edit_requisition.html", controller: "edit_requisitionCtlr"})
+					.when("/edit_requisition/:reqNo/:type", {templateUrl: "../views/edit_requisition.html", controller: "edit_requisitionCtlr"})
 					.when("/recieve_items/:reqNo/:type/:category",{templateUrl: "../views/recieve_items.html"})
 					.when("/approve_requisition/:reqNo/:type/:category", {templateUrl: "../views/recieve_items.html"})
 					//.when("/approve_requisition/:reqNo/:category", {templateUrl: "../views/recieve_items.html"})
@@ -181,6 +183,10 @@
 				var title = document.getElementsByTagName("title")[0];
 				//alert(title.innerHTML);
 				title.innerHTML = link;
+			}
+			
+			function capitaliseFirstLetter(str){
+				return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.substring(1)).join(' ');
 			}
 			
 		</script>

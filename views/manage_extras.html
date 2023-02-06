@@ -20,7 +20,7 @@
 						<div class="grid_view_header_cell">
 							<span>Date</span>
 						</div>
-						<div ng-if="show" class="grid_view_header_cell">
+						<div ng-if="show" class="grid_view_header_cell animate_if">
 							<span>For</span>
 						</div>
 						<div class="grid_view_header_cell">
@@ -40,14 +40,14 @@
 						</div>
 					</div>
 						
-					<div id="grid_view_content" data-ng-repeat="extra in extras">
+					<div id="grid_view_content" data-ng-repeat="extra in extras" class="animate_repeat">
 						<div class="grid_view_content_cell">
 							<span>{{$index+1}}</span>
 						</div>
 						<div class="grid_view_content_cell">
 							<span>{{::extra._date}}</span>
 						</div>
-						<div ng-if="show" class="grid_view_content_cell">
+						<div ng-if="show" class="grid_view_content_cell animate_if">
 							<span>{{::extra.RecipientCategory}}</span>
 						</div>
 						<div class="grid_view_content_cell">

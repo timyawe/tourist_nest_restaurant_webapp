@@ -27,7 +27,7 @@
 							<div class="form_input_row">
 								<label>Category:</label><input type="text" class="txt_box" data-ng-model="category" readonly />
 							</div>
-							<div ng-if="show" class="form_input_row">
+							<div ng-if="show" class="form_input_row animate_if">
 								<label>To:</label>
 								<select class="select_box" data-ng-model="$parent.to" data-ng-change="changeTo()" required>
 									<option value="">Choose Reciepient</option>
@@ -87,7 +87,7 @@
 							<input type="button" class="save_btn" value="Save" data-ng-click="validate()" data-ng-disabled="extras_form.$invalid" />
 							<input type="button" class="cancel_btn" value="Cancel" onclick="history.back()"/>
 						</div>
-					<span data-ng-show="extras_form.$dirty && extras_form.$invalid"><pre class="form_error_note">*Highlited fields are required</pre></span>
+					<span data-ng-show="extras_form.$dirty && extras_form.$invalid" class="animate_show"><pre class="form_error_note">*Highlited fields are required</pre></span>
 					</div>
 				</form>
 			</div>

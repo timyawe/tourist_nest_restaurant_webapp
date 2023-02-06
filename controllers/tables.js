@@ -37,6 +37,7 @@ theApp.controller("edit_tableCtlr", function($scope, $timeout, $http, $routePara
 	$scope.validate = function (){
 		let form = document.getElementsByName("table_form")[0];
 		let formInputs = new FormData(form);//requires inputs to have `name` attribute
+		formInputs.set('desc', capitaliseFirstLetter($scope.desc));
 		let form_values = Object.fromEntries(formInputs);
 		
 		//let form_values = {desc:$scope.desc, capacity:$scope.cap, location:$scope.loc, status:$scope.status};
@@ -47,7 +48,7 @@ theApp.controller("edit_tableCtlr", function($scope, $timeout, $http, $routePara
 			}, function(response){
 				httpResponse.error(0, response.data);
 				//document.getElementsByClassName("save_btn")[0].
-			});	
+			});
 			//console.log("Bakudo #81: Danku");
 		}else{
 			/*angular.forEach($scope.table_form, function(k, v){
@@ -75,7 +76,7 @@ theApp.controller("edit_tableCtlr", function($scope, $timeout, $http, $routePara
 				editedfields.location = $scope.loc;
 			}
 			if($scope.table_form.desc.$dirty){
-				editedfields.description = $scope.desc;
+				editedfields.description = capitaliseFirstLetter($scope.desc);
 			}
 			if($scope.table_form.cap.$dirty){
 				editedfields.capacity = $scope.cap;

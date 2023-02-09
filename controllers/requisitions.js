@@ -230,19 +230,32 @@ theApp.controller("edit_requisitionCtlr", function($scope, $http, $routeParams, 
 	
 	/* Function to delete a existing record from the orders details */
 	$scope.deleteLineItem = function(detailsID, index){
+		
 		if($scope.requisition_items[index].deleted === false){
 			$scope.requisition_items[index].deleted = true;
-			deleted_req_lines.push({detailsID, index});
+			deleted_req_lines.push({detailsID/*, index*/});
 		}else{
 			$scope.requisition_items[index].deleted = false;
 			deleted_req_lines.splice(index,1);
 		}
+		
+		if(deleteAllItems()){
+			alert("Looks like you're deleting all items, if you continue to submit this requisition will be deleted");
+		}
 		//console.log(deleted_order_lines, $scope.order_items[index]);
+	}
+	
+	function deleteAllItems(){
+		if(deleted_req_lines.length === $scope.requisition_items.length && editreq_details.length === 0){
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
 	//Delete Order Line Promise
 	function deletePromise(_data){
-		return $http.get("../crud/delete/deleteReqLine.php", {params: _data});
+		return $http.delete("../crud/delete/deleteReqLine.php", {data:_data});
 	}
 	
 	//Add Order Line Promise
@@ -253,13 +266,19 @@ theApp.controller("edit_requisitionCtlr", function($scope, $http, $routeParams, 
 	function collectPromises(){
 		let collected = false;
 		
-		if(deleted_req_lines.length !== 0){
-			promisesArr.push(deletePromise({deletedLines: deleted_req_lines}));
-			collected = true;
-		}
-		
-		if(editreq_details.length !== 0){
-			promisesArr.push(addPromise({reqNo: $routeParams.reqNo, addedLines: editreq_details}));
+		if(!deleteAllItems()){
+			if(deleted_req_lines.length !== 0){
+				promisesArr.push(deletePromise(/*{deletedLines: */deleted_req_lines));
+				collected = true;
+			}
+			
+			if(editreq_details.length !== 0){
+				promisesArr.push(addPromise({reqNo: $routeParams.reqNo, addedLines: editreq_details}));
+				collected = true;
+			}
+		}else{
+			promisesArr.push($http.delete("../crud/delete/deleteReq.php", {data:{reqNo: $routeParams.reqNo}}));
+			//console.log(JSON.stringify({reqNo: $routeParams.reqNo}));
 			collected = true;
 		}
 		
@@ -276,7 +295,7 @@ theApp.controller("edit_requisitionCtlr", function($scope, $http, $routeParams, 
 					}else if(response[0].data.status === 0 || response[1].data.status === 0){
 						httpResponse.success(0, "One or both operations failed, check and try again");
 					}
-				}else{
+				}else{//console.log(response[0].data);
 					if(response[0].data.status === 1){
 						httpResponse.success(1, "Updated Succesfuly");
 					}else{
@@ -624,7 +643,7 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 	function postData(){
 		let _data;
 		if(userDetails.getUserLevel() === "Level1"){
-			_data = {recvd_items: recvd_items};
+			_data = {reqNo: $routeParams.reqNo, recvd_items: recvd_items};
 		}else{
 			if($routeParams.category === "Eats"){
 				_data = {reqNo: $routeParams.reqNo, PurchaseStatus: $scope.approve};

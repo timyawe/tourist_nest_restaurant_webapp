@@ -2,7 +2,7 @@ theApp.controller("ordersCtlr", function($scope, $http, userDetails){
 	$scope.ID = userDetails.getUserID();
 	$http.get("../crud/read/getOrders.php", {params: {station: userDetails.getStation()}}).then(function(response){
 		$scope.orders = response.data;/* Generating orders list */
-		//console.log(response.data);
+		console.log(response.data);
 	},function(response){
 		console.log(response.data);
 	});
@@ -103,9 +103,9 @@ theApp.controller("create_orderCtlr", function($scope, $timeout, $http, userDeta
 			$timeout(function(){
 				if(response.data.status === 1){
 					$scope.showEditBtn = true;
-					displayResponseBox(true, response.data.message);
+					displayResponseBox(1, response.data.message);
 				}else{
-					displayResponseBox(false, response.data.message);
+					displayResponseBox(0, response.data.message);
 				}
 				//Fadeout response_box after 4sec
 				$timeout(fadeout, 4000);
@@ -116,7 +116,7 @@ theApp.controller("create_orderCtlr", function($scope, $timeout, $http, userDeta
 			toggleLoader("block");
 			
 			$timeout(function(){
-				displayResponseBox(false, response.data);
+				displayResponseBox(0, response.data);
 				//Fadeout response_box after 4sec
 				$timeout(fadeout, 4000);
 			}, 2000);
@@ -381,17 +381,34 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 	$scope.deleteLineItem = function(detailsID, index){
 		if($scope.order_items[index].deleted === false){
 			$scope.order_items[index].deleted = true;
-			deleted_order_lines.push({detailsID, index});
+			deleted_order_lines.push({detailsID/*, index*/});
 		}else{
 			$scope.order_items[index].deleted = false;
 			deleted_order_lines.splice(index,1);
 		}
+		
+		if(deleteAllItems()){
+			if(ordStatus === "Delivered"){
+				alert("This order is already delivered, make sure to add an item before you submit");
+				//$scope.order_form.$invalid = true;
+			}else{
+				alert("Looks like you're deleting all items, if you continue to submit this order will be deleted");
+			}
+		}
 		//console.log(deleted_order_lines, $scope.order_items[index]);
+	}
+	
+	function deleteAllItems(){
+		if(deleted_order_lines.length === $scope.order_items.length && editorder_details.length === 0){
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
 	//Delete Order Line Promise
 	function deletePromise(_data){
-		return $http.get("../crud/delete/deleteOrderLine.php", {params: _data});
+		return $http.delete("../crud/delete/deleteOrderLine.php", {data: _data});
 	}
 	
 	//Add Order Line Promise
@@ -402,14 +419,24 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 	function collectPromises(){
 		let collected = false;
 		
-		if(deleted_order_lines.length !== 0){
-			promisesArr.push(deletePromise({deletedLines: deleted_order_lines}));
-			collected = true;
-		}
-		
-		if(editorder_details.length !== 0){
-			promisesArr.push(addPromise({ordNo: $routeParams.ordNo, addedLines: editorder_details}));
-			collected = true;
+		if(!deleteAllItems()){
+			if(deleted_order_lines.length !== 0){
+				promisesArr.push(deletePromise(/*{deletedLines: */deleted_order_lines));
+				collected = true;
+			}
+			
+			if(editorder_details.length !== 0){
+				promisesArr.push(addPromise({ordNo: $routeParams.ordNo, addedLines: editorder_details}));
+				collected = true;
+			}
+		}else{
+			if(ordStatus === "Delivered"){
+				alert("This order is already delivered, make sure to add an item before you Save");
+				collected = false;
+			}else{
+				promisesArr.push($http.delete("../crud/delete/deleteOrder.php", {data:{ordNo: $routeParams.ordNo}}));
+				collected = true;
+			}
 		}
 		
 		return collected;
@@ -425,7 +452,7 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 					}else if(response[0].data.status === 0 || response[1].data.status === 0){
 						httpResponse.success(0, "One or both operations failed, check and try again");
 					}
-				}else{
+				}else{//console.log(response[0].data);
 					if(response[0].data.status === 1){
 						httpResponse.success(1, "Updated Succesfuly");
 					}else{

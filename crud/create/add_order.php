@@ -17,13 +17,18 @@ $ord_tmplt = array("station", "to", "delv_point");
 $ord_fields = createFields($json_data, $ord_tmplt);
 $ord_det_fields = $clean_data['details']; //The array is accessed and saved in variable
 
-$ord_sql = "INSERT INTO Orders (Order_No, OrderStatus, Station, `To`, DeliveryPoint, UserID) VALUES (?,?,?,?,?,?)";
+if($ord_fields['to'] != 'Go'){
+	$ord_sql = "INSERT INTO Orders (Order_No, OrderStatus, Station, `To`, DeliveryPoint, UserID) VALUES (?,?,?,?,?,?)";
+	$ordbind_types = "sssssi";
+}else{
+	$ord_sql = "INSERT INTO Orders (Order_No, OrderStatus, Station, `To`, UserID) VALUES (?,?,?,?,?)";
+	$ordbind_types = "ssssi";
+}
 $ord_details_sql = "INSERT INTO OrderDetails (ProductNo, Qty, Rate, Cost, OrderNo) VALUES (?,?,?,?,?)";
+$ord_detbind_types = "sidds";
 
 $ord_status = "Pending";
 $usrID = $clean_data['userID'];
-$ordbind_types = "sssssi";
-$ord_detbind_types = "sidds";
 
 $ordconn_res = new stdClass();
 $orddet_res = new stdClass();

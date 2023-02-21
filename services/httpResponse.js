@@ -13,7 +13,6 @@ theApp.service("httpResponse", function($timeout){
 			}
 			//Fadeout response_box after 4sec
 			$timeout(fadeout, 4000);
-			$timeout(resetResponseBox, 5500);
 		}, 2000);
 	
 	};

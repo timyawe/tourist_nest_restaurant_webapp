@@ -16,18 +16,17 @@ $pymtIn_bindtypes = "si";
 $ordpymt_bindtypes = "is";
 $pymt_src = "Order";
 
+array_unshift($clean_data, $bind_types);
 foreach($clean_data as $k => $v){
-	/*if($k == "pdate"){
+	if($k == "pdate"){
 		$d = date("Y-m-d", strtotime($v));
 		$clean_data['pdate'] = $d;
-	}*/
+	}
 	if($k == "ordNo"){
 		$ordNo = $v;
 		unset($clean_data['ordNo']);
 	}
 }
-
-array_unshift($clean_data, $bind_types);
 
 $pymtconn_res = new stdClass();
 $pymtIn_res = new stdClass();

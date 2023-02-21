@@ -153,7 +153,12 @@
 					
 				}
 			}
-	
+			
+				let resetResponseBox = function(){
+				document.getElementById("response_box").style.display = "none";
+				document.getElementById("response_box").style.backgroundColor = "";
+				document.getElementById("response_box").classList.remove("fade_away_el");
+			}	
 			
 			let toggleLoader = function(state){
 				let loader = document.getElementById("loader");

@@ -221,6 +221,7 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 		console.log($scope.order_items);
 		if(ordStatus === "Pending"){
 			$scope.showDeliverBtn = true;
+			$scope.showTimer = true;
 		}
 	}, function(response){
 		console.log(response.data);
@@ -229,7 +230,8 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 	
 	$scope.deliver = function(){
 		stop_timer();
-		document.getElementById("order_status").style.display = "none";
+		//document.getElementById("order_status").style.display = "none";
+		$scope.showTimer = false;
 		/*var loader = document.getElementById("loader");
 		loader.style.display = "block";*/
 		toggleLoader("block");
@@ -343,6 +345,11 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 		$interval.cancel(interval);
 	}
 	
+	$scope.$on('$destroy', function() {
+	  // Make sure that the interval is destroyed too
+	  stop_timer()//$scope.stopFight();
+	});
+
 	/* Generating the options of the Item select tag */
 	//getItems($http).then(res => $scope.items =res);
 	lineDetails.getItems("../crud/read/getOrdItemsList.php").then(res => $scope.items =res);
@@ -454,6 +461,22 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 					}
 				}else{//console.log(response[0].data);
 					if(response[0].data.status === 1){
+						if(!deleteAllItems()){
+							httpResponse.success(1, "Updated Succesfuly");
+						}else{
+							stop_timer();
+							//document.getElementsByClassName("pymt_btn").style.display = "none";
+							$scope.showTimer = false;
+							$scope.showDeliverBtn = false;
+							$scope.hidePymtBtn = true;
+							httpResponse.success(1, "Deleted Succesfuly, please wait...");
+							document.body.style.cursor = "wait";
+							$timeout(function(){
+								//wait for the httpResponse above to finish and return to the orders list
+								document.getElementById("orders_btn").click();
+								document.body.style.cursor = "auto";
+							}, 7000)
+						}
 						httpResponse.success(1, "Updated Succesfuly");
 					}else{
 						httpResponse.success(0, "The operation failed, Please try again");
@@ -521,37 +544,53 @@ theApp.controller("OrdpaymentCtlr", function($scope, $timeout, $http, $routePara
 		});
 	}
 	
+	$scope.verifyAmount = function(amount){
+		if(isNaN(amount)){
+			alert("Please enter only digits");
+			$scope.pamnt = "";
+		}
+	}
+	
 	/* Validate Form Data and submit */
 	$scope.validate = function (){
-		let pdate = new Date($scope.pdate/*'2022-12-24 04:00:13'*/).toLocaleDateString();
+		let pdate = document.getElementsByName("paymentdate")[0].value;// new Date($scope.pdate/*'2022-12-24 04:00:13'*/).toLocaleDateString();
 		let form_values = {pdate:pdate, pamnt:$scope.pamnt, ptype:$scope.ptype, ordNo:$scope.ordNo/*, status:$scope.status*/};
 		
-		if($routeParams.pymtID === undefined){
-			$http.post("../crud/create/add_orderpayment.php", form_values).then(function(response){
-				httpResponse.success(1, response.data.message);
-			}, function(response){
-				httpResponse.error(0, response.data);
-				//document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
-			});
-			//console.log($scope.pdate, pdate);
-		}else{
-			let editedfields = {pymtID: $routeParams.pymtID};
-			
-			//* Use this method as one that works to only choose the edited fields
-			angular.forEach($scope.payment_form, function(v, k){
-				if(typeof v === 'object' && v.hasOwnProperty('$modelValue') && v.$dirty){
-					editedfields[k] = v.$modelValue;
+		$http.get("../crud/read/compareAmount.php", {params: {pamnt: form_values.pamnt, ordNo:$scope.ordNo}}).then(function(response){
+			//console.log(response.data/*.message*/);
+			if(response.data.status === 0){
+				alert(response.data.message);
+				$scope.pamnt = "";
+				//amountOk = false;
+			}else{
+				if($routeParams.pymtID === undefined){
+					$http.post("../crud/create/add_orderpayment.php", form_values).then(function(response){
+						httpResponse.success(1, response.data.message);
+					}, function(response){
+						httpResponse.error(0, response.data);
+						//document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
+					});
+					//console.log($scope.pdate, pdate);
+				}else{
+					let editedfields = {pymtID: $routeParams.pymtID};
+					
+					//* Use this method as one that works to only choose the edited fields
+					angular.forEach($scope.payment_form, function(v, k){
+						if(typeof v === 'object' && v.hasOwnProperty('$modelValue') && v.$dirty){
+							editedfields[k] = v.$modelValue;
+						}
+					});
+					
+					$http.post("../crud/update/setOrderPayment.php", editedfields).then(function(response){
+						httpResponse.success(1, response.data.message);
+						//console.log(response.data);
+					}, function(response){
+						httpResponse.error(0, response.data);
+						//document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
+						//console.log(response.data);
+					});
 				}
-			});
-			
-			$http.post("../crud/update/setOrderPayment.php", editedfields).then(function(response){
-				httpResponse.success(1, response.data.message);
-				//console.log(response.data);
-			}, function(response){
-				httpResponse.error(0, response.data);
-				//document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
-				//console.log(response.data);
-			});
-		}
+			}
+		});
 	}
 });

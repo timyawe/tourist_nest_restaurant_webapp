@@ -221,6 +221,7 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 		console.log($scope.order_items);
 		if(ordStatus === "Pending"){
 			$scope.showDeliverBtn = true;
+			$scope.showTimer = true;
 		}
 	}, function(response){
 		console.log(response.data);
@@ -229,9 +230,8 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 	
 	$scope.deliver = function(){
 		stop_timer();
-		document.getElementById("order_status").style.display = "none";
-		/*var loader = document.getElementById("loader");
-		loader.style.display = "block";*/
+		//document.getElementById("order_status").style.display = "none";
+		$scope.showTimer = false;
 		toggleLoader("block");
 		$http.post("../crud/update/setOrder.php", {orderstatus: "Delivered", ordNo: $routeParams.ordNo}).then(function(response){
 			
@@ -271,10 +271,10 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 		if(ordStatus === "Pending"){
 			if(ordMaxTime !== 0){//When order items dont require preparation time e.g drinks
 				var start_time = new Date(/*"12/31/2022 17:52:58"*/odrStartTime);
-				let start_time_in_secs = Math.floor(start_time.getTime()/1000);
+				let start_time_in_secs = Math.floor(start_time.getTime()/1000);//convert millis to seconds
 				
 				var curr_time = new Date();
-				let curr_time_in_secs = Math.floor(curr_time.getTime()/1000);
+				let curr_time_in_secs = Math.floor(curr_time.getTime()/1000);//convert millis to seconds
 				
 				var lead_time = ordMaxTime;
 				let lead_time_in_secs = lead_time * 60;
@@ -282,40 +282,54 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 				var end_time = start_time.getMinutes() + lead_time;
 				let end_time_in_secs = start_time_in_secs + lead_time_in_secs;
 				
+				let start_millis = Math.floor(start_time.getTime());
+				let end_millis = start_millis + (lead_time_in_secs * 1000);
+				function convertMillis(millis){
+					let mins = Math.floor(millis/60000);
+					let secs = ((millis % 60000) / 1000).toFixed(0);
+					return (secs == 60 ? (mins+1) + ":00" : mins + ":" + (secs < 10 ? "0" : "") + secs);
+				}
+				
 				var time_left_mins = end_time - curr_time.getMinutes();
 				var start_time_secs = start_time.getSeconds();
 				if(start_time_secs == 0){var end_time_secs = 59}else{var end_time_secs = start_time_secs + (59 - start_time_secs);}
 				var time_left_secs = end_time_secs - curr_time.getSeconds();
-				var warning_time = lead_time * 0.5;
-				var critical_time = lead_time * 0.25;
+				var warning_time = lead_time * 0.5//Math.floor((lead_time * 0.5) * 60);
+				var critical_time = lead_time * 0.25//Math.floor(end_time_in_secs * 0.25);
+				let time_left = (end_time_in_secs - curr_time_in_secs)/60;//convert seconds back to mins
 				
-				if(end_time_in_secs > curr_time_in_secs){
+				if(end_time_in_secs > curr_time_in_secs){//console.log(end_time,curr_time.getMinutes(),end_time_in_secs,end_time_in_secs - curr_time_in_secs);
 					var order_time_el = document.getElementById("order_time");
-					if(time_left_mins <= warning_time && time_left_mins > critical_time){
+					if(/*time_left_mins*/time_left <= warning_time && /*time_left_mins*/time_left > critical_time){
+						console.log(end_time,curr_time.getMinutes(),end_time_in_secs,end_time_in_secs - curr_time_in_secs);
 						if(order_time_el.className !== "order_time_warning" || order_time_el.className === " "){
 							order_time_el.className = "order_time_warning";
-						}
-						$scope.ordertime = time_left_mins + " mins";
+						}//$scope.applyWarnClass = true;
+						$scope.ordertime = convertMillis(end_millis - start_millis);
+						//$scope.ordertime = /*time_left_mins Math.ceil*/((end_time_in_secs - curr_time_in_secs) / 60) + " mins";
 					}
 					/*if(time_left_mins == critical_time){
 						order_time_el.style.color = "red";
 						$scope.ordertime = time_left_mins + " mins";
 					}*/
-					if(time_left_mins < critical_time){
+					if(/*time_left_mins*/time_left < critical_time){
 						//if(order_time_el.className !== "order_time_critical" /*|| order_time_el.className === " "*/){
 							order_time_el.className = "order_time_critical";
 						//}
-						$scope.ordertime = time_left_mins + " mins";
+						//$scope.applyCriticalClass = true;
+						console.log(end_time,curr_time.getMinutes(),end_time_in_secs,end_time_in_secs - curr_time_in_secs);
+						$scope.ordertime = /*time_left_mins Math.ceil*/((end_time_in_secs - curr_time_in_secs) / 60) + " mins";
 					}
-					if(time_left_mins > 1){
-						$scope.ordertime = time_left_mins + " mins";
-					}else if(time_left_mins === 1){
-						$scope.ordertime = time_left_mins + " min";
+					if(/*time_left_mins*/end_time_in_secs > 1000){
+						console.log(end_time,curr_time.getMinutes(),end_time_in_secs,time_left);
+						$scope.ordertime = /*time_left_mins Math.ceil*/((end_time_in_secs - curr_time_in_secs)/ 60) + " mins";
+					}else if(/*time_left_mins*/end_time_in_secs === 1000){
+						$scope.ordertime = /*time_left_mins Math.ceil*/((end_time_in_secs - curr_time_in_secs)/ 60) + " min";
 					}else{
 						$scope.ordertime = time_left_secs + " secs";
 					}
-				}else{
-					stop_timer();
+				}else{console.log(end_time, end_time_in_secs- curr_time_in_secs, /*<=*/ warning_time, /*&& end_time_in_secs >*/ critical_time);
+					stop_timer();console.log(convertMillis(end_millis - start_millis));
 					document.getElementById("order_timer_box").style.display = "none";
 					document.getElementById("late_order_label").style.display = "block";
 				}
@@ -330,7 +344,8 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 				//console.log(ordMaxTime);
 			}
 		}else{
-			document.getElementById("order_timer_box").style.display = "none";
+			//document.getElementById("order_timer_box").style.display = "none";
+			$scope.showTimer = false;
 			stop_timer();
 		}
 	}
@@ -342,6 +357,11 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 	function stop_timer(){
 		$interval.cancel(interval);
 	}
+	
+	$scope.$on('$destroy', function() {
+	  // Make sure that the interval is destroyed too
+	  stop_timer()//$scope.stopFight();
+	});
 	
 	/* Generating the options of the Item select tag */
 	//getItems($http).then(res => $scope.items =res);
@@ -454,7 +474,22 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 					}
 				}else{//console.log(response[0].data);
 					if(response[0].data.status === 1){
-						httpResponse.success(1, "Updated Succesfuly");
+						if(!deleteAllItems()){
+							httpResponse.success(1, "Updated Succesfuly");
+						}else{
+							stop_timer();
+							//document.getElementsByClassName("pymt_btn").style.display = "none";
+							$scope.showTimer = false;
+							$scope.showDeliverBtn = false;
+							$scope.hidePymtBtn = true;
+							httpResponse.success(1, "Deleted Succesfuly, please wait...");
+							document.body.style.cursor = "wait";
+							$timeout(function(){
+								//wait for the httpResponse above to finish and return to the orders list
+								document.getElementById("orders_btn").click();
+								document.body.style.cursor = "auto";
+							}, 7000)
+						}
 					}else{
 						httpResponse.success(0, "The operation failed, Please try again");
 					}
@@ -521,37 +556,64 @@ theApp.controller("OrdpaymentCtlr", function($scope, $timeout, $http, $routePara
 		});
 	}
 	
+	$scope.verifyAmount = function(amount){
+		if(isNaN(amount)){
+			alert("Please enter only digits");
+			$scope.pamnt = "";
+		}
+	}
+	
 	/* Validate Form Data and submit */
 	$scope.validate = function (){
-		let pdate = new Date($scope.pdate/*'2022-12-24 04:00:13'*/).toLocaleDateString();
+		let pdate = document.getElementsByName("paymentdate")[0].value;//new Date($scope.pdate/*'2022-12-24 04:00:13'*/).toLocaleDateString();
 		let form_values = {pdate:pdate, pamnt:$scope.pamnt, ptype:$scope.ptype, ordNo:$scope.ordNo/*, status:$scope.status*/};
 		
-		if($routeParams.pymtID === undefined){
-			$http.post("../crud/create/add_orderpayment.php", form_values).then(function(response){
-				httpResponse.success(1, response.data.message);
-			}, function(response){
-				httpResponse.error(0, response.data);
-				//document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
-			});
-			//console.log($scope.pdate, pdate);
-		}else{
-			let editedfields = {pymtID: $routeParams.pymtID};
+		//function checkAmount(){
+			//let amountOk;
+		$http.get("../crud/read/compareAmount.php", {params: {pamnt: form_values.pamnt, ordNo:$scope.ordNo}}).then(function(response){
+			//console.log(response.data/*.message*/);
+			if(response.data.status === 0){
+				alert(response.data.message);
+				$scope.pamnt = "";
+				//amountOk = false;
+			}else{
+				if($routeParams.pymtID === undefined){
+					$http.post("../crud/create/add_orderpayment.php", form_values).then(function(response){
+						httpResponse.success(1, response.data.message);
+					}, function(response){
+						httpResponse.error(0, response.data);
+						//document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
+					});
+					//console.log($scope.pdate, pdate);
+				}else{
+					let editedfields = {pymtID: $routeParams.pymtID};
+					
+					//* Use this method as one that works to only choose the edited fields
+					angular.forEach($scope.payment_form, function(v, k){
+						if(typeof v === 'object' && v.hasOwnProperty('$modelValue') && v.$dirty){
+							editedfields[k] = v.$modelValue;
+						}
+					});
+					
+					$http.post("../crud/update/setOrderPayment.php", editedfields).then(function(response){
+						httpResponse.success(1, response.data.message);
+						//console.log(response.data);
+					}, function(response){
+						httpResponse.error(0, response.data);
+						//document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
+						//console.log(response.data);
+					});
+				}console.log(pdate);
+				//amountOk = true;console.log(response.data.status, amountOk);
+			}
 			
-			//* Use this method as one that works to only choose the edited fields
-			angular.forEach($scope.payment_form, function(v, k){
-				if(typeof v === 'object' && v.hasOwnProperty('$modelValue') && v.$dirty){
-					editedfields[k] = v.$modelValue;
-				}
-			});
-			
-			$http.post("../crud/update/setOrderPayment.php", editedfields).then(function(response){
-				httpResponse.success(1, response.data.message);
-				//console.log(response.data);
-			}, function(response){
-				httpResponse.error(0, response.data);
-				//document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
-				//console.log(response.data);
-			});
-		}
+		}, function(response){
+			console.log(response);
+		});
+			//return amountOk;
+		//}
+		
+		
+		
 	}
 });

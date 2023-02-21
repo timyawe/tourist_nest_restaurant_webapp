@@ -5,7 +5,7 @@
 <div id="sub_content_box" data-ng-controller="edit_orderCtlr">
 	<div id="view_content">
 	<div id="details_link_box">
-		<a href="#!orders">Manage Orders</a>
+		<a id="orders_btn" href="#!orders">Manage Orders</a>
 	</div>
 	<div id="details_box">	
 		<div id="details_header_box">
@@ -17,13 +17,13 @@
 				<div id="response_box" style="display:none"></div>
 				<div id="form_header">
 					<div>
-						<a href="#!order_payments/{{::ordNo}}" class="pymt_btn">Payments</a>
+						<a href="#!order_payments/{{::ordNo}}" class="pymt_btn animate_show" ng-hide="hidePymtBtn">Payments</a>
 					</div>
 
-					<div id="order_status">
+					<div id="order_status" class="animate_show" ng-show="showTimer">
 						<p id="late_order_label" style="display:none">Order is late, Deliver Now!!</p>
 						<div id="order_timer_box">
-							<div id="order_time_label">Order Timer</div>
+							<div id="order_time_label" ng-class="{order_time_warning: applyWarnClass, order_time_critical: applyCriticalClass}">Order Timer</div>
 							<span id="order_time">{{ordertime}}</span>
 						</div>
 					</div>

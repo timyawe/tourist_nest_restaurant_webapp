@@ -1,0 +1,104 @@
+<div id="content_banner_box">
+	<h2 id="banner">Report Filter</h2>
+</div>
+<div id="sub_content_box">
+	<div id="view_content">
+		<div id="details_box">
+			<div id="details_header_box">
+				<h3>Generate Report...</h3>
+			</div>
+			<div id="details_content_box"><div id="loader" style="display:none"></div>
+				<form id="details_form" name="report_filter_form" class="animate_show" ng-hide="hideForm" novalidate>
+					
+					<div>
+						<div class="form_input_row">
+							<label style="width: initial">Station:</label>
+							<select class="select_box" name="station" ng-model="station" ng-change="changeStation()" >
+								<option value="">Choose Station...</option>
+								<option value="Reception">Reception</option>
+								<option value="Restaurant">Restaurant</option>
+								<option value="Hall">Hall</option>
+								<option value="All">All</option>
+							</select>
+						</div>
+						<div class="form_input_row">
+							<label style="width: initial">Category:</label>
+							<select class="select_box" name="category" ng-model="rep_cat" ng-change="changeCategory()" >
+								<option value="">Choose Report Category...</option>
+								<!--<option value="General">General</option>-->
+								<option value="individual">Pick Fields</option>
+							</select>
+						</div>
+					</div>
+					
+					<div ng-if="showFields" class="animate_if" style="margin-bottom:9px">
+						<fieldset>
+							<legend>Choose fields for report</legend>
+							<div style="margin-bottom:9px">
+								<input class="check" type="checkbox" name="rep_cols" id="orders" value="orders"/>
+								<label for="orders" class="check_label">Orders</label>
+							</div>
+							<div style="margin-bottom:9px">
+								<input class="check" type="checkbox" name="rep_cols" id="reqs" value="requisitions"/>
+								<label for="reqs" class="check_label">Requisitions</label>
+							</div>
+							<div style="margin-bottom:9px">
+								<input class="check" type="checkbox" name="rep_cols" id="offers" value="offers"/>
+								<label for="offers" class="check_label">Offers</label>
+							</div>
+							<div style="margin-bottom:9px">
+								<input class="check" type="checkbox" name="rep_cols" id="spoilt" value="spoilt"/>
+								<label for="spoilt" class="check_label">Spoilt</label>
+							</div>
+						</fieldset>
+					</div>
+					
+					<div ng-if="showType" class="animate_if" style="margin-bottom:9px">
+						<fieldset>
+							<legend>Choose Filter Type</legend>
+							<div style="margin-bottom:9px">
+								<input class="check filter_type" type="checkbox" name="filter_type" id="period" value="period" ng-click="clickPeriod($event)" checked />
+								<label for="period" class="check_label">By Current Period</label>
+							</div>
+							<div style="margin-bottom:9px">
+								<input class="check filter_type" type="checkbox" name="filter_type" id="date" value="_date" ng-model="date" ng-change="changeDateFilter()"/>
+								<label for="date" class="check_label">By Date</label>
+							</div>
+							<div style="margin-bottom:9px">
+								<input class="check filter_type" type="checkbox" name="filter_type" id="item" value="item" ng-model="item" ng-change="changeItemFilter()"/>
+								<label for="item" class="check_label">By Item</label>
+							</div>
+						</fieldset>
+					</div>
+					
+					<div ng-if="showDate" class="animate_if">
+						<div class="form_input_row">
+							<label style="width: initial">From:</label><input type="date" name="from_date" class="txt_box" ng-model="$parent.fro_date" />
+						</div>
+						<div class="form_input_row">
+							<label style="width: initial">To:</label><input type="date" name="to_date" class="txt_box" ng-model="$parent.to_date" />
+						</div>
+					</div>
+					
+					<div ng-if="showItem" class="animate_if">
+						<div class="form_input_row">
+							<label style="width: initial">Items:</label>
+							<select class="select_box" name="item" data-ng-options="item.label for item in items track by item.value" ng-model="$parent.item" >
+								<option value="">Choose Item...</option>
+								<!--<option value="date">By Date</option>
+								<option value="item">By Item</option>-->
+							</select>
+						</div>
+					</div>
+					
+					<div id="form_footer" ng-if="report_filter_form.$valid" class="animate_if">
+						<div>
+							<input type="button" class="save_btn" value="Done" ng-click="validate()"/>
+							<div><a id="rep_res_link" href="#!report_result" hidden></a></div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

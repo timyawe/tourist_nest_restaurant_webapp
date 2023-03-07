@@ -9,7 +9,8 @@
 		<script src="../resources/thirdparty/js/angular/v1.8.2/angular-animate.js"></script>
 		<link rel="stylesheet" href="../resources/thirdparty/css/fontawesome/css/font-awesome.css" />
 		<link type="text/css" rel="stylesheet" href="../resources/css/layout.css" />
-		<link rel="stylesheet" href="../resources/css/forms.css" />
+		<link type="text/css" rel="stylesheet" href="../resources/css/forms.css" />
+		<link type="text/css" rel="stylesheet" href="../resources/css/tables.css" />
 		<link rel="stylesheet" href="../resources/css/ngAnimateStyles.css" />
 		
 	</head>
@@ -120,6 +121,8 @@
 					.when("/extras/:category", {templateUrl: "/views/manage_extras.html", controller: "manage_extrasCtlr"})
 					.when("/create_extra/:category", {templateUrl: "/views/create_extra.html", controller: "create_extraCtlr"})
 					.when("/edit_extra/:category/:ID", {templateUrl: "/views/edit_extra.html", controller: "create_extraCtlr"})
+					.when("/reports", {templateUrl: "/views/report_filter.html", controller: "report_filterCtlr"})
+					.when("/report_result", {templateUrl: "/views/report_result.html", controller: "report_resultCtlr"})
 					.otherwise({redirectTo: "/dashboard"});
 			});
 			
@@ -204,6 +207,7 @@
 		<script src="../controllers/tables.js"></script>
 		<script src="../controllers/account.js"></script>
 		<script src="../controllers/extras.js"></script>
+		<script src="../controllers/reports.js"></script>
 		<script src="../services/userDetails.js"></script>
 		<script src="../services/httpResponse.js"></script>
 		<script src="../services/lineDetails.js"></script>

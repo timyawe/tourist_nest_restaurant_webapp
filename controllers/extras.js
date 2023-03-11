@@ -37,7 +37,7 @@ theApp.controller("create_extraCtlr", function($scope, $http, $routeParams, user
 		let details = [1];//to contain details for form submission
 		
 		/* Generating the options of the Item select tag */
-		lineDetails.getItems(getItemsUrl()).then(res => $scope.items =res);
+		lineDetails.getItems(getItemsUrl(), {params: {station: userDetails.getStation()}}).then(res => $scope.items =res);
 		
 		/* Array to hold the number of rows of the orders details */
 		$scope.rows = [{ID:1, item: undefined, qty:null, itemSelected: false}];
@@ -49,22 +49,25 @@ theApp.controller("create_extraCtlr", function($scope, $http, $routeParams, user
 		$scope.removeRow = (index) => lineDetails.removeRow_create($scope.rows, index, "Atleast one item is required", details);
 		
 		$scope.changeItem = function(row, index){
+			row.qty = null;
 			if(row.item === undefined){
 				row.itemSelected = false;
-				row.qty = null;
 			}else{
 				row.itemSelected = true;
 			}console.log(row, index);
 		}
 		
 		$scope.updateRow = function(row, index){
-			if(row.qty === 0){
+			if(row.qty <= 0){
 				alert("Quantity should be atleast 1");
 				row.qty = null;
-			}else if(row.qty > 0){
-				details[index] = {pdtNo: row.item.value, qty: row.qty};
 			}else{
-				row.qty = null;
+				if(row.qty > row.item.finish){
+					alert("Cannot update Qty, quantity entered is more than quantity available for sale");
+					row.qty = null;
+				}else{
+					details[index] = {pdtNo: row.item.value, qty: row.qty};
+				}
 			}
 			console.log(details, $scope.to);
 		}

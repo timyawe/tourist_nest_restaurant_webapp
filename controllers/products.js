@@ -19,7 +19,7 @@ theApp.controller("edit_productCtlr", function($scope, $timeout, $http, $routePa
 		let pdtID = $routeParams.pdtID;
 		$http.post("../crud/read/getProduct.php", {pdtID: pdtID}).then(function(response){
 			if(response.data.status === 1){
-				let res = response.data.message;
+				let res = response.data.message[0];
 				$scope.desc = res.Description;
 				$scope.sale_name = res.SaleName;
 				$scope.sale_price = res.UnitSalePrice;
@@ -30,6 +30,9 @@ theApp.controller("edit_productCtlr", function($scope, $timeout, $http, $routePa
 				$scope.untqty = res.UnitQty;
 				$scope.status = res.Status;
 				$scope.preptime = Number(res.PrepTime);
+				$scope.stkl_rec = Number(res.Reception);
+				$scope.stkl_res = Number(res.Restaurant);
+				$scope.stkl_bar = Number(res.Bar);
 			}
 			//console.log(response.data);
 		},function(response){

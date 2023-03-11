@@ -41,12 +41,10 @@ theApp.controller("create_orderCtlr", function($scope, $timeout, $http, userDeta
 	}
 
 	/* When user chooses item, apply the rate */
-	//$scope.itemRate = function(item, index){ applyRate(item, index, order_details,$scope);}
-	$scope.changeItem = function(row, index)  {console.log(row); lineDetails.applyRate(row, index, order_details, $scope.rows);}
+	$scope.changeItem = function(row, index)  {console.log(row); lineDetails.checkItem(row, index, order_details, $scope.rows, 'order');}
 	
 	/* Computing the Item total from Qty */
-	//$scope.computeSubTotal = function(qty,item, idx){ computeSubTotal(qty,item, idx, order_details); }
-	$scope.computeSubTotal = function(/*qty,item*/row, idx) {lineDetails.computeSubTotal(/*qty,item*/row, idx, order_details);} 
+	$scope.changeQty = function(/*qty,item*/row, idx) {lineDetails.checkQty(/*qty,item*/row, idx, order_details, 'order');} 
 
 	$scope.q = function(){
 		console.log($scope.delv_point)
@@ -77,8 +75,8 @@ theApp.controller("create_orderCtlr", function($scope, $timeout, $http, userDeta
 
 
 	/* Generating the options of the Item select tag */
-	//$scope.items = lineDetails.getItems("../crud/read/getOrdItemsList.php");
-	lineDetails.getItems("../crud/read/getOrdItemsList.php").then(res => $scope.items =res);
+	
+	lineDetails.getItems("../crud/read/getOrdItemsList.php", {params: {station: userDetails.getStation()}}).then(res => $scope.items =res);
 	
 	/* Array to hold the number of rows of the orders details */
 	$scope.rows = [{ID:1, item: undefined, qty:null, rate:null, total:null, itemSelected: false}];
@@ -351,14 +349,13 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 	});
 
 	/* Generating the options of the Item select tag */
-	//getItems($http).then(res => $scope.items =res);
-	lineDetails.getItems("../crud/read/getOrdItemsList.php").then(res => $scope.items =res);
+	lineDetails.getItems("../crud/read/getOrdItemsList.php", {params: {station: userDetails.getStation()}}).then(res => $scope.items =res);
 	
 	/* When user chooses item, apply the rate */
-	$scope.changeItem = function(row, index){ lineDetails.applyRate(row, index, editorder_details, $scope.rows);}
+	$scope.changeItem = function(row, index){ lineDetails.checkItem(row, index, editorder_details, $scope.rows, 'order');}
 	
 	/* Computing the Item total from Qty */
-	$scope.computeSubTotal = function(/*qty,item*/row, idx){ lineDetails.computeSubTotal(/*qty,item*/row, idx, editorder_details); }
+	$scope.changeQty = function(/*qty,item*/row, idx){ lineDetails.checkQty(/*qty,item*/row, idx, editorder_details, 'order'); }
 	
 	/* Array to hold the number of rows of the orders details */
 	$scope.rows = [/*{ID:1}*/];

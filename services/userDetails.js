@@ -1,4 +1,5 @@
 //Create Angular custom service for user details
+//The user variable is set in the home script when the app first loads
 theApp.service("userDetails", function(){
 	this.getUserID = function(){
 		return user.ID;

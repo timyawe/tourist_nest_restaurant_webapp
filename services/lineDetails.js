@@ -1,23 +1,51 @@
 //Create Angular custom service for manipulating order/requisition line details
 theApp.service("lineDetails", function($http){
 
-	this.getItems = function(url){
-		return $http.get(url).then(function(response){
+	this.getItems = function(url, params){
+		return $http.get(url, params).then(function(response){
 			return response.data;
 		});
 	}
 	
-	this.applyRate = function(row, idx, line_details_arr, rows_arr){//x
+	this.checkItem = function(row, idx, line_details_arr, rows_arr, category){//x
 		if(row.item !== undefined){
+			if(category == 'order'){
+				applyRate();
+			}else{
+				let finish = Number(row.item.finish);
+				let minstock = Number(row.item.MinStockLevel);
+				let isRecieved = Number(row.item.Recieved);
+				let item = row.item.label;
+				if(!isRecieved){
+					alert(`${item} was previously requested for but not recieved, recieve item insted`);
+					row.item = undefined;
+				}else{
+					if(finish > minstock || !minstock ){
+						alert(`${item} doesn't require restocking`);
+						row.item = undefined;
+					}else{
+						applyRate();
+					}
+				}
+			}
+		}else{
+			row.qty = null;
+			row.rate = null;
+			row.total = null;
+			row.purchaseAmount = null;
+			line_details_arr.splice(idx, 1);
+		}
+		
+		function applyRate(){
 			if(line_details_arr.length > 0){
 				if(!comparePdts(row.item, line_details_arr)){
 					line_details_arr[idx] = {pdtNo:row.item.value};//adding the order details' objects to array by the current index
 					
 					//Apply the total if the qty field is already filled
 					if(row.qty !== null){
-						this.computeSubTotal(row,idx,line_details_arr);
+						this.checkQty(row,idx,line_details_arr);
 					}
-					console.log(line_details_arr);
+					//console.log(line_details_arr);
 				}else{
 					alert("Item is already selected, adjust its Qty instead");
 					rows_arr.splice(idx, 1);
@@ -29,65 +57,11 @@ theApp.service("lineDetails", function($http){
 				
 				//Apply the total if the qty field is already filled
 				if(row.qty !== null){
-					this.computeSubTotal(row,idx,line_details_arr);
+					this.checkQty(row,idx,line_details_arr);
 				}
-				console.log(line_details_arr);
+				console.log(line_details_arr, row.item);
 			}
-		}else{
-			row.qty = null;
-			row.rate = null;
-			row.total = null;
-			row.purchaseAmount = null;
-			line_details_arr.splice(idx, 1);
 		}
-		/*let qty_input = document.getElementsByClassName("qty_input");
-		let rate_input = document.getElementsByClassName("rate_input");
-		let total_input = document.getElementsByClassName("total_input");
-		
-		for(let i = 0; i<rate_input.length; i++){
-			if(idx === i){
-				if(x !== undefined){
-					if(line_details_arr.length > 0){
-						if(!comparePdts(x, line_details_arr)){
-							//applyRateProcess(rate_input[i].value, x.rate, line_details_arr[idx], x.value);
-							rate_input[i].value = x.rate;
-					
-							line_details_arr[idx] = {pdtNo:x.value};//adding the order details' objects to array by the current index
-							console.log(line_details_arr);
-							//Apply the total if the qty field is already filled
-							if(qty_input[i].value !== undefined){
-								let qty = qty_input[i].value;
-								console.log(qty_input[i].value);
-								this.computeSubTotal(qty,x,idx,line_details_arr);
-							}
-						}else{
-							alert("Item is already selected, adjust its Qty instead");
-							rows_arr.splice(idx, 1);
-							line_details_arr.splice(idx, 1);
-							console.log(line_details_arr);
-						}
-					
-					}else{
-						//applyRateProcess(rate_input[i].value, x.rate, line_details_arr[idx], x.value);
-						rate_input[i].value = x.rate;
-						
-						line_details_arr[idx] = {pdtNo:x.value};//adding the order details' objects to array by the current index
-						
-						//Apply the total if the qty field is already filled
-						if(qty_input[i].value !== undefined){
-							let qty = qty_input[i].value;
-							console.log(qty_input[i].value);
-							this.computeSubTotal(qty,x,idx,line_details_arr);
-						}
-					}
-					
-				}else{
-					qty_input[i].value = "";
-					rate_input[i].value = "";
-					total_input[i].value = "";
-				}
-			}
-		}*/
 	}
 	
 	/*this.comparePdts = */function comparePdts(item_sel, arr_to_comp){
@@ -114,7 +88,23 @@ theApp.service("lineDetails", function($http){
 		}*/
 	}
 	
-	this.computeSubTotal = function(/*qty,item*/row, idx, line_details_arr){
+	this.checkQty = function(row, idx, line_details_arr, category){
+		let qty = row.qty;
+		let finish = Number(row.item.finish);
+		
+		if(category == 'order'){
+			if(qty > finish){
+				alert("Cannot update Qty, quantity entered is more than quantity available for sale");
+				row.qty = null;
+			}else{
+				computeSubTotal(row,idx,line_details_arr);
+			}
+		}else{
+			computeSubTotal(row,idx,line_details_arr);
+		}
+	}
+	
+	/*this.computeSubTotal =*/ function computeSubTotal(/*qty,item*/row, idx, line_details_arr){
 		//let total_input = document.getElementsByClassName("total_input");
 		let item = row.item;
 		let qty = row.qty;

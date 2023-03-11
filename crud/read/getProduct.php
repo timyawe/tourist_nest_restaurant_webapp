@@ -8,8 +8,13 @@ $json_data = json_decode($json_post_file, true);
 $clean_data = array_map('funcSanitise', $json_data);
 $pdtID = $clean_data['pdtID'];
 
+$pdt_sql = "select Product_No, Description, Category, Status, UnitCostPrice, UnitQty, reception,restaurant, bar,UnitSalePrice, Salename, MeasureSold, PrepTime from products 
+			left join (select unitcostprice, unitqty, reception,restaurant, bar, productno from itemsboughtextended) as ItemsBought on Product_No = ItemsBought.ProductNo
+			left join (select UnitSalePrice, Salename, MeasureSold, PrepTime, ProductNo from items_sold ) as ItemsSold on Product_No = ItemsSold.ProductNo 
+			where Product_No = '$pdtID'";
+echo dbConn($pdt_sql, array(), 'select');
 /*Select record, if present, from the three tables associated with product using pdtID */
-$pdt_sql = "SELECT * FROM Products WHERE Product_No = '$pdtID'";
+/*$pdt_sql = "SELECT * FROM Products WHERE Product_No = '$pdtID'";
 $purch_sql = "SELECT UnitCostPrice, UnitQty, StockLevel FROM Items_Bought WHERE ProductNo = '$pdtID'";
 $sales_sql = "SELECT UnitSalePrice, SaleName, MeasureSold, PrepTime FROM Items_Sold WHERE ProductNo = '$pdtID'";
 
@@ -36,6 +41,6 @@ $json_res = new stdClass();
 $json_res->status = 1;
 $json_res->message = array_merge($pdt_res_arr,$purch_res_arr,$sales_res_arr);
 
-echo json_encode($json_res);
+echo json_encode($json_res);*/
 
 ?>

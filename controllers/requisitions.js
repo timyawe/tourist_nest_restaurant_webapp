@@ -36,7 +36,7 @@ theApp.controller("create_requisitionCtlr", function($scope, $timeout, $http, us
 	
 	/* When user chooses item, apply the rate */
 	$scope.reqChangeItem = function(row, index){
-		lineDetails.applyRate(row, index, req_details, $scope.rows);
+		lineDetails.checkItem(row, index, req_details, $scope.rows, 'req');
 	}
 
 	
@@ -70,7 +70,7 @@ theApp.controller("create_requisitionCtlr", function($scope, $timeout, $http, us
 				}
 			}
 		}else{
-			lineDetails.computeSubTotal(/*qty,item*/row, idx, req_details);
+			lineDetails.checkQty(/*qty,item*/row, idx, req_details, 'req');
 		}
 	}
 	
@@ -89,7 +89,7 @@ theApp.controller("create_requisitionCtlr", function($scope, $timeout, $http, us
 	}
 	
 	/* Generating the options of the Item select tag */
-	lineDetails.getItems("../crud/read/getReqItemsList.php").then(res => $scope.items =res);
+	lineDetails.getItems("../crud/read/getReqItemsList.php", {params: {station: userDetails.getStation()}}).then(res => $scope.items =res);
 	/*$http.get("../crud/read/getReqItemsList.php").then(function(response){
 		$scope.items = response.data;
 	});*/
@@ -184,7 +184,7 @@ theApp.controller("edit_requisitionCtlr", function($scope, $http, $routeParams, 
 	});
 	
 	/* When user chooses item, apply the rate */
-	$scope.reqChangeItem = function(row, index){ lineDetails.applyRate(row, index, editreq_details,	$scope.rows);}
+	$scope.reqChangeItem = function(row, index){ lineDetails.checkItem(row, index, editreq_details,	$scope.rows, 'req');}
 
 	/* Computing the Item total from Qty */
 	$scope.reqComputeSubTotal = function(/*qty,item*/row, idx){
@@ -198,12 +198,12 @@ theApp.controller("edit_requisitionCtlr", function($scope, $http, $routeParams, 
 				}
 			}
 		}else{
-			lineDetails.computeSubTotal(/*qty,item*/row, idx, editreq_details);
+			lineDetails.checkQty(/*qty,item*/row, idx, editreq_details, 'req');
 		}
 	}
 	
 	/* Generating the options of the Item select tag */
-	lineDetails.getItems("../crud/read/getReqItemsList.php").then(res => $scope.items =res);
+	lineDetails.getItems("../crud/read/getReqItemsList.php", {params: {station: userDetails.getStation()}}).then(res => $scope.items =res);
 	
 	/* Array to hold the number of rows of the orders details */
 	$scope.rows = [/*{ID:1}*/];

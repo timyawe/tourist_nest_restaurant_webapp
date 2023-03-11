@@ -12,7 +12,7 @@ $clean_data = array_map('funcSanitise', $json_data);
 
 //Here three arrays are created to hold the expected key values for each of the tables associated with a product. */ 
 $pdt_template = array('description','category','status');
-$itms_bought_templ = array('unitcostprice','unitqty','stocklevel');
+$itms_bought_templ = array('unitcostprice','unitqty');
 $itms_sld_templ = array('unitsaleprice','salename','measuresold', 'preptime');
 
 //Here the the function that places the values of each table in the respective array template created above is called
@@ -21,11 +21,11 @@ $itms_bought_fields = createFields($clean_data, $itms_bought_templ);
 $itms_sld_fields = createFields($clean_data, $itms_sld_templ);
 
 $pdt_sql = "INSERT INTO Products (Product_No, Description, Category, Status) VALUES (?,?,?,?)";
-$purch_sql = "INSERT INTO Items_Bought (UnitCostPrice, StockLevel, UnitQty, ProductNo) VALUES (?,?,?,?)";
+$purch_sql = "INSERT INTO Items_Bought (UnitCostPrice, UnitQty, ProductNo) VALUES (?,?,?)";
 $sales_sql = "INSERT INTO Items_Sold (SaleName, UnitSalePrice, MeasureSold, PrepTime, ProductNo) VALUES (?,?,?,?,?)";
 $p_key = genPK('Products', 'Product_No', 'PDT');
 $pdtbind_types = "ssss";
-$purchbind_types = "diss";
+$purchbind_types = "dss";
 $salesbind_types = "sddis";
 
 array_unshift($pdt_fields,$pdtbind_types, $p_key);
@@ -40,7 +40,16 @@ if(!array_key_exists("item_sold_check", $clean_data)){
 	if($pdtconn_result->status !== 0){
 		$purchconn_res = json_decode(dbConn($purch_sql,$itms_bought_fields, 'insert'));
 		if($purchconn_res->status !== 0){
-			echo dbConn($sales_sql,$itms_sld_fields, 'insert');
+			$items_bought_key = $purchconn_res->insertID;
+			$stocklevel_rec = $clean_data['stocklevel_rec'];
+			$stocklevel_res = $clean_data['stocklevel_res'];
+			$stocklevel_bar = $clean_data['stocklevel_bar'];
+			$stocklevelconn_fields = array('iiii', $stocklevel_rec,$stocklevel_res,$stocklevel_bar, $items_bought_key);
+			$stocklevels_sql = "INSERT INTO StockLevels (Reception, Restaurant, Bar, ItemsBoughtID) VALUES (?,?,?,?)";
+			$stocklevelconn_res = json_decode(dbConn($stocklevels_sql, $stocklevelconn_fields, 'insert'));
+			if($stocklevelconn_res->status !== 0){
+				echo dbConn($sales_sql,$itms_sld_fields, 'insert');
+			}
 		}else{
 			echo $purchconn_res;
 		}

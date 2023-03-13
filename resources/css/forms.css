@@ -14,6 +14,20 @@ label{
 
 }
 
+.check_label{
+	color: initial;
+	font-size: initial;
+	text-align: left;
+}
+
+fieldset{
+	border-radius: 3px;
+}
+
+legend{
+	color: steelblue;
+}
+
 .form_input_col{
 	display: flex;
 	flex-direction: column;
@@ -65,6 +79,14 @@ label{
 	border-radius: 2px;
 	color: #fff;
 	cursor: pointer;
+}
+
+.num_field{
+	text-align: center;
+}
+
+.curr_field{
+	text-align: right;
 }
 /**
 	>>> Styling login form begins <<<
@@ -265,19 +287,19 @@ label{
 }
 
 
-.animate_repeat.ng-move, .animate_repeat.ng-enter, .animate_repeat.ng-leave{
+/*.animate_repeat.ng-move, .animate_repeat.ng-enter, .animate_repeat.ng-leave{
 	transition: all linear 0.5s;
 }
 
 .animate_repeat.ng-leave.ng-leave-active, .animate_repeat.ng-enter, .animate_repeat.ng-move{
 	opacity: 0;
-	max-height: 0;
+	//max-height: 0;
 }
 
 .animate_repeat.ng-leave, .animate_repeat.ng-enter.ng-enter-active, .animate_repeat.ng-move.ng-move-active{
 	opacity: 1;
 	
-}
+}*/
 
 
 .pdt_cell span{
@@ -300,7 +322,7 @@ label{
 }
 
 .action_cell{
-	width: 3em
+	width: 4em
 }
 
 .qty_input{

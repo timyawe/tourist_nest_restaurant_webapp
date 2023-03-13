@@ -39,7 +39,7 @@ if($off_res->status == 1){
 $json_res = new stdClass();
 if(empty($details_fail)){
 	$json_res->status = 1;
-	$json_res->message = "Added Succesfully";
+	$json_res->message = "Added Succesfully, please wait...";
 	echo json_encode($json_res);
 }else{
 	$json_res->status = 0;

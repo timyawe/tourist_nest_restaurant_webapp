@@ -169,6 +169,7 @@ ul{
 #top_nav_bar_box{
 	border: 1px solid #f2f2f2;
 	width: 75%;
+	overflow: hidden;
 	margin: auto;
 	margin-bottom: 3px;
 	text-align: center;

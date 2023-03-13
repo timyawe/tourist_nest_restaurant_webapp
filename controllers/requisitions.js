@@ -123,9 +123,10 @@ theApp.controller("create_requisitionCtlr", function($scope, $timeout, $http, us
 		console.log(form_values);
 		
 		$http.post("../crud/create/add_requisition.php", form_values).then(function(response){
-			//httpResponse.success(1, response.data.message);
+			httpResponse.success(1, response.data.message);
 			//document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
 			console.log(response.data);
+			exitEditMode("reqs_btn");
 		}, function(response){
 			httpResponse.error(0, response.data);	
 		});

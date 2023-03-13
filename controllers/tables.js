@@ -44,7 +44,8 @@ theApp.controller("edit_tableCtlr", function($scope, $timeout, $http, $routePara
 		//console.log(form_values);
 		if($routeParams.tblID === undefined){
 			$http.post("../crud/create/add_table.php", form_values).then(function(response){
-				httpResponse.success(1, response.data.message);	
+				httpResponse.success(1, response.data.message);
+				exitEditMode("tables_btn");
 			}, function(response){
 				httpResponse.error(0, response.data);
 				//document.getElementsByClassName("save_btn")[0].

@@ -76,6 +76,7 @@ theApp.controller("create_extraCtlr", function($scope, $http, $routeParams, user
 			$http.post(postUrl(), postData()).then(function(response){
 				httpResponse.success(1, response.data.message);
 				console.log(response.data);
+				exitEditMode("extras_btn");
 			},function(response){
 				console.log(response);
 			});

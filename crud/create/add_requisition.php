@@ -57,7 +57,7 @@ if($reqconn_res->status === 1){
 
 if(!empty($details_added)){
 	$res->status = 1;
-	$res->message = "Updated Successfully";
+	$res->message = "Updated Successfully, please wait...";
 	echo json_encode($res);
 }
 

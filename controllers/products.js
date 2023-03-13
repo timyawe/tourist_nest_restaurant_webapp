@@ -66,6 +66,7 @@ theApp.controller("edit_productCtlr", function($scope, $timeout, $http, $routePa
 		if($routeParams.pdtID === undefined){
 			$http.post("../crud/create/add_product.php", form_values).then(function(response){
 				httpResponse.success(1, response.data.message);
+				exitEditMode("products_btn");
 			}, function(response){
 				httpResponse.error(0, response.data);
 				//document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);

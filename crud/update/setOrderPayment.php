@@ -3,6 +3,7 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/functions/funcSanitise.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/functions/createBindTypes.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/functions/createUpdateSql.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/functions/comparisonRecord.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/functions/updateActivityLog.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/db/conn.php';
 
 $json_post_file = file_get_contents('php://input');//recieves JSON type data
@@ -16,17 +17,27 @@ foreach($clean_data as $k => $v){
 		$d = date("Y-m-d", strtotime($v));
 		$clean_data['paymentdate'] = $d;
 	}
-	/*if($k == "ordNo"){
+	if($k == "ordNo"){
 		$ordNo = $v;
 		unset($clean_data['ordNo']);
-	}*/
+	}
+	if($k == "userID"){
+		$userID = $v;
+		unset($clean_data['userID']);
+	}
 }
 
 $final_arr = array_diff($clean_data, comparisonRecord('Payments', 'Payment_ID', $pymtID));
+$res = new stdClass();
 
 if(!empty($final_arr)){
 	$fields_arr = array_keys($final_arr);
 	array_unshift($final_arr, createBindTypes($final_arr));
-	echo dbConn(createUpdateSql($fields_arr, 'Payments', 'Payment_ID', $pymtID),$final_arr, 'update');
+	if(json_decode(dbConn(createUpdateSql($fields_arr, 'Payments', 'Payment_ID', $pymtID),$final_arr, 'update'))->status == 1){
+		updateActivityLog('Update Payment', 'Payment #'. $pymtID. ' for order #'. $ordNo .' updated successfully', $userID);
+		$res->status = 1;
+		$res->message = "Updated Successfully";
+		echo json_encode($res);
+	}		
 }
 ?>

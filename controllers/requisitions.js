@@ -159,6 +159,7 @@ function showAmountsDesc(userLevel, category){
 }
 
 theApp.controller("edit_requisitionCtlr", function($scope, $http, $routeParams, $q, httpResponse, lineDetails, userDetails){
+	let userID = userDetails.getUserID();
 	let editreq_details = [];
 	let deleted_req_lines = [];
 	let promisesArr = [];
@@ -278,7 +279,7 @@ theApp.controller("edit_requisitionCtlr", function($scope, $http, $routeParams, 
 				collected = true;
 			}
 		}else{
-			promisesArr.push($http.delete("../crud/delete/deleteReq.php", {data:{reqNo: $routeParams.reqNo}}));
+			promisesArr.push($http.delete("../crud/delete/deleteReq.php", {data:{reqNo: $routeParams.reqNo, userID: userID}}));
 			//console.log(JSON.stringify({reqNo: $routeParams.reqNo}));
 			collected = true;
 		}

@@ -187,6 +187,7 @@ let ordPreptime = (arr) => {
 }
 
 theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http, $routeParams, $q, userDetails, httpResponse, lineDetails){
+	let userID = userDetails.getUserID();
 	let odrStartTime;
 	let ordMaxTime;
 	let ordStatus;
@@ -233,7 +234,7 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 		/*var loader = document.getElementById("loader");
 		loader.style.display = "block";*/
 		toggleLoader("block");
-		$http.post("../crud/update/setOrder.php", {orderstatus: "Delivered", ordNo: $routeParams.ordNo}).then(function(response){
+		$http.post("../crud/update/setOrder.php", {orderstatus: "Delivered", ordNo: $routeParams.ordNo, userID: userID}).then(function(response){
 			
 			$timeout(function(){
 				if(response.data.status === 1){
@@ -438,7 +439,7 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 				alert("This order is already delivered, make sure to add an item before you Save");
 				collected = false;
 			}else{
-				promisesArr.push($http.delete("../crud/delete/deleteOrder.php", {data:{ordNo: $routeParams.ordNo}}));
+				promisesArr.push($http.delete("../crud/delete/deleteOrder.php", {data:{ordNo: $routeParams.ordNo, userID: userID}}));
 				collected = true;
 			}
 		}
@@ -517,8 +518,9 @@ theApp.controller("order_paymentsCtlr", function($scope, $http, $routeParams){
 
 });
 
-theApp.controller("OrdpaymentCtlr", function($scope, $timeout, $http, $routeParams, httpResponse){
+theApp.controller("OrdpaymentCtlr", function($scope, $timeout, $http, $routeParams, httpResponse, userDetails){
 	$scope.ordNo = $routeParams.ordNo;
+	let userID = userDetails.getUserID();
 	
 	if($routeParams.pymtID === undefined){
 		$scope.pgtitle = "Add";
@@ -551,7 +553,7 @@ theApp.controller("OrdpaymentCtlr", function($scope, $timeout, $http, $routePara
 	/* Validate Form Data and submit */
 	$scope.validate = function (){
 		let pdate = document.getElementsByName("paymentdate")[0].value;// new Date($scope.pdate/*'2022-12-24 04:00:13'*/).toLocaleDateString();
-		let form_values = {pdate:pdate, pamnt:$scope.pamnt, ptype:$scope.ptype, ordNo:$scope.ordNo/*, status:$scope.status*/};
+		let form_values = {pdate:pdate, pamnt:$scope.pamnt, ptype:$scope.ptype, ordNo:$scope.ordNo, userID:userID/*, status:$scope.status*/};
 		
 		$http.get("../crud/read/compareAmount.php", {params: {pamnt: form_values.pamnt, ordNo:$scope.ordNo}}).then(function(response){
 			//console.log(response.data/*.message*/);
@@ -563,13 +565,14 @@ theApp.controller("OrdpaymentCtlr", function($scope, $timeout, $http, $routePara
 				if($routeParams.pymtID === undefined){
 					$http.post("../crud/create/add_orderpayment.php", form_values).then(function(response){
 						httpResponse.success(1, response.data.message);
+						exitEditMode("payments_btn");
 					}, function(response){
 						httpResponse.error(0, response.data);
 						//document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
 					});
 					//console.log($scope.pdate, pdate);
 				}else{
-					let editedfields = {pymtID: $routeParams.pymtID};
+					let editedfields = {pymtID: $routeParams.pymtID, ordNo:$scope.ordNo, userID:userID};
 					
 					//* Use this method as one that works to only choose the edited fields
 					angular.forEach($scope.payment_form, function(v, k){

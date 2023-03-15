@@ -1,4 +1,5 @@
 <?php
+require_once $_SERVER['DOCUMENT_ROOT'].'/functions/updateActivityLog.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/db/conn.php';
 $json_post_file = file_get_contents('php://input');
 $json_data = json_decode($json_post_file, true);
@@ -12,6 +13,7 @@ $delete_sql = "DELETE FROM Orders WHERE Order_No = '$ordID' LIMIT 1";
 
 $del_fail = []; 
 if(json_decode(dbConn($delete_sql, array(), 'delete'))->status == 1){
+	updateActivityLog('Delete Order', 'Order '.$ordID.' deleted successfully', $json_data['userID']);
 	if($ordpaymts_json->status == 1){
 		//$ordpaymts = json_decode($ordpaymts_json->message, true);
 		foreach($ordpaymts_json->message as $v){

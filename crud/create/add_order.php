@@ -1,5 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'].'/functions/mutateOrderDetails.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/functions/updateActivityLog.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/functions/funcSanitise.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/functions/genPK.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/db/conn.php';
@@ -30,8 +31,8 @@ $ord_detbind_types = "sidds";
 $ord_status = "Pending";
 $usrID = $clean_data['userID'];
 
-$ordconn_res = new stdClass();
-$orddet_res = new stdClass();
+/*$ordconn_res = new stdClass();
+$orddet_res = new stdClass();*/
 
 $json_res = new stdClass();
 
@@ -42,7 +43,7 @@ $ord_fields['usrID'] = $usrID;
 $ordconn_res = json_decode(dbConn($ord_sql, $ord_fields, "insert"));
 if($ordconn_res->status === 1){
 	$orddet_res = json_decode(mutateOrderDetails($ord_det_fields,$ord_detbind_types,$p_key,$ord_details_sql));
-	
+	updateActivityLog('Insert Order', 'Order #'.$p_key.' added successfully', $usrID);
 	$json_res->ordNo = $p_key;
 	$json_res->status = $orddet_res->status;
 	$json_res->message = $orddet_res->message;

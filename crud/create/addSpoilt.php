@@ -1,5 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'].'/functions/mutateOrderDetails.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/functions/updateActivityLog.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/functions/createBindTypes.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/functions/funcSanitise.php';
 //require_once $_SERVER['DOCUMENT_ROOT'].'/functions/genPK.php';
@@ -38,6 +39,7 @@ if($spt_res->status == 1){
 
 $json_res = new stdClass();
 if(empty($details_fail)){
+	updateActivityLog('Insert SpoiltItem', 'Offer #'. $fkey . ' added successfully', $clean_data['UserID']);
 	$json_res->status = 1;
 	$json_res->message = "Added Succesfully";
 	echo json_encode($json_res);

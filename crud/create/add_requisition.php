@@ -1,5 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'].'/functions/mutateOrderDetails.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/functions/updateActivityLog.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/functions/funcSanitise.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/functions/genPK.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/db/conn.php';
@@ -56,6 +57,7 @@ if($reqconn_res->status === 1){
 }
 
 if(!empty($details_added)){
+	updateActivityLog('Insert Requisition', 'Requisition #'. $p_key.' added successfully', $usrID);
 	$res->status = 1;
 	$res->message = "Updated Successfully, please wait...";
 	echo json_encode($res);

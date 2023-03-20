@@ -14,8 +14,12 @@ if(array_key_exists('from_date', $json_data) && array_key_exists('to_date', $jso
 	$to_date = $json_data['to_date'];
 }
 
-if(array_key_exists('item', $json_data)){
-	$item = $json_data['item'];
+if(array_key_exists('item_name', $json_data)){
+	$item_name = $json_data['item_name'];
+}
+
+if(array_key_exists('item_cat', $json_data)){
+	$item_cat = $json_data['item_cat'];
 }
 
 $subquery_fields = [];
@@ -82,7 +86,8 @@ if(array_key_exists('rep_cols', $json_data)){
 }
 
 $reportsql = "select product_no, if(salename='' or IsNull(salename),description,SaleName) as item, ". implode(",", $rep_cols). " from products left join items_sold on Product_No = ProductNo ". implode("",$rep_subqueries);
-if(isset($item)){$reportsql = $reportsql. " where Product_No = '$item'";}
+if(isset($item_name)){$reportsql = $reportsql. " where Product_No = '$item_name'";}
+if(isset($item_cat)){$reportsql = $reportsql. " where Category = '$item_cat'";}
 //echo $reportsql;
 
 $res_records = new stdClass();

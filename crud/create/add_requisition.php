@@ -21,8 +21,8 @@ $req_sql = "INSERT INTO PurchaseOrder (Purchase_No, PurchaseStatus, Category, St
 $reqbind_types = "sssssi";
 
 if($clean_data['requisitiontype'] == 'External'){
-	$req_details_sql = "INSERT INTO PurchaseDetails (ProductNo, Qty, Rate, StandardCost, PurchaseNo) VALUES (?,?,?,?,?)";
-	$req_detbind_types = "sidds";
+	$req_details_sql = "INSERT INTO PurchaseDetails (ProductNo, PurchaseAmount, Qty, Rate, StandardCost, PurchaseNo) VALUES (?,?,?,?,?,?)";
+	$req_detbind_types = "sdidds";
 }else{
 	$req_details_sql = "INSERT INTO PurchaseDetails (ProductNo, Qty, PurchaseNo) VALUES (?,?,?)";
 	$req_detbind_types = "sis";

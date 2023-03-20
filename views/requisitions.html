@@ -18,7 +18,7 @@
 							<span>#</span>
 						</div>
 						<div class="grid_view_header_cell">
-							<span>Date</span>
+							<span>Time</span>
 						</div>
 						<div class="grid_view_header_cell">
 							<span>For</span>
@@ -39,7 +39,7 @@
 							<span>Action</span>
 						</div>
 					</div>
-					
+					<div  style="max-height: 200px; overflow-y:auto">
 					<div id="grid_view_content" data-ng-repeat="requisition in requisitions" class="animate_repeat">
 						<div class="grid_view_content_cell">
 							<span>{{$index+1}}</span>
@@ -78,7 +78,7 @@
 								</a>
 							</span>
 						</div>
-					</div>
+					</div></div>
 				</div>
 			</div>
 		</div>

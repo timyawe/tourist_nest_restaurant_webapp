@@ -1,5 +1,5 @@
 theApp.controller("report_filterCtlr", function($scope, $timeout, lineDetails, userDetails){
-	let formComplete = false;
+	//let formComplete = false;
 	
 	if(userDetails.getUserLevel() === "Level1"){
 		$scope.station = userDetails.getStation();//Pre-select station based on current station
@@ -65,12 +65,32 @@ theApp.controller("report_filterCtlr", function($scope, $timeout, lineDetails, u
 		}
 	}
 	
+	$scope.changeItemCatFilter = function(){
+		if(document.querySelector('#item_cat').checked){
+			if(document.querySelector('#item_name').checked){
+				document.querySelector('#item_name').click(); //console.log("Click");// = false;
+			}
+			$scope.showItemCategory = true;//console.log("Click");
+			$scope.showItem = false;
+			$scope.item = undefined;
+		}else{
+			$scope.showItemCategory = false;//console.log("Click");
+			$scope.item_cat = undefined;
+		}
+		//console.log("Changed");
+	}
+	
 	/* Generating the options of the Item select tag */
 	lineDetails.getItems("../crud/read/getOrdItemsList.php").then(res => $scope.items =res);
 	
 	$scope.changeItemFilter = function(){
-		if(document.querySelector('#item').checked){
+		if(document.querySelector('#item_name').checked){
+			if(document.querySelector('#item_cat').checked){
+				document.querySelector('#item_cat').click()// = false;
+			}
 			$scope.showItem = true;
+			$scope.showItemCategory = false;
+			$scope.item_cat = undefined;
 		}else{
 			$scope.showItem = false;
 			$scope.item = undefined;
@@ -79,21 +99,28 @@ theApp.controller("report_filterCtlr", function($scope, $timeout, lineDetails, u
 	
 	$scope.validate = function(){
 		
-		if(document.querySelector('#date').checked && angular.isDefined($scope.fro_date) && angular.isDefined($scope.to_date)){
-			formComplete = true;
-			console.log("Defined",$scope.fro_date,$scope.to_date,$scope.item,formComplete);
-		}else{
-			formComplete = false;
-		}
-		
-		if(document.querySelector('#item').checked && angular.isDefined($scope.item)){
-			formComplete = true;
-		}else{
-			//formComplete = false;
-		}
-		
-		if(document.querySelector('#period').checked){
-			formComplete = true;
+		function checkForm(){
+			let formComplete = true;
+			
+			/*if(document.querySelector('#period').checked){
+				formComplete = true;
+			}*/if(document.querySelector('#date').checked && !angular.isDefined($scope.fro_date) && !angular.isDefined($scope.to_date)){
+				formComplete = false;
+				//console.log("Defined",$scope.fro_date,$scope.to_date,$scope.item,formComplete);
+			}
+			
+			if(document.querySelector('#item_name').checked && !angular.isDefined($scope.item_name)){
+				formComplete = false;
+			}
+			
+			if(document.querySelector('#item_cat').checked && !angular.isDefined($scope.item_cat)){
+				formComplete = false;
+			}
+			
+			if($scope.rep_cat == "individual" && form_values.rep_cols.length == 0){
+				formComplete = false;
+			}
+			return formComplete;
 		}
 		
 		let formdata = new FormData(document.getElementsByName("report_filter_form")[0])
@@ -107,11 +134,7 @@ theApp.controller("report_filterCtlr", function($scope, $timeout, lineDetails, u
 			form_values.filter_type = formdata.getAll('filter_type');
 		}
 		
-		if($scope.rep_cat == "individual" && form_values.rep_cols.length == 0){
-			formComplete = false;
-		}
-		
-		if(formComplete){
+		if(checkForm()){
 			sessionStorage.setItem("report_filter", JSON.stringify(form_values));
 			console.log(form_values);
 			$scope.hideForm = true;
@@ -121,7 +144,9 @@ theApp.controller("report_filterCtlr", function($scope, $timeout, lineDetails, u
 				document.getElementById("rep_res_link").click();
 			}, 1500);
 		}else{
-			alert("The options chosen are not enough to generate a report. Choose relevant options and try again");console.log(form_values);
+			alert("The options chosen are not enough to generate a report. Choose relevant options and try again");
+			console.log(form_values, $scope.item_name, $scope.item_cat);
+			console.log(document.querySelector('#item_name').checked, document.querySelector('#item_cat').checked);
 		}
 	}
 });
@@ -193,20 +218,38 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 	let currMonth = new Date().toLocaleString('default', {month: 'long'});
 	let from_date = new Date(filter_items.from_date).toLocaleDateString();
 	let to_date = new Date(filter_items.to_date).toLocaleDateString();
-	if(Array.isArray(type)){
-		if(type.includes('period')){
-			$scope.report_desc = `${station} Report For ${currMonth}`;
+	
+	function filterItemType(){
+		let itemtype;
+		if(type.includes('item_cat')){
+			itemtype = "Category";
 		}else{
-			$scope.report_desc = `${station} Report From ${from_date} To ${to_date}`;
-			//console.log(type);
+			itemtype = "Name";
 		}
-	}else{
-		if(type == "item"){
-			$scope.report_desc = `${station} Report by Item`;
-		}else if(type == "_date"){
-			$scope.report_desc = `${station} Report From ${from_date} To ${to_date}`;
+		return itemtype;
+	}
+	
+	if(Array.isArray(type)){
+		if(type.length === 1){
+			if(type.includes('period')){
+				$scope.report_desc = `${station} Report For ${currMonth}`;
+			}else{
+				$scope.report_desc = `${station} Report From ${from_date} To ${to_date}`;
+			}
 		}else{
-			$scope.report_desc = `${station} Report For ${currMonth}`;
+			if(type.includes('period')){
+				if(filterItemType() == "Category"){
+					$scope.report_desc = `${station} ${filter_items.item_cat} Report For ${currMonth}`;
+				}else{
+					$scope.report_desc = `${station} Report For ${currMonth} By Item`;
+				}
+			}else{
+				if(filterItemType() == "Category"){
+					$scope.report_desc = `${station} ${filter_items.item_cat} Report From ${from_date} To ${to_date}`;
+				}else{
+					$scope.report_desc = `${station} Report From ${from_date} To ${to_date} By Item`;
+				}
+			}
 		}
 	}
 	

@@ -13,7 +13,7 @@
 					<div>
 						<div class="form_input_row">
 							<label style="width: initial">Station:</label>
-							<select class="select_box" name="station" ng-model="station" ng-change="changeStation()" >
+							<select class="select_box" name="station" ng-model="station" ng-change="changeStation()" required >
 								<option value="">Choose Station...</option>
 								<option value="Reception">Reception</option>
 								<option value="Restaurant">Restaurant</option>
@@ -23,7 +23,7 @@
 						</div>
 						<div class="form_input_row">
 							<label style="width: initial">Category:</label>
-							<select class="select_box" name="category" ng-model="rep_cat" ng-change="changeCategory()" >
+							<select class="select_box" name="category" ng-model="rep_cat" ng-change="changeCategory()" required >
 								<option value="">Choose Report Category...</option>
 								<!--<option value="General">General</option>-->
 								<option value="individual">Pick Fields</option>
@@ -65,8 +65,12 @@
 								<label for="date" class="check_label">By Date</label>
 							</div>
 							<div style="margin-bottom:9px">
-								<input class="check filter_type" type="checkbox" name="filter_type" id="item" value="item" ng-model="item" ng-change="changeItemFilter()"/>
-								<label for="item" class="check_label">By Item</label>
+								<input class="check filter_type" type="checkbox" name="filter_type" id="item_cat" value="item_cat" ng-model="item_cat" ng-change="changeItemCatFilter()"/>
+								<label for="item_cat" class="check_label">By Item Category</label>
+							</div>
+							<div style="margin-bottom:9px">
+								<input class="check filter_type" type="checkbox" name="filter_type" id="item_name" value="item_name" ng-model="item_name" ng-change="changeItemFilter()"/>
+								<label for="item_name" class="check_label">By Item Name</label>
 							</div>
 						</fieldset>
 					</div>
@@ -83,10 +87,21 @@
 					<div ng-if="showItem" class="animate_if">
 						<div class="form_input_row">
 							<label style="width: initial">Items:</label>
-							<select class="select_box" name="item" data-ng-options="item.label for item in items track by item.value" ng-model="$parent.item" >
+							<select class="select_box" name="item_name" data-ng-options="item.label for item in items track by item.value" ng-model="$parent.item_name" >
 								<option value="">Choose Item...</option>
 								<!--<option value="date">By Date</option>
 								<option value="item">By Item</option>-->
+							</select>
+						</div>
+					</div>
+					
+					<div ng-if="showItemCategory" class="animate_if">
+						<div class="form_input_row">
+							<label style="width: 10em">Items Category:</label>
+							<select class="select_box" name="item_cat" ng-model="$parent.item_cat" >
+								<option value="">Choose Category...</option>
+								<option value="Drinks">Drinks</option>
+								<option value="Eats">Eats</option>
 							</select>
 						</div>
 					</div>

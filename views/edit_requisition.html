@@ -72,7 +72,7 @@
 									<span><input type="text" class="txt_box curr_field" value="{{::request_item.total | number:0}}" readonly /></span>
 								</div>
 								<div ng-if="showAmounts" class="grid_view_content_cell">
-									<span><input type="text" class="txt_box " value="{{request_item.purchaseAmount | number:0}}" readonly /></span>
+									<span><input type="text" class="txt_box " value="{{request_item.PurchaseAmount | number:0}}" readonly /></span>
 								</div>
 								<div class="grid_view_content_cell action_cell">
 									<span data-ng-click="deleteLineItem(request_item.DetailsNo, $index)"><i ng-class="(!request_item.deleted)? 'fa fa-trash' : 'fa fa-undo'"></i></span>

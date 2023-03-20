@@ -10,7 +10,7 @@ theApp.service("lineDetails", function($http){
 	this.checkItem = function(row, idx, line_details_arr, rows_arr, category){//x
 		if(row.item !== undefined){
 			if(category == 'order'){
-				applyRate();
+				applyRate(category);
 			}else{
 				let finish = Number(row.item.finish);
 				let minstock = Number(row.item.MinStockLevel);
@@ -24,7 +24,7 @@ theApp.service("lineDetails", function($http){
 						alert(`${item} doesn't require restocking`);
 						row.item = undefined;
 					}else{
-						applyRate();
+						applyRate(category);
 					}
 				}
 			}
@@ -36,10 +36,15 @@ theApp.service("lineDetails", function($http){
 			line_details_arr.splice(idx, 1);
 		}
 		
-		function applyRate(){
+		function applyRate(category){
 			if(line_details_arr.length > 0){
 				if(!comparePdts(row.item, line_details_arr)){
-					line_details_arr[idx] = {pdtNo:row.item.value};//adding the order details' objects to array by the current index
+					//adding the order details' objects to array by the current index
+					if(category != 'order'){
+						line_details_arr[idx] = {pdtNo:row.item.value, purchaseAmount:row.purchaseAmount};
+					}else{
+						line_details_arr[idx] = {pdtNo:row.item.value};
+					}
 					
 					//Apply the total if the qty field is already filled
 					if(row.qty !== null){
@@ -53,7 +58,12 @@ theApp.service("lineDetails", function($http){
 					console.log(line_details_arr);
 				}
 			}else{
-				line_details_arr[idx] = {pdtNo:row.item.value};//adding the order details' objects to array by the current index
+				//adding the order details' objects to array by the current index
+				if(category != 'order'){
+					line_details_arr[idx] = {pdtNo:row.item.value, purchaseAmount:row.purchaseAmount};
+				}else{
+					line_details_arr[idx] = {pdtNo:row.item.value};
+				}
 				
 				//Apply the total if the qty field is already filled
 				if(row.qty !== null){

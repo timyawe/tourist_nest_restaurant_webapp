@@ -81,9 +81,12 @@ theApp.controller("create_requisitionCtlr", function($scope, $timeout, $http, us
 		}else if (Number(row.purchaseAmount) <= 0){
 			alert("Amount should be greater than 0");
 			row.purchaseAmount = null;
+		}else if(Number(row.purchaseAmount) == row.total){
+			alert("Amount entered is same as Total and will be ignored");
+			row.purchaseAmount = null;
 		}else{
 			if(row.purchaseAmount !== "" /*|| amnt === '0'*/){
-				//req_details[idx].purchaseAmount = Number(row.purchaseAmount); >>> Uncomment to continue when ready <<<
+				req_details[idx].purchaseAmount = Number(row.purchaseAmount);
 			}
 		}
 	}
@@ -126,7 +129,7 @@ theApp.controller("create_requisitionCtlr", function($scope, $timeout, $http, us
 			httpResponse.success(1, response.data.message);
 			//document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
 			console.log(response.data);
-			exitEditMode("reqs_btn");
+			//exitEditMode("reqs_btn");
 		}, function(response){
 			httpResponse.error(0, response.data);	
 		});
@@ -201,6 +204,23 @@ theApp.controller("edit_requisitionCtlr", function($scope, $http, $routeParams, 
 			}
 		}else{
 			lineDetails.checkQty(/*qty,item*/row, idx, editreq_details, 'req');
+		}
+	}
+	
+	$scope.updPurchAmnt = function(row, idx){
+		if(isNaN(row.purchaseAmount)){
+			alert("Please enter only digits");
+			row.purchaseAmount = null;
+		}else if (Number(row.purchaseAmount) <= 0){
+			alert("Amount should be greater than 0");
+			row.purchaseAmount = null;
+		}else if(Number(row.purchaseAmount) == row.total){
+			alert("Amount entered is same as Total and will be ignored");
+			row.purchaseAmount = null;
+		}else{
+			if(row.purchaseAmount !== "" /*|| amnt === '0'*/){
+				req_details[idx].purchaseAmount = Number(row.purchaseAmount);
+			}
 		}
 	}
 	

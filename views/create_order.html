@@ -42,6 +42,14 @@
 									<option value="">Choose {{to}}</option>
 								</select>						
 							</div>
+							<div class="form_input_row">
+								<label>Reciepient:</label>
+								<select class="select_box" data-ng-model="reciepient" data-ng-change="changeReciepient()" required>
+									<option value="">Choose Reciepient</option>
+									<option value="Individual">Individual (1-2 people)</option>
+									<option value="Group">Group (3+ people)</option>
+								</select>
+							</div>
 						</div>
 					</div>
 					<div id="form_content">

@@ -34,6 +34,19 @@ theApp.controller("report_filterCtlr", function($scope, $timeout, lineDetails, u
 		}
 	};
 	
+	$scope.checkToDate = function(){
+		if($scope.fro_date < $scope.to_date){
+				alert("From Date cannot be after the To Date");console.log($scope.fro_date,$scope.to_date, $scope.fro_date<$scope.to_date);
+				$scope.to_date = undefined;
+		}
+	}
+	
+	$scope.checkFromDate = function(){
+		if($scope.fro_date > $scope.to_date){
+				alert("To Date cannot be before the From Date");//console.log($scope.fro_date,$scope.to_date, $scope.fro_date<$scope.to_date);
+				$scope.to_date = undefined;
+		}
+	}
 	
 	/*let checks = document.querySelectorAll('.check');
 	for(let check of checks){
@@ -109,6 +122,11 @@ theApp.controller("report_filterCtlr", function($scope, $timeout, lineDetails, u
 				//console.log("Defined",$scope.fro_date,$scope.to_date,$scope.item,formComplete);
 			}
 			
+			if(document.querySelector('#date').checked && !angular.isDefined($scope.from_period) && !angular.isDefined($scope.to_period)){
+				formComplete = false;
+				//console.log("Defined",$scope.fro_date,$scope.to_date,$scope.item,formComplete);
+			}
+			
 			if(document.querySelector('#item_name').checked && !angular.isDefined($scope.item_name)){
 				formComplete = false;
 			}
@@ -135,6 +153,9 @@ theApp.controller("report_filterCtlr", function($scope, $timeout, lineDetails, u
 		}
 		
 		if(checkForm()){
+			if(form_values.rep_cols.length == 4){
+				form_values.rep_cols.push("missing");
+			}
 			sessionStorage.setItem("report_filter", JSON.stringify(form_values));
 			console.log(form_values);
 			$scope.hideForm = true;
@@ -157,13 +178,26 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 	let category = filter_items.category;
 	let type = filter_items.filter_type;
 	/*if(category === "individual"){*/rep_cols = filter_items.rep_cols//}
-	let table_cols = {no_col:"#", item: "Item"}
-	
+	let table_cols;
+	if(rep_cols.length == 5){
+		table_cols = {no_col:"#", item: "Item", Start: "Start"};
+	}else{
+		table_cols = {no_col:"#", item: "Item"};
+	}
+		
 	if(rep_cols !== undefined){
 		rep_cols.forEach((el, idx) =>{
 			table_cols[el] = el;//console.log(idx, el);
 		});
 		//rep_cols.map((el) => {table_cols[el] = el;console.log( el);})
+	}
+	
+	/*if(rep_cols.length == 4){
+		table_cols['Missing'] = 'Missing';
+	}*/
+	
+	if(rep_cols.length == 5){
+		table_cols['Finish'] = 'Finish';
 	}
 	
 	function createEl(){
@@ -197,6 +231,16 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 			if(table_cols[table_col] !== "#" && table_cols[table_col] !== "Item"){
 				td.classList.add('qty_col');
 			}
+			if(table_cols[table_col] == "Start"){
+				td.style.fontWeight = 'bold';
+			}
+			if(table_cols[table_col] == "missing"){
+				td.style.color = 'red';
+
+			}
+			if(table_cols[table_col] == "Finish"){
+				td.style.fontWeight = 'bold';
+			}
 			td.appendChild(txt);
 			body_row.appendChild(td);
 		}
@@ -204,7 +248,7 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 		//Dynamically added component should be compiled using angular, use $compile function 
 		$compile(tbody)($scope);
 		table.appendChild(tbody);
-		document.querySelector('#details_content_box').appendChild(table);
+		document.querySelector('#table_content_box').appendChild(table);
 	}
 	$http.get("../crud/read/getReport.php", {params: {_data: filter_items}}).then(function(response){
 		console.log(response.data);
@@ -218,6 +262,23 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 	let currMonth = new Date().toLocaleString('default', {month: 'long'});
 	let from_date = new Date(filter_items.from_date).toLocaleDateString();
 	let to_date = new Date(filter_items.to_date).toLocaleDateString();
+	let from_period, to_period;
+	
+	if(filter_items.from_period){
+		if(filter_items.from_period == "19:00:00"){
+			from_period = "Night";
+		}else{
+			from_period = "Day";
+		}
+	}
+	
+	if(filter_items.to_period){
+		if(filter_items.to_period == "19:00:00"){
+			to_period = "Night";
+		}else{
+			to_period = "Day";
+		}
+	}
 	
 	function filterItemType(){
 		let itemtype;
@@ -234,7 +295,7 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 			if(type.includes('period')){
 				$scope.report_desc = `${station} Report For ${currMonth}`;
 			}else{
-				$scope.report_desc = `${station} Report From ${from_date} To ${to_date}`;
+				$scope.report_desc = `${station} Report From ${from_date} ${from_period} To ${to_date} ${to_period}`;
 			}
 		}else{
 			if(type.includes('period')){
@@ -245,9 +306,9 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 				}
 			}else{
 				if(filterItemType() == "Category"){
-					$scope.report_desc = `${station} ${filter_items.item_cat} Report From ${from_date} To ${to_date}`;
+					$scope.report_desc = `${station} ${filter_items.item_cat} Report From ${from_date} ${from_period} To ${to_date} ${to_period}`;
 				}else{
-					$scope.report_desc = `${station} Report From ${from_date} To ${to_date} By Item`;
+					$scope.report_desc = `${station} Report From ${from_date} ${from_period} To ${to_date} ${to_period} By Item`;
 				}
 			}
 		}

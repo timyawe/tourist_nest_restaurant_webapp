@@ -23,7 +23,7 @@ $itms_sld_fields = createFields($clean_data, $itms_sld_templ);
 $pdt_sql = "INSERT INTO Products (Product_No, Description, Category, Status) VALUES (?,?,?,?)";
 $purch_sql = "INSERT INTO Items_Bought (UnitCostPrice, UnitQty, ProductNo) VALUES (?,?,?)";
 $sales_sql = "INSERT INTO Items_Sold (SaleName, UnitSalePrice, MeasureSold, PrepTime, ProductNo) VALUES (?,?,?,?,?)";
-$p_key = genPK('Products', 'Product_No', 'PDT');
+$p_key = genPK('Products', 'Product_No', 'PDT', 'Product_No');
 $pdtbind_types = "ssss";
 $purchbind_types = "dss";
 $salesbind_types = "sddis";
@@ -34,7 +34,7 @@ array_unshift($itms_sld_fields, $salesbind_types);
 $itms_bought_fields["pkey"] = $p_key;
 $itms_sld_fields["pkey"] = $p_key;
 
-if(!array_key_exists("item_sold_check", $clean_data)){
+if(!array_key_exists("item_sold_check", $clean_data)){//echo "Nice";
 	
 	$pdtconn_result = json_decode(dbConn($pdt_sql,$pdt_fields, 'insert'));
 	if($pdtconn_result->status !== 0){
@@ -56,13 +56,13 @@ if(!array_key_exists("item_sold_check", $clean_data)){
 	}else{
 		echo $pdtconn_result;//check it out
 	}
-}else{
+}else{//print_r($pdt_fields);
 	$pdtconn_result = json_decode(dbConn($pdt_sql,$pdt_fields, 'insert'));
 	if($pdtconn_result->status !== 0){
 		echo dbConn($sales_sql,$itms_sld_fields, 'insert');
 	}else{
 		echo $pdtconn_result;
-	}
+	}//print_r($itms_sld_fields);
 }
 
 function createFields($genarr, $temparr/*, $fieldsarr*/){

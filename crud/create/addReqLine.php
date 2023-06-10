@@ -10,10 +10,18 @@ $clean_data = array_map('funcSanitise', $json_data);
 //print_r($clean_data);
 
 $reqNo_pk = $clean_data['reqNo'];
+$reqType = $clean_data['reqType'];
 $reqDetails = $clean_data['addedLines'];
 
-$req_details_sql = "INSERT INTO PurchaseDetails (ProductNo, Qty, Rate, StandardCost, PurchaseNo) VALUES (?,?,?,?,?)";
-$req_detbind_types = "sidds";
+if($reqType === 'intEats' || $reqType === 'extDrinks'){
+$req_details_sql = "INSERT INTO PurchaseDetails (ProductNo, PurchaseAmount, Qty, Rate, StandardCost,PurchaseNo) VALUES (?,?,?,?,?,?)";
+$req_detbind_types = "sdidds";
+}else{
+	$req_details_sql = "INSERT INTO PurchaseDetails (ProductNo, PurchaseAmount, Qty,PurchaseNo) VALUES (?,?,?,?)";
+	$req_detbind_types = "sdis";
+/*array_unshift($reqDetails, $req_detbind_types);
+print_r($reqDetails);*/
+}
 
 echo mutateOrderDetails($reqDetails, $req_detbind_types, $reqNo_pk, $req_details_sql);
 ?>

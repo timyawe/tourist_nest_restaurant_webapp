@@ -36,7 +36,7 @@ $orddet_res = new stdClass();*/
 
 $json_res = new stdClass();
 
-$p_key = genPK('Orders', 'Order_No', 'ORD');
+$p_key = genPK('Orders', 'Order_No', 'ORD', 'Order_No');
 array_unshift($ord_fields, $ordbind_types, $p_key, $ord_status);
 $ord_fields['usrID'] = $usrID;
 
@@ -46,7 +46,7 @@ if($ordconn_res->status === 1){
 	updateActivityLog('Insert Order', 'Order #'.$p_key.' added successfully', $usrID);
 	$json_res->ordNo = $p_key;
 	$json_res->status = $orddet_res->status;
-	$json_res->message = $orddet_res->message;
+	$json_res->message = "Added Succesfully, please wait...";//$orddet_res->message;
 	echo json_encode($json_res);
 	
 }else{

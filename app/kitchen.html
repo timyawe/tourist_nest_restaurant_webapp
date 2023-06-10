@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta charset="utf-8">
+		<title>Restaurant: Kitchen</title>
+		<!--<script src="../resources/thirdparty/js/angular/v1.8.2/angular.min.js"></script>
+		<script src="../resources/thirdparty/js/angular/v1.8.2/angular-route.js"></script>
+		<script src="../resources/thirdparty/js/angular/v1.8.2/angular-animate.js"></script>-->
+		<link rel="stylesheet" href="../resources/thirdparty/css/fontawesome/css/font-awesome.css" />
+		<link type="text/css" rel="stylesheet" href="../resources/css/layout.css" />
+		<link type="text/css" rel="stylesheet" href="../resources/css/forms.css" />
+		<!--<link type="text/css" rel="stylesheet" href="../resources/css/tables.css" />
+		<link rel="stylesheet" href="../resources/css/ngAnimateStyles.css" />-->
+		
+		<style>
+			#main_container{
+				width: fit-content;
+				margin: auto;
+				margin-top: 3em;
+				/*display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;*/
+				
+			}
+			
+			.hd{
+				border: 2px solid red;
+				border-radius: 3px;
+				text-align: center;
+				padding: .5em;
+				margin: 0px 10px;
+			}
+			
+			.box{
+				margin: 10px;
+				padding:8em;
+				border-radius: 5px;
+				background-image: linear-gradient(150deg,rgb(244,117,13), #ffffff);
+				color: darkblue;
+			}
+			
+			/*.box_link{
+				padding: 50px;
+				
+			}*/
+			@media only screen and (max-width: 1000px){
+				.hd{
+					font-size: 1.1rem;
+					font-weight: bold;
+					letter-spacing: .2em;
+				}
+				#link_container{
+							font-size: 1.1rem;
+							display: flex;
+							flex-direction: row;
+							justify-content: center;
+							align-items: center;
+						}
+
+			}
+		</style>
+	</head>
+	<body><div id="kit_hme_arw_box"><i class="fa fa-home kit_hme_arw"></i></div>
+		<div id="main_container">
+			<div class="hd">Choose Station</div>
+			<div id="link_container"><div class="box" id="rec">Reception
+				<!--<a class="box_link" href="home.html">Reception</a>-->
+			</div>
+			<div class="box" id="res">Restaurant
+				<!--<a class="box_link" href="home.html">Restaurant</a>-->
+			</div></div>
+		</div>
+	</body>
+	
+	<script>
+		document.getElementById('rec').addEventListener('click', function(){
+			sessionStorage.setItem('kit_sta', 'Reception');
+			location.replace("/app/kitchen_home.html");
+		});
+		
+		document.getElementById('res').addEventListener('click', function(){
+			sessionStorage.setItem('kit_sta', 'Restaurant');
+			location.replace("/app/kitchen_home.html");
+		});
+		
+		document.getElementsByClassName('kit_hme_arw')[0].addEventListener('click', function(){
+			//sessionStorage.setItem('kit_sta', 'Restaurant');
+			location.replace("/");
+		});
+	</script>
+</html>

@@ -58,14 +58,20 @@
 		<script>
 		
 			/** >>> 
-				Script to toggle user action section by clicking on chevron <<< 
+				Script to toggle user action section by hovering on chevron <<< 
 			**/
-			document.getElementsByClassName("user_chevron")[0].addEventListener("click", function(){
+			document.getElementsByClassName("user_chevron")[0].addEventListener("mouseenter", function(){
 				if(document.getElementById("user_lnks_box").style.display == "" || document.getElementById("user_lnks_box").style.display == "none"){
 					document.getElementById("user_lnks_box").style.display = "block";
+					//document.getElementsByTagName("i")[0].classList.toggle("fa-chevron-circle-up")
 				}else{
 					document.getElementById("user_lnks_box").style.display = "none";
 				}	
+			});
+			
+			document.getElementById("user_lnks_box").addEventListener("mouseleave", function(){
+				document.getElementById("user_lnks_box").style.display = "none";
+			
 			});
 			
 			/** 
@@ -84,7 +90,13 @@
 			}
 			
 			let user = JSON.parse(sessionStorage.getItem("user"));
-			document.getElementById("user_welcome").innerHTML = /*"Hello " + user[0].FirstName;*/`Hello ${user.FirstName} From ${user.Station}`;
+			
+			if(user.Station){
+				welcome_banner = `Hello ${user.FirstName} From ${user.Station}`;
+			}else{
+				welcome_banner = `Hello ${user.FirstName} (Admin)`;
+			}
+			document.getElementById("user_welcome").innerHTML = /*"Hello " + user[0].FirstName;*/ welcome_banner;
 			//console.log(/*data.message[0]*/user[0]);
 			
 			/** 
@@ -99,16 +111,18 @@
 				$routeProvider
 					.when("/dashboard", {templateUrl: "../views/dashboard.html", controller: "dashboardCtlr"})
 					.when("/orders", {templateUrl: "../views/orders.html", controller: "ordersCtlr"})
+					.when("/orders/:ordStatus", {templateUrl: "../views/orders.html", controller: "ordersCtlr"})
 					.when("/requisitions", {templateUrl: "../views/requisitions.html", controller: "requisitionsCtlr"})
 					.when("/create_order", {templateUrl: "../views/create_order.html", controller: "create_orderCtlr"})
 					.when("/edit_order/:ordNo", {templateUrl: "../views/edit_order.html", controller: "edit_orderCtlr"})
+					.when("/view_order/:ordNo", {templateUrl: "../views/view_order.html", controller: "view_orderCtlr"})
 					.when("/order_payments/:ordNo", {templateUrl: "../views/order_payments.html", controller: "order_paymentsCtlr"})
 					.when("/new_payment/:ordNo", {templateUrl: "../views/order_payment.html", controller: "OrdpaymentCtlr"})
 					.when("/edit_ordpayment/:pymtID", {templateUrl: "../views/order_payment.html", controller: "OrdpaymentCtlr"})
 					.when("/create_requisition", {templateUrl: "../views/create_requisition.html", controller: "create_requisitionCtlr"})
 					.when("/edit_requisition/:reqNo/:type", {templateUrl: "../views/edit_requisition.html", controller: "edit_requisitionCtlr"})
-					.when("/recieve_items/:reqNo/:type/:category",{templateUrl: "../views/recieve_items.html"})
-					.when("/approve_requisition/:reqNo/:type/:category", {templateUrl: "../views/recieve_items.html"})
+					.when("/recieve_items/:reqNo/:type/:category",{templateUrl: "../views/recieve_items.html", controller: "recv_requisitionCtlr"})
+					.when("/approve_requisition/:reqNo/:type/:category", {templateUrl: "../views/recieve_items.html", controller: "recv_requisitionCtlr"})
 					//.when("/approve_requisition/:reqNo/:category", {templateUrl: "../views/recieve_items.html"})
 					.when("/account", {templateUrl: "../views/account.html", controller: "accountCtlr"})
 					.when("/products", {templateUrl: "../views/products.html", controller: "productsCtlr"})
@@ -117,7 +131,7 @@
 					.when("/tables", {templateUrl: "../views/tables.html", controller: "tablesCtlr"})
 					.when("/create_table", {templateUrl: "../views/edit_table.html", controller: "edit_tableCtlr"})
 					.when("/edit_table/:tblID", {templateUrl: "../views/edit_table.html", controller: "edit_tableCtlr"})
-					.when("/extras/", {templateUrl: "/views/extras.html"})
+					.when("/extras/", {templateUrl: "/views/extras.html", controller: "extrasCtlr"})
 					.when("/extras/:category", {templateUrl: "/views/manage_extras.html", controller: "manage_extrasCtlr"})
 					.when("/create_extra/:category", {templateUrl: "/views/create_extra.html", controller: "create_extraCtlr"})
 					.when("/edit_extra/:category/:ID", {templateUrl: "/views/edit_extra.html", controller: "create_extraCtlr"})
@@ -126,47 +140,6 @@
 					.otherwise({redirectTo: "/dashboard"});
 			});
 			
-			let displayResponseBox = function(success, response){
-				let response_box = document.getElementById("response_box");
-				if(success === 1){//
-					toggleLoader("none");console.log(response);
-					//response_box.innerHTML = response
-					response_box.style.display = "block";
-					response_box.style.backgroundColor = "green";
-				}else if(success === 0){
-					toggleLoader("none");console.log(response);
-					//response_box.innerHTML = "An error occured: Record not added, contact Admin";
-					response_box.style.display = "block";
-					response_box.style.backgroundColor = "red";
-				}else if(success === 2){
-					toggleLoader("none");
-					response_box.innerHTML = response;
-					response_box.style.display = "block";
-					response_box.style.backgroundColor = "blue";
-				}
-			}
-			
-			/* Fading out the response */
-			
-			 var fadeout = function(){
-				if(document.getElementById("response_box").style.display === "block"){
-					//document.getElementById("response_box").classList.add("fade_away_el");
-					document.getElementById("response_box").className = "fade_away_el";
-					document.getElementById("response_box").innerHTML = "";
-					
-				}
-			}
-			
-				let resetResponseBox = function(){
-				document.getElementById("response_box").style.display = "none";
-				document.getElementById("response_box").style.backgroundColor = "";
-				document.getElementById("response_box").classList.remove("fade_away_el");
-			}	
-			
-			let toggleLoader = function(state){
-				let loader = document.getElementById("loader");
-				loader.style.display = state;
-			}
 			
 			function gTotal(arr/*, property*/) {
 				let grandtotal = 0;
@@ -211,27 +184,10 @@
 				}
 			}
 			
-			function updateActivityLog(_data){
-				return fetch ("../crud/create/addActivity.php", {
-						method: "POST",
-						body: JSON.stringify({userID: _data})
-					}).then(function(response){
-						return response.text();
-					}).then(function(data){
-						console.log(data);
-						return data;
-					});
-			}
 			
-			function exitEditMode(btnID){
-				document.body.style.cursor = "wait";
-				setTimeout(function(){
-					//wait for the httpResponse above to finish and return to the orders list
-					document.getElementById(btnID).click();
-					document.body.style.cursor = "auto";
-				}, 8000)
-			}
 		</script>
+		
+		<script src="../resources/js/global_functions.js"></script>
 		
 		<!-- /** Angular Controllers **/ -->
 		<script src="../controllers/dashboard.js"></script>

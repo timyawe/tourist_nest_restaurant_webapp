@@ -142,6 +142,10 @@ ul{
 	
 }
 
+.user_chevron:hover{
+	cursor: pointer;
+}
+
 #user_lnks_box{
 	border: 1px solid white;
 	background-color: rgb(244,117,13);
@@ -276,7 +280,8 @@ ul{
 
 .analysis_small_box{
 	border-radius: 3px;
-	width: 12em;
+	width: fit-content;
+	min-width: 12em;
 	height: 6em;
 	padding: 10px;
 }
@@ -409,7 +414,7 @@ ul{
 	font-family: Arial, sans-serif;
 }
 
-#grid_view_content{
+.grid_view_content{
 	/*background-color: red;*/
 	width: 100%;
 	margin-bottom: 3px;
@@ -417,6 +422,18 @@ ul{
 	border-radius: 2px;
 	display: flex;
 	justify-content: space-between;
+	color: #00478bab;
+}
+
+#no_items_container{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 10px 0px;
+}
+
+#no_items_span{
+	color: green;
 }
 
 .grid_view_content_cell{
@@ -425,11 +442,12 @@ ul{
 	text-align: center;
 	padding: 5px 2px;
 	font-size: 1.1em;
-	color: #00478bab;
+	font-family: Helvetica, sans-serif;
 }
 
 .grid_view_content_cell:nth-child(1){
-	width: 20px
+	width: 20px;
+	padding: 10px 0px;
 }
 
 .table_cell{
@@ -437,7 +455,7 @@ ul{
 }
 
 .time_cell{
-	flex-grow: 1
+	flex-grow: 2
 }
 
 .status_cell{
@@ -445,11 +463,11 @@ ul{
 }
 
 .bill_cell{
-	flex-grow: 1
+	flex-grow: 0
 }
 
 .paymt_cell{
-	flex-grow: 1
+	flex-grow: 0
 }
 
 .delv_cell{
@@ -458,6 +476,15 @@ ul{
 
 .pending_order{
 	background-color: red;
+}
+
+.progress_order{
+	background-color: orange;
+}
+
+.delivered_order{
+	background-color: green;
+	color: white;
 }
 
 #grid_view_footer{
@@ -500,4 +527,38 @@ ul{
 	/*margin-right: 10px;*/
 	margin-bottom: 10px;
 	width: 9em;
+}
+
+.kit_bck_arw{
+	position: absolute;
+	font-size: 3em;
+	cursor: pointer;
+}
+
+.kit_hme_arw{
+	position: absolute;
+	font-size: 3em;
+	cursor: pointer;
+}
+
+@media only screen and (max-width: 1000px){
+	#app_container{
+		width: 90%;
+		margin: auto;
+		margin-top: 10px;
+		padding-bottom: 20px;
+	}	
+	
+	.kitchen_grid_view{
+		height: 50px;
+		line-height: 40px;
+	}
+	
+	.grid_view_content_cell:nth-child(1){
+		padding: 5px 0px;
+	}
+	/*.grid_cell_content span{
+		vertical-align: bottom;
+	}*/
+
 }

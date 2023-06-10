@@ -21,7 +21,7 @@ theApp.controller("edit_productCtlr", function($scope, $timeout, $http, $routePa
 			if(response.data.status === 1){
 				let res = response.data.message[0];
 				$scope.desc = res.Description;
-				$scope.sale_name = res.SaleName;
+				$scope.sale_name = res.Salename;
 				$scope.sale_price = res.UnitSalePrice;
 				$scope.cost_price = res.UnitCostPrice;
 				$scope.cat = res.Category;
@@ -33,8 +33,14 @@ theApp.controller("edit_productCtlr", function($scope, $timeout, $http, $routePa
 				$scope.stkl_rec = Number(res.Reception);
 				$scope.stkl_res = Number(res.Restaurant);
 				$scope.stkl_bar = Number(res.Bar);
+				
+				if(res.UnitCostPrice){
+					document.getElementById('check').checked = false;
+				}else{
+					document.getElementById('check').checked = true;
+				}
 			}
-			//console.log(response.data);
+			console.log(response.data);
 		},function(response){
 			console.log(response.data);
 		});
@@ -63,10 +69,11 @@ theApp.controller("edit_productCtlr", function($scope, $timeout, $http, $routePa
 		
 		//console.log(form_values);
 		
-		if($routeParams.pdtID === undefined){
+		if($routeParams.pdtID === undefined){console.log(form_values);
 			$http.post("../crud/create/add_product.php", form_values).then(function(response){
 				httpResponse.success(1, response.data.message);
 				exitEditMode("products_btn");
+				console.log(response.data);
 			}, function(response){
 				httpResponse.error(0, response.data);
 				//document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
@@ -93,10 +100,10 @@ theApp.controller("edit_productCtlr", function($scope, $timeout, $http, $routePa
 					}
 				}
 			});
-			//console.log(editedfields);
+			console.log(editedfields);
 			$http.post("../crud/update/setProduct.php", editedfields).then(function(response){
-				httpResponse.success(1, response.data.message);
-				//console.log(response.data);
+				httpResponse.success(1, response.data.suc_message);
+				console.log(response.data);
 			}, function(response){
 				httpResponse.error(0, response.data);
 				//document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);

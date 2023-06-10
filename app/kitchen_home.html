@@ -1,0 +1,45 @@
+<!doctype html>
+<html data-ng-app="kitchenApp">
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta charset="utf-8">
+		<meta http-equiv="Cache-control" content="no-cache, no-store, must-revalidate">
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="Expires" content="0">
+		<title>Restaurant: Kitchen</title>
+		<script src="../resources/thirdparty/js/angular/v1.8.2/angular.min.js"></script>
+		<script src="../resources/thirdparty/js/angular/v1.8.2/angular-route.js"></script>
+		<script src="../resources/thirdparty/js/angular/v1.8.2/angular-animate.js"></script>
+		<link rel="stylesheet" href="../resources/thirdparty/css/fontawesome/css/font-awesome.css" />
+		<link type="text/css" rel="stylesheet" href="../resources/css/layout.css" />
+		<link type="text/css" rel="stylesheet" href="../resources/css/forms.css" />
+		<link type="text/css" rel="stylesheet" href="../resources/css/tables.css" />
+		<link rel="stylesheet" href="../resources/css/ngAnimateStyles.css" />
+	</head>
+	<body>
+		<div id="main_content_box" data-ng-view class="animate_view">
+				
+			</div>
+			
+			<script>
+				//Initailize App
+				let kitchenApp = angular.module("kitchenApp",["ngRoute","ngAnimate"]);
+				
+				kitchenApp.config(function($routeProvider){
+					$routeProvider
+						.when("/orders", {templateUrl: "../views/kitchen_orders.html", controller: "kitchenOrdersCtlr"})
+						.when("/view_order/:ordNo", {templateUrl: "../views/view_order.html", controller: "view_orderCtlr"})
+						.otherwise({redirectTo: "/orders"});
+				});
+				
+				document.getElementsByClassName('kit_bck_arw')[0].addEventListener('click', function(){
+					//sessionStorage.setItem('kit_sta', 'Restaurant');
+					location.replace("/app/kitchen.html");
+				});
+			</script>
+			
+			<script src="../resources/js/global_functions.js"></script>
+			<script src="../controllers/kitchen_orders/kitchenOrders.js"></script>
+			
+	</body>
+</html>

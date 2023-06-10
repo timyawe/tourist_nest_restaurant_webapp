@@ -1,11 +1,90 @@
-theApp.controller("ordersCtlr", function($scope, $http, userDetails){
+theApp.controller("ordersCtlr", function($scope, $http, $routeParams,$timeout,$window,userDetails,lineDetails){
 	$scope.ID = userDetails.getUserID();
-	$http.get("../crud/read/getOrders.php", {params: {station: userDetails.getStation()}}).then(function(response){
-		$scope.orders = response.data;/* Generating orders list */
-		console.log(response.data);
-	},function(response){
-		console.log(response.data);
-	});
+	//toggleLoader("block");
+	if(userDetails.getUserLevel() !== "Level1"){
+		$scope.isAdmin = true;
+	}else{
+		$scope.isAdmin = false;
+	}
+	
+	$scope.startFilter = function(){
+		if($scope.filterApplied == true){
+			$scope.filterApplied = false;
+			if(sessionStorage.getItem('order_filter') !== null){
+				sessionStorage.removeItem('order_filter');
+				$window.location.reload();//forces page reload
+			}
+		}else{
+			$scope.filterApplied = true;
+		}
+	}
+	
+	/* Generating the options of the Item select tag */
+	
+	lineDetails.getItems("../crud/read/getOrdItemsList.php", {params: {station: userDetails.getStation()}}).then(res => $scope.items =res);
+	
+	$scope.changeItemFilter = function(){
+		//toggleLoader("block");
+		console.log($scope.item_name.value)
+		$http.get("../crud/read/filterOrders.php", {params: {station: userDetails.getStation(), item: $scope.item_name.value}}).then(function(response){
+			if(response.data.status === 1){
+				$scope.orders = response.data.message;
+				sessionStorage.setItem("order_filter", JSON.stringify(response.data.message));
+				$timeout(function(){
+					$scope.$apply();
+				}, 1000);
+				$scope.showNoItems = false;
+				toggleLoader("none");
+				document.getElementById("applyFilter_btn").innerHTML = "Remove Filter";
+			}else{
+				$scope.orders = undefined;
+				$timeout(function(){
+					$scope.$apply();
+				}, 1000);
+				$scope.showNoItems = true;
+			}
+			toggleLoader("none");
+			console.log(response.data);
+		});
+	}
+	
+	/*function httpUrl(){
+		if($routeParams.ordStatus === undefined){
+			return "../crud/read/getOrders.php";
+		}else{
+			return "../crud/read/getDashboardContent.php";
+		}	
+	}*/
+	
+	function httpParams(){
+		if($routeParams.ordStatus === undefined){
+			return {station: userDetails.getStation()};
+		}else{
+			return {station: userDetails.getStation(), ordStatus: $routeParams.ordStatus};
+		}	
+	}
+	
+	if(sessionStorage.getItem('order_filter') !== null){
+		document.getElementById("applyFilter_btn").innerHTML = "Remove Filter";
+		toggleLoader("none");
+		$scope.filterApplied = true;
+		$scope.orders = JSON.parse(sessionStorage.getItem('order_filter'));
+		console.log('done');
+	}else{
+		$http.get(/*httpUrl()*/"../crud/read/getOrders.php", {params: httpParams()}).then(function(response){
+					//if($routeParams.ordStatus === undefined){
+						if(response.data.status === 1){
+							$scope.orders = response.data.message;/* Generating orders list */
+							toggleLoader("none");
+							console.log(response.data);
+						}/*
+					}else{
+						$scope.orders = response.data.pendingorders_records;
+					}*/
+		},function(response){
+			console.log(response.data);
+		});
+	}
 
 });
 
@@ -65,10 +144,34 @@ theApp.controller("create_orderCtlr", function($scope, $timeout, $http, userDeta
 
 	function rooms(){
 		room = [
-			
-				{pntName: "Braxton"}, 
+				{pntName: "Annex"},
+				{pntName: "Barca"},
+				{pntName: "Braxton"},
+				{pntName: "Cindy"},
+				{pntName: "Crown"},
+				{pntName: "Cubic"},
+				{pntName: "Elbrus"},
+				{pntName: "Everest"},
+				{pntName: "Finex"},
+				{pntName: "Houston"},
+				{pntName: "Jojo"},
+				{pntName: "Kintar"},
+				{pntName: "Leads"},
+				{pntName: "Marie"},
+				{pntName: "Miami"},
+				{pntName: "Middle"},
+				{pntName: "Mishel"},
+				{pntName: "Newton"},
+				{pntName: "Nic"},
 				{pntName: "Parkers"}, 
-				{pntName: "Nic"}
+				{pntName: "Saints"},
+				{pntName: "Tasha"},
+				{pntName: "Trend"},
+				{pntName: "Tidy"},
+				{pntName: "Tides"},
+				{pntName: "Top"},
+				{pntName: "Tournest"},
+				{pntName: "Vegas"}
 			];
 		return room;
 	}
@@ -92,6 +195,13 @@ theApp.controller("create_orderCtlr", function($scope, $timeout, $http, userDeta
 
 		let form_values = {station:$scope.station, to:$scope.to, delv_point:$scope.delv_point, details:order_details, userID: userDetails.getUserID()};
 		
+		document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
+		document.getElementsByClassName("save_btn")[0].style.cursor = "not-allowed";
+		$scope.to = undefined;
+		$scope.delv_point = undefined;
+		$scope.show = false;
+		$scope.rows = [{ID:1, item: undefined, qty:null, rate:null, total:null, itemSelected: false}];
+		
 		$http.post("../crud/create/add_order.php", form_values).then(function(response){
 			
 			toggleLoader("block");
@@ -99,16 +209,17 @@ theApp.controller("create_orderCtlr", function($scope, $timeout, $http, userDeta
 			$scope.ordNo = response.data.ordNo;
 			
 			$timeout(function(){
-				if(response.data.status === 1){
+				if(response.data.status === 1){console.log(response.data);
 					$scope.showEditBtn = true;
 					displayResponseBox(1, response.data.message);
-				}else{
+				}else{console.log(response.data);
 					displayResponseBox(0, response.data.message);
 				}
 				//Fadeout response_box after 4sec
-				$timeout(fadeout, 4000);
+				//$timeout(fadeout, 4000);
+				exitEditMode("orders_btn");
 			}, 2000);
-			//document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
+			
 			
 		}, function(response){
 			toggleLoader("block");
@@ -187,6 +298,7 @@ let ordPreptime = (arr) => {
 }
 
 theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http, $routeParams, $q, userDetails, httpResponse, lineDetails){
+	toggleLoader("block");
 	let userID = userDetails.getUserID();
 	let odrStartTime;
 	let ordMaxTime;
@@ -195,7 +307,7 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 	let deleted_order_lines = [];//to contain order details deleted for form submission
 	let promisesArr = [];
 	
-	if(userDetails.getUserLevel() === "Level2"){
+	if(userDetails.getUserLevel() !== "Level1"){
 		$scope.showVerify = true;
 	}
 	
@@ -218,10 +330,11 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 		$scope.order_items = response.data.ord_details;//edit_ordersPage[0].order_items;
 		$scope.getGrandTotal = gTotal(response.data.ord_details);
 		console.log($scope.order_items);
-		if(ordStatus === "Pending"){
+		if(ordStatus === "Pending" || ordStatus === "In Progress"){
 			$scope.showDeliverBtn = true;
 			$scope.showTimer = true;
 		}
+		toggleLoader("none");
 	}, function(response){
 		console.log(response.data);
 	});
@@ -269,7 +382,7 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 	function timer(){
 		
 		/*stop_timer();*/
-		if(ordStatus === "Pending"){
+		if(ordStatus === "Pending" || ordStatus === "In Progress"){
 			if(ordMaxTime !== 0){//When order items dont require preparation time e.g drinks
 				var start_time = new Date(/*"12/31/2022 17:52:58"*/odrStartTime);
 				let start_time_in_secs = Math.floor(start_time.getTime()/1000);
@@ -449,6 +562,8 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 	
 	$scope.validate = function (){ 
 		if(collectPromises()){
+			document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
+			document.getElementsByClassName("save_btn")[0].style.cursor = "not-allowed";
 			//console.log(promisesArr);
 			$q.all(promisesArr).then(function(response){
 				if(collectPromises.length === 2){
@@ -461,6 +576,11 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 					if(response[0].data.status === 1){
 						if(!deleteAllItems()){
 							httpResponse.success(1, "Updated Succesfuly");
+							$timeout(function(){
+								//wait for the httpResponse above to finish and return to the orders list
+								document.getElementById("orders_btn").click();
+								document.body.style.cursor = "auto";
+							}, 7000)
 						}else{
 							stop_timer();
 							//document.getElementsByClassName("pymt_btn").style.display = "none";
@@ -477,7 +597,7 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 						}
 						httpResponse.success(1, "Updated Succesfuly");
 					}else{
-						httpResponse.success(0, "The operation failed, Please try again");
+						httpResponse.success(0, "The operation failed, Please try again");console.log(response[0].data);
 					}
 				}
 				//console.log(response[0].data);
@@ -494,6 +614,104 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 	}
 
 });
+
+theApp.controller("view_orderCtlr", function($scope, $timeout, $interval, $http, $routeParams/*, $q, userDetails, httpResponse, lineDetails*/){
+	//let userID = userDetails.getUserID();
+	let odrStartTime;
+	let ordMaxTime;
+	let ordStatus;
+	console.log($routeParams.ordNo);
+	/*Pre-select icon class for the delete action of order details*/
+	//let del_icon = "fa fa-trash";
+	//let undo_icon = "fa fa-undo";
+	//$scope.iconClass = function(id){ return del_icon;}
+	//console.log(icon.length);//.classList.add(del_icon);
+	
+	$scope.showDeliverBtn = false;
+	$scope.showTimer = false;
+	$scope.showOrderMeta = true;
+	$scope.showVerify = true;
+	//$scope.verify = "Not Verified";
+	
+	changeVerification = function(){
+		let ordVerificationOpt = document.getElementsByClassName("ord_ver_option")[0].value;
+		console.log(document.getElementsByClassName("ord_ver_option")[0].value);
+		
+		if(ordVerificationOpt === 'Verified'){
+			$scope.showSubmitBtn = true;
+		}else{
+			$scope.showSubmitBtn = false;
+		}
+	}
+	
+	$http.post("../crud/read/getOrder.php", {ordNo: $routeParams.ordNo}).then (function(response){
+		console.log(response.data);
+		$scope.ordNo = $routeParams.ordNo;
+		$scope.station = response.data.order[0].Station;
+		$scope.to = response.data.order[0].To;
+		
+		if(!response.data.order[0].DeliveryPoint){
+			$scope.delv_point = "Go";
+		}else{
+			$scope.delv_point = response.data.order[0].DeliveryPoint;
+		}
+		
+		$scope.startDate = new Date(response.data.order[0].OrderDate).toLocaleDateString("en-GB");
+		$scope.startTime = new Date(response.data.order[0].OrderDate).toLocaleString("en-GB", {hour12: true/*to display am/pm*/});
+		
+		if(response.data.order[0].DeliveredTime){
+			$scope.deliveredTime = new Date(response.data.order[0].DeliveredTime).toLocaleString("en-GB", {hour12: true});
+		}else{
+			$scope.deliveredTime = 'Not Yet Delivered';
+		}
+		
+		//$scope.deliveredStatus = response.data.order[0].DeliveredStatus;
+		$scope.createdBy = response.data.order[0].FirstName;
+		$scope.recievedBy = response.data.order[0].RecievedBy;
+		$scope.deliveredBy = response.data.order[0].DeliveredBy;
+		odrStartTime = response.data.order[0].OrderDate;
+		$scope.ordMaxTime = ordPreptime(response.data.ord_details);
+		ordMaxTime = ordPreptime(response.data.ord_details);
+		ordStatus = response.data.order[0].OrderStatus;
+		let start_time = new Date(/*"12/31/2022 17:52:58"*/odrStartTime);
+		let lead_time = ordMaxTime;
+		let end_time = new Date (start_time.getTime() + lead_time*60000);console.log(start_time, lead_time,end_time, new Date(response.data.order[0].DeliveredTime));
+		
+		if(response.data.order[0].DeliveredTime){
+			if(end_time < new Date(response.data.order[0].DeliveredTime)){
+				$scope.deliveredStatus = 'Late';
+			}else{
+				$scope.deliveredStatus = 'On Time';
+			}
+		}else{
+			if(end_time < new Date()){
+				$scope.deliveredStatus = 'Late';
+			}else{
+				$scope.deliveredStatus = 'Not Yet Delivered';
+			}
+		}
+		angular.forEach(response.data.ord_details, function(v)  {v.deleted = false})//Add deleted property for toggling deleted class in ngRepeat
+		$scope.order_items = response.data.ord_details;//edit_ordersPage[0].order_items;
+		//$scope.getGrandTotal = gTotal(response.data.ord_details);
+		console.log($scope.order_items);
+		/*if(ordStatus === "Pending" || ordStatus === "In Progress"){
+			$scope.showDeliverBtn = true;
+			$scope.showTimer = true;
+		}
+		
+		if(ordStatus === "In Progress"){
+			$scope.showRecievedBtn = false;
+		}else{
+			$scope.showRecievedBtn = true;
+		}*/
+	}, function(response){
+		console.log(response.data);
+	});
+	
+	
+
+});
+
 
 theApp.controller("order_paymentsCtlr", function($scope, $http, $routeParams){
 				

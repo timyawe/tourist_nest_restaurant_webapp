@@ -2,13 +2,20 @@ theApp.controller("requisitionsCtlr", function($scope, $http, userDetails){
 	
 	/*Generating requisitions list */
 	$http.get("../crud/read/getRequisitions.php", {params: {station: userDetails.getStation()}}).then(function(response){
-		if(userDetails.getStation() === undefined){
-			$scope.activeStation = false;
-		}else{
-			$scope.activeStation = true;
+		console.log(response.data);if(response.data.status == 1){
+			if(userDetails.getStation() === undefined){
+				$scope.activeStation = false;
+			}else{
+				$scope.activeStation = true;
+			}
+			$scope.showNoItems = false;
+			$scope.requisitions = response.data.message;//response.data.userLevel = "Level3";console.log("Danke" ,$scope.requisitions);
+			toggleLoader("none");
+			console.log(response.data);
+		}else if(response.data.status == 2){
+			$scope.showNoItems = true;
+			toggleLoader("none");console.log(response.data);
 		}
-		$scope.requisitions = response.data;//response.data.userLevel = "Level3";console.log("Danke" ,$scope.requisitions);
-		//console.log(response.data);
 	}, function(response){
 		console.log(response.data);
 	});
@@ -125,11 +132,16 @@ theApp.controller("create_requisitionCtlr", function($scope, $timeout, $http, us
 		let form_values = {category:$scope.category, station:$scope.station, requisitiontype: type(), details:req_details, userID: userDetails.getUserID()};
 		console.log(form_values);
 		
+		document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
+		document.getElementsByClassName("save_btn")[0].style.cursor = "not-allowed";
+		$scope.category = undefined;
+		$scope.rows = [{ID:1, item: undefined, qty:null, rate:null, total:null, purchaseAmount:null, itemSelected: false}];
+		
 		$http.post("../crud/create/add_requisition.php", form_values).then(function(response){
-			httpResponse.success(1, response.data.message);
-			//document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
-			console.log(response.data);
-			//exitEditMode("reqs_btn");
+			httpResponse.success(1, response.data.message);console.log(response.data);
+			
+			//console.log(response.data);
+			exitEditMode("reqs_btn");
 		}, function(response){
 			httpResponse.error(0, response.data);	
 		});
@@ -161,7 +173,7 @@ function showAmountsDesc(userLevel, category){
 	}
 }
 
-theApp.controller("edit_requisitionCtlr", function($scope, $http, $routeParams, $q, httpResponse, lineDetails, userDetails){
+theApp.controller("edit_requisitionCtlr", function($scope, $http, $routeParams, $timeout, $q, httpResponse, lineDetails, userDetails){
 	let userID = userDetails.getUserID();
 	let editreq_details = [];
 	let deleted_req_lines = [];
@@ -281,7 +293,7 @@ theApp.controller("edit_requisitionCtlr", function($scope, $http, $routeParams, 
 	}
 	
 	//Add Order Line Promise
-	function addPromise(_data){
+	function addPromise(_data){console.log(_data);
 		return $http.post("../crud/create/addReqLine.php", _data);
 	}
 	
@@ -295,7 +307,21 @@ theApp.controller("edit_requisitionCtlr", function($scope, $http, $routeParams, 
 			}
 			
 			if(editreq_details.length !== 0){
-				promisesArr.push(addPromise({reqNo: $routeParams.reqNo, addedLines: editreq_details}));
+				let reqType;
+				if(userDetails.getUserLevel() === "Level1"){
+					 if($scope.category === "Drinks"){
+							reqType = "intDrinks";
+						}else{
+							reqType = "intEats";
+						}
+					}else{
+						if($scope.category === "Drinks"){
+							reqType = "extDrinks";
+						}else{
+							reqType = "extEats";
+						}
+					}
+				promisesArr.push(addPromise({reqNo: $routeParams.reqNo, reqType: reqType, addedLines: editreq_details}));
 				collected = true;
 			}
 		}else{
@@ -309,6 +335,8 @@ theApp.controller("edit_requisitionCtlr", function($scope, $http, $routeParams, 
 	
 	$scope.validate = function (){ 
 		if(collectPromises()){
+			document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
+			document.getElementsByClassName("save_btn")[0].style.cursor = "not-allowed";
 			
 			$q.all(promisesArr).then(function(response){
 				if(collectPromises.length === 2){
@@ -319,9 +347,20 @@ theApp.controller("edit_requisitionCtlr", function($scope, $http, $routeParams, 
 					}
 				}else{//console.log(response[0].data);
 					if(response[0].data.status === 1){
-						httpResponse.success(1, "Updated Succesfuly");
+						if(!deleteAllItems()){
+							httpResponse.success(1, "Updated Succesfuly");
+						}else{
+							httpResponse.success(1, "Deleted Succesfuly, please wait...");
+							document.body.style.cursor = "wait";
+							$timeout(function(){
+								//wait for the httpResponse above to finish and return to the requisitions list
+								document.getElementById("reqs_btn").click();
+								document.body.style.cursor = "auto";
+							}, 7000)
+						
+						}
 					}else{
-						httpResponse.success(0, "The operation failed, Please try again");
+						httpResponse.success(0, "The operation failed, Please try again");console.log(promisesArr,response[0].data);
 					}
 				}
 				//console.log(response[0].data);
@@ -477,7 +516,7 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 		if($routeParams.category === "Eats"){
 			if(row[index].isChecked){
 				row[index].qty_recvd = Number(row[index].qty);
-				recvd_items.push({Details_No: row[index].Details_No, RecievedStatus: 1, QtyRecieved: row[index].qty_recvd});
+				recvd_items.push({Details_No: row[index].DetailsNo, RecievedStatus: 1, QtyRecieved: row[index].qty_recvd});
 				//console.log("Danku",recvd_items);
 			}else{
 				row[index].qty_recvd = null;
@@ -608,11 +647,11 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 				}else{
 					httpResponse.success(0, response.data.message);
 				}
-				//document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
+				document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
 				console.log(response.data);
 			}, function(response){console.log(postData());
 				httpResponse.error(0, response.data);	
-			});
+			});//console.log(postUrl(), postData());
 			
 		}/*else{
 			alert("No Item has been marked as recieved");

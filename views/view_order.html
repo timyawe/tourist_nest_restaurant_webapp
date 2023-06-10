@@ -1,0 +1,187 @@
+<div id="content_banner_box">
+	<h2 id="banner">Orders</h2>
+</div>
+<div id="sub_content_box">
+	<div id="view_content">
+		<div id="details_link_box">
+			<a id="orders_btn" href="#!orders">Orders List</a>	
+		</div>
+		<div id="details_box">	
+			<div id="details_header_box">
+				<h3>View Order</h3>
+			</div>
+				<div id="details_content_box">
+					<form id="details_form" name="order_form" novalidate>
+						<div id="loader" style="display:none"></div>
+						<div id="response_box" style="display:none"></div>
+						<div id="form_header">
+							<div>
+								<div id="order_meta" ng-if="showOrderMeta">
+								<table id="table_view_order">
+								<tr>
+									<td>Time Created:</td>     <td>{{::startTime}}</td>
+								</tr>
+								<tr>
+									<td>Created By:</td>         <td>{{::createdBy}}</td>
+								</tr>
+								<tr>
+									<td>Recieved By:</td>       <td>{{::recievedBy}}</td>
+								</tr>
+								<tr>
+									<td>Delivered By:</td>      <td>{{::deliveredBy}}</td>
+								</tr>
+								<tr>
+									<td>Time Delivered:</td>  <td>{{::deliveredTime}}</td>
+								</tr>
+								<tr>
+									<td>Order Max TIme:</td> <td>{{::ordMaxTime}}min(s)</td>
+								</tr>
+								<tr>
+									<td ng-style="{'color': ('{{deliveredStatus}}' == 'Late')? 'red': 'green'}">Delivered Status:</td> <td>{{::deliveredStatus}}</td>
+								</tr>
+								</table>
+									<!--<div>
+										<p><pre>Time Created:     {{::startTime}}</pre></p>
+									</div>
+									<div>
+										<p><pre>Created By:         {{::createdBy}}</pre></p>
+									</div>
+									<div>
+										<p><pre>Recieved By:       {{::recievedBy}}</pre></p>
+									</div>
+									<div>
+										<p><pre>Delivered By:      {{::deliveredBy}}</pre></p>
+									</div>
+									<div>
+										<p><pre>Time Delivered:  {{::deliveredTime}}</pre></p>
+									</div>
+									<div>
+										<p><pre>Order Max TIme: {{::ordMaxTime}}min(s)</pre></p>
+									</div>
+									<div>
+										<p<pre ng-style="{'color': ('{{deliveredStatus}}' == 'Late')? 'red': 'green'}">Delivered Status: {{::deliveredStatus}}</pre></p>
+									</div>-->
+								</div>
+							</div>
+							<div id="order_status" class="animate_show" ng-show="showTimer">
+								<p id="late_order_label" style="display:none">Order is late, Deliver If Ready!!</p>
+								<div id="order_timer_box">
+									<div id="order_time_label" ng-class="{order_time_warning: applyWarnClass, order_time_critical: applyCriticalClass}">Order Timer</div>
+									<span id="order_time">{{ordertime}}</span>
+								</div>
+							</div>
+							
+							<div class="form_input_col">
+								<div class="form_input_row">
+									<label>Station:</label><input type="text" class="txt_box" value="{{::station}}" readonly />
+								</div>
+								<div class="form_input_row">
+									<label>To:</label><input type="text" class="txt_box" value="{{::delv_point}}" readonly />
+								</div>
+								<!--<div class="form_input_row">
+									<label style="width:12em">Delivery Point:</label><input type="text" class="txt_box" value="{{::delv_point}}" readonly />
+								</div>-->
+								<div class="deliver_btn_box animate_if"  ng-if="showDeliverBtn">
+									<button data-ng-click="deliver()">Deliver Now</button>
+								</div>
+								<div class="form_input_row animate_if" ng-if="showVerify">
+									<label>Verify:</label>
+									<select class="select_box ord_ver_option" onchange="changeVerification()">
+										<option value="Not Verified">Not Verified</option>
+										<option value="Verified">Verified</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div id="form_content">
+							<div id="grid_view">
+								<div id="grid_view_header">
+									<div class="grid_view_header_cell">
+										<span>#</span>
+									</div>
+									<div class="grid_view_header_cell pdt_cell">
+										<span>Item</span>
+									</div>
+									<div class="grid_view_header_cell">
+										<span>Qty</span>
+									</div>
+									<div class="grid_view_header_cell">
+										<span>Rate</span>
+									</div>
+									<div class="grid_view_header_cell">
+										<span>Total</span>
+									</div>
+									<div class="grid_view_header_cell">
+										<span>Delivered</span>
+									</div>
+									<!--<div class="grid_view_header_cell action_cell">
+										<span><button type="button" class="add_row_btn" data-ng-click="addRow()"><i class="fa fa-plus"></i></button></span>
+									</div>-->
+								</div>
+								
+								<div class="grid_view_content" data-ng-repeat="order_item in order_items" class="animate_repeat" ng-class="{item_deleted: order_item.deleted}">
+									<div class="grid_view_content_cell">
+										<span>{{$index+1}}</span>
+									</div>
+									<div class="grid_view_content_cell pdt_cell">
+										<span><input type="text" class="txt_box" value="{{::order_item.item}}" readonly /></span>
+									</div>
+									<div class="grid_view_content_cell">
+										<span><input type="text" class="txt_box num_field" value="{{::order_item.qty}}" readonly /></span>
+									</div>
+									<div class="grid_view_content_cell">
+										<span><input type="text" class="txt_box" value="{{::order_item.rate | number:0}}" readonly /></span>
+									</div>
+									<div class="grid_view_content_cell">
+										<span><input type="text" class="txt_box" value="{{::order_item.total | number:0}}" readonly /></span>
+									</div>
+									<div class="grid_view_content_cell">
+										<span<button style="cursor: pointer" type="button" ng-click="deliverItem(order_item.DeliveredStatus,order_item.Details_No)"><i ng-class="(order_item.DeliveredStatus == 1)? 'fa fa-check-circle-o' : 'fa fa-times-circle-o'" ng-style="{'color': (order_item.DeliveredStatus == 1)? 'green':'red','font-size': (order_item.DeliveredStatus == 1)? '1.5em':'1.5em'}"></i></button></span>
+									</div>
+									<!--<div class="grid_view_content_cell action_cell">
+										<span data-ng-click="deleteLineItem(order_item.Details_No, $index)"><i ng-class="(!order_item.deleted)? 'fa fa-trash' : 'fa fa-undo'"></i></span>
+									</div>-->
+								</div>
+								<!--<div id="grid_view_content" class="animate_repeat animate_if" data-ng-repeat="row in rows" ng-if="showEditDetails">
+									<div class="grid_view_content_cell">
+										<span>{{row.ID}}</span>
+									</div>
+									<div class="grid_view_content_cell pdt_cell">
+										<span>
+											<select class="select_box item" data-ng-options="item.label for item in items track by item.value" data-ng-model="row.item" data-ng-change="changeItem(row,$index)" required>
+												<option value="">Choose Item</option>
+											</select>
+										</span>
+									</div>
+									<div class="grid_view_content_cell">
+										<span><input type="number" class="txt_box qty_input" data-ng-model="row.qty" data-ng-blur="changeQty(row,$index)" ng-readonly="row.item === undefined" required /></span>
+									</div>
+									<div class="grid_view_content_cell">
+										<span><input type="text" class="txt_box rate_input" data-ng-model="row.item.rate" readonly /></span>
+									</div>
+									<div class="grid_view_content_cell">
+										<span><input type="text" class="txt_box total_input" data-ng-model="row.total" readonly /></span>
+									</div>
+									<div class="grid_view_content_cell action_cell">
+										<span data-ng-click="removeRow($index)"><i class="fa fa-close"></i></span>
+									</div>
+								</div>
+								
+								<div id="grid_view_footer">
+									<span>Total</span><span>{{getGrandTotal}}</span>
+								</div>-->
+							</div>
+						</div>
+						<div id="form_footer">
+							<div>
+								<input data-ng-show="showRecievedBtn" type="button" class="save_btn animate_show" value="Mark as Recieved" data-ng-click="recieve()"/> <!--data-ng-disabled="order_form.$invalid"/> || !order_form.$dirty && order_form.$valid"/>-->
+								<input data-ng-show="showSubmitBtn" type="button" class="save_btn animate_show" value="Submit" data-ng-click="recieve()"/>
+								<input type="button" class="cancel_btn" value="Cancel" onclick="history.back()"/>
+							</div>
+							<span ng-if="showErrorNote"><pre class="form_error_note">*Confirm Order Details before delivering!</pre></span>
+						</div>
+					</form>
+			</div>
+		</div>
+	</div>
+</div>

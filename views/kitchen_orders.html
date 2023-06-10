@@ -1,0 +1,73 @@
+<div id="kit_bck_arw_box"><i class="fa fa-arrow-left kit_bck_arw"></i></div>
+<div id="content_banner_box">
+	<h2 id="banner">Orders</h2>
+</div>
+<div id="sub_content_box">
+	<div id="view_content">
+		<div id="details_content_box">
+			<div id="grid_view">
+				<div id="grid_view_header">
+					<div class="grid_view_header_cell">
+						<span>#</span>
+					</div>
+					<!--<div class="grid_view_header_cell delv_cell">
+						<span>Station</span>
+					</div>-->
+					<div class="grid_view_header_cell table_cell">
+						<span>To</span>
+					</div>
+					<div class="grid_view_header_cell time_cell">
+						<span>Time</span>
+					</div>
+					<div class="grid_view_header_cell status_cell">
+						<span>Status</span>
+					</div>
+					<!--<div class="grid_view_header_cell bill_cell">
+						<span>Bill</span>
+					</div>
+					<div class="grid_view_header_cell paymt_cell">
+						<span>Payment</span>
+					</div>
+					<!--<div class="grid_view_header_cell delv_cell">
+						<span>Delivered</span>
+					</div>-->
+					<div class="grid_view_header_cell action_cell">
+						<span>View</span>
+					</div>
+				</div>
+				
+				<div class="grid_view_content kitchen_grid_view" data-ng-repeat="order in orders" class="animate_repeat" data-ng-style="{'background-color':(order.status == 'Pending') ? 'red' : 'orange'}">
+					<div class="grid_view_content_cell">
+						<span>{{$index +1}}</span>
+					</div>
+					<!--<div class="grid_view_content_cell  delv_cell">
+						<span>{{::order.station}}</span>
+					</div>-->
+					<div class="grid_view_content_cell table_cell" ng-click="check($index)">
+						<span>{{::order.to}}</span>
+					</div>
+					<div class="grid_view_content_cell time_cell">
+						<span>{{::order.time | date: 'dd/MM/yyyy'}}</span><!-- filter not working -->
+					</div>
+					<div class="grid_view_content_cell status_cell">
+						<span class="status_val">{{::order.status}}</span>
+					</div>
+					<!--<div class="grid_view_content_cell  bill_cell">
+						<span>{{::order.bill}}</span>
+					</div>
+					<div class="grid_view_content_cell  paymt_cell">
+						<span>{{::order.payment}}</span>
+					</div>
+					<!--<div class="grid_view_content_cell  delv_cell">
+						<span>{{::order.delvstatus}}</span>
+					</div>-->
+					<div class="grid_view_content_cell  action_cell">
+						<a href="#!view_order/{{order.ordNo}}"><div><span><i class="fa fa-eye"></i></span></div></a>
+					</div>
+				</div>
+				<div id="no_items_container"  class="grid_view_content animate_show" ng-show="showNoItems"><span id="no_items_span">All Done! All Orders have been delivered <span><i class="fa fa-check-circle"></i></span></span></div>
+				
+			</div>
+		</div>
+	</div>
+</div>

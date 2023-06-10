@@ -21,7 +21,16 @@
 						</div>
 						
 						<div class="form_input_col">
-							<div class="form_input_row">
+							<div class="form_input_row" ng-if="isMissingItems">
+								<label>Station:</label>
+								<select class="select_box" data-ng-model="$parent.station" required>
+									<option value="">Choose Station...</option>
+									<option value="Reception">Reception</option>
+									<option value="Restaurant">Restaurant</option>
+									<option value="Bar">Bar</option>
+								</select>
+							</div>
+							<div class="form_input_row" ng-if="!isMissingItems">
 								<label>Station:</label><input type="text" class="txt_box" data-ng-model="station" readonly />
 							</div>
 							<div class="form_input_row">
@@ -33,6 +42,7 @@
 									<option value="">Choose Reciepient</option>
 									<option value="Staff">Staff</option>
 									<option value="Visitor">Visitor</option>
+									<option value="Eng">Eng</option>
 								</select>
 							</div>
 						</div>
@@ -62,7 +72,7 @@
 							</div>
 						</div>
 						
-						<div id="grid_view_content" class="animate_repeat" data-ng-repeat="row in rows">
+						<div class="grid_view_content" class="animate_repeat" data-ng-repeat="row in rows">
 							<div class="grid_view_content_cell">
 								<span>{{$index +1}}</span>
 							</div>

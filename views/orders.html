@@ -8,8 +8,17 @@
 			<a href="#!create_order">Add Order</a>
 		</div>
 		<div id="details_box">	
-			<div id="details_header_box">
+			<div id="details_header_box" style="display: flex; justify-content: space-between">
 				<h3>Manage Orders</h3>
+				<div id="filter_box" style="display: flex; flex-direction: column">
+					<button id="applyFilter_btn" style="float: right" ng-click="startFilter()">Filter Orders</button>
+					<div ng-show="filterApplied" class="animate_show" style="display: flex">
+						<!--<select><option>Choose Filter</option><option>By Item</option></select>-->
+						<select ng-model="$parent.item_name" ng-change="changeItemFilter()" ng-options="item.label for item in items track by item.value">
+							<option value="">Choose Item</option>
+						</select>
+					</div>
+				</div>
 			</div>
 			<div id="details_content_box">
 				<div id="grid_view">
@@ -17,7 +26,7 @@
 						<div class="grid_view_header_cell">
 							<span>#</span>
 						</div>
-						<div class="grid_view_header_cell delv_cell">
+						<div class="grid_view_header_cell delv_cell" ng-if="isAdmin">
 							<span>Station</span>
 						</div>
 						<div class="grid_view_header_cell table_cell">
@@ -39,15 +48,18 @@
 							<span>Delivered</span>
 						</div>-->
 						<div class="grid_view_header_cell action_cell">
-							<span>Edit</span>
+							<span ng-show="!{{isAdmin}}">Edit</span>
+							<span ng-show="{{isAdmin}}">View</span>
 						</div>
 					</div>
 					
-					<div id="grid_view_content" data-ng-repeat="order in orders" class="animate_repeat" data-ng-style="{'background-color':(order.status == 'Pending') ? 'red' : ''}">
+					<div id="details_content_box"><div id="loader"></div>
+					<div  style="max-height: 250px; overflow-y:auto">
+					<div class="grid_view_content" data-ng-repeat="order in orders" class="animate_repeat" data-ng-class="{pending_order: order.status == 'Pending', progress_order: order.status == 'In Progress', delivered_order: order.status == 'Delivered' }">
 						<div class="grid_view_content_cell">
 							<span>{{$index +1}}</span>
 						</div>
-						<div class="grid_view_content_cell  delv_cell">
+						<div class="grid_view_content_cell  delv_cell" ng-if="isAdmin">
 							<span>{{::order.station}}</span>
 						</div>
 						<div class="grid_view_content_cell table_cell" ng-click="check($index)">
@@ -69,8 +81,13 @@
 							<span>{{::order.delvstatus}}</span>
 						</div>-->
 						<div class="grid_view_content_cell  action_cell">
-							<span><a href="#!edit_order/{{order.ordNo}}"><i class="fa fa-edit"></i></a></span>
+							<span>
+								<a ng-show="!{{isAdmin}}" href="#!edit_order/{{order.ordNo}}"><i class="fa fa-edit"></i></a>
+								<a ng-show="{{isAdmin}}" href="#!view_order/{{order.ordNo}}"><div><i class="fa fa-eye"></i></div></a>
+							</span>
 						</div>
+					</div>
+					<div id="no_items_container"  class="grid_view_content animate_show" ng-show="showNoItems"><span style="color: red">There are no Orders that match your filter selection <span><i class="fa fa-times-circle-o"></i></span></span></div>
 					</div>
 				</div>
 			</div>

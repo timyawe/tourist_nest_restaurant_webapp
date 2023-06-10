@@ -24,13 +24,13 @@ if($clean_data['requisitiontype'] == 'External'){
 	$req_details_sql = "INSERT INTO PurchaseDetails (ProductNo, PurchaseAmount, Qty, Rate, StandardCost, PurchaseNo) VALUES (?,?,?,?,?,?)";
 	$req_detbind_types = "sdidds";
 }else{
-	$req_details_sql = "INSERT INTO PurchaseDetails (ProductNo, Qty, PurchaseNo) VALUES (?,?,?)";
-	$req_detbind_types = "sis";
+	$req_details_sql = "INSERT INTO PurchaseDetails (ProductNo, PurchaseAmount, Qty, PurchaseNo) VALUES (?,?,?,?)";
+	$req_detbind_types = "sdis";
 }
 
 $given_sql = "INSERT INTO InternalRequisition_Given (DetailsNo) VALUES (?)";
 
-$p_key = genPK('PurchaseOrder', 'Purchase_No', 'REQ');
+$p_key = genPK('PurchaseOrder', 'Purchase_No', 'REQ', 'Purchase_No');
 $req_status = "Submitted";
 $usrID = $clean_data['userID'];
 

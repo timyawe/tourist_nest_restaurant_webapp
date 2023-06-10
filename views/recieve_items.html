@@ -66,34 +66,36 @@
 								</div>
 								
 							</div>
-						
-							<div id="grid_view_content" data-ng-repeat="request_item in requisition_items" class="animate_repeat">
-								<div class="grid_view_content_cell">
-									<span>{{$index+1}}</span>
-								</div>
-								<div class="grid_view_content_cell" style="flex-grow: 2">
-									<span><input type="text" class="txt_box" ng-model="request_item.item" readonly />
-								</div>
-								<div class="grid_view_content_cell" style="flex-grow: 1">
-									<span><input type="text" class="txt_box qty_reqstd num_field" ng-model="request_item.qty" readonly /></span>
-								</div>
-		
-								<div ng-if="showGiven()" class="grid_view_content_cell animate_if" style="flex-grow: 0">
-									<span><input type="checkbox" style="-webkit-transform: scale(1.5);" ng-model="request_item.isGiven" ng-change="giveItem(requisition_items, $index)" ng-disabled="request_item.isDisabledGvn"/></span>
-								</div>
-								<div ng-if="showQtyGiven()" class="grid_view_content_cell animate_if" style="flex-grow: 1">
-									<span><input type="number" class="txt_box num_field" ng-model="request_item.QtyGiven" ng-readonly="!request_item.isGiven || request_item.isDisabledGvn" ng-blur="updQtyGvn(requisition_items, $index)"/></span>
-								</div>
-								
-								<div ng-if="showRcvd()" class="grid_view_content_cell animate_if" style="flex-grow: 0">
-									<!-- Take entire row in function arguments using the array(requisition_items) to access the cells as needed -->
-									<span><input type="checkbox" class="check" style="-webkit-transform: scale(1.5);" ng-model="request_item.isChecked" ng-change="recieveItem(requisition_items, $index)" ng-disabled="request_item.isDisabledRcv"/></span>
-								</div>
-								<div ng-if="showQtyRcvd()" class="grid_view_content_cell animate_if" style="flex-grow: 0">
-									<span><input type="number" class="txt_box num_field" ng-model="request_item.qty_recvd" ng-readonly="!request_item.isChecked || request_item.isDisabledRcv" ng-blur="updQtyRcvd(requisition_items, $index)" /></span>
-								</div>
-								<div ng-if="showFinalAmount()" class="grid_view_content_cell animate_if" style="flex-grow: 0">
-									<span><input type="text" class="txt_box curr_field" ng-model="request_item.FinalAmount" ng-readonly="!request_item.isChecked || request_item.isDisabledRcv" ng-blur="updFinAmnt(requisition_items, $index)"/></span>
+							
+							<div  style="max-height: 250px; overflow-y:auto">
+								<div class="grid_view_content" data-ng-repeat="request_item in requisition_items" class="animate_repeat">
+									<div class="grid_view_content_cell">
+										<span>{{$index+1}}</span>
+									</div>
+									<div class="grid_view_content_cell" style="flex-grow: 2">
+										<span><input type="text" class="txt_box" ng-model="request_item.item" readonly />
+									</div>
+									<div class="grid_view_content_cell" style="flex-grow: 1">
+										<span><input type="text" class="txt_box qty_reqstd num_field" ng-model="request_item.qty" readonly /></span>
+									</div>
+			
+									<div ng-if="showGiven()" class="grid_view_content_cell animate_if" style="flex-grow: 0">
+										<span><input type="checkbox" style="-webkit-transform: scale(1.5);" ng-model="request_item.isGiven" ng-change="giveItem(requisition_items, $index)" ng-disabled="request_item.isDisabledGvn"/></span>
+									</div>
+									<div ng-if="showQtyGiven()" class="grid_view_content_cell animate_if" style="flex-grow: 1">
+										<span><input type="number" class="txt_box num_field" ng-model="request_item.QtyGiven" ng-readonly="!request_item.isGiven || request_item.isDisabledGvn" ng-blur="updQtyGvn(requisition_items, $index)"/></span>
+									</div>
+									
+									<div ng-if="showRcvd()" class="grid_view_content_cell animate_if" style="flex-grow: 0">
+										<!-- Take entire row in function arguments using the array(requisition_items) to access the cells as needed -->
+										<span><input type="checkbox" class="check" style="-webkit-transform: scale(1.5);" ng-model="request_item.isChecked" ng-change="recieveItem(requisition_items, $index)" ng-disabled="request_item.isDisabledRcv"/></span>
+									</div>
+									<div ng-if="showQtyRcvd()" class="grid_view_content_cell animate_if" style="flex-grow: 0">
+										<span><input type="number" class="txt_box num_field" ng-model="request_item.qty_recvd" ng-readonly="!request_item.isChecked || request_item.isDisabledRcv" ng-blur="updQtyRcvd(requisition_items, $index)" /></span>
+									</div>
+									<div ng-if="showFinalAmount()" class="grid_view_content_cell animate_if" style="flex-grow: 0">
+										<span><input type="text" class="txt_box curr_field" ng-model="request_item.FinalAmount" ng-readonly="!request_item.isChecked || request_item.isDisabledRcv" ng-blur="updFinAmnt(requisition_items, $index)"/></span>
+									</div>
 								</div>
 							</div>
 						</div>

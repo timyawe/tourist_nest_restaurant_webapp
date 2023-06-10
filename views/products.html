@@ -49,7 +49,8 @@
 						</div>
 					</div>
 					
-					<div id="grid_view_content" data-ng-repeat="pdt in products" class="animate_repeat" data-ng-style="{'background-color':(pdt.Status == 'Discontinued') ? 'red' : ''}">
+					<div  style="max-height: 250px; overflow-y:auto">
+					<div class="grid_view_content" data-ng-repeat="pdt in products" class="animate_repeat" data-ng-style="{'background-color':(pdt.Status == 'Discontinued') ? 'red' : ''}">
 						<div class="grid_view_content_cell">
 							<span>{{::pdt.Product_No}}</span>
 						</div>
@@ -74,6 +75,7 @@
 						<div class="grid_view_content_cell  action_cell">
 							<span><a href="#!edit_product/{{::pdt.Product_No}}"><i class="fa fa-edit"></i></a></span>
 						</div>
+					</div>
 					</div>
 				</div>
 			</div>

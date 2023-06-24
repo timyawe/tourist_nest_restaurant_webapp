@@ -34,6 +34,11 @@ if(!empty($final_arr)){
 	$fields_arr = array_keys($final_arr);
 	array_unshift($final_arr, createBindTypes($final_arr));
 	if(json_decode(dbConn(createUpdateSql($fields_arr, 'Payments', 'Payment_ID', $pymtID),$final_arr, 'update'))->status == 1){
+		$ordpymt = intval(json_decode(dbConn("SELECT TotalPaid FROM OrderPayments_grouped WHERE OrderNo = '$ordNo'", array(), 'select'))->message[0]->TotalPaid);
+		$ordbill = intval(json_decode(dbConn("SELECT Bill FROM OrderBill_grouped WHERE OrderNo = '$ordNo'", array(), 'select'))->message[0]->Bill);
+		if($ordpymt == $ordbill){
+			dbConn("UPDATE OrderDetails SET PaidStatus = ? WHERE OrderNo = '$ordNo'", array('i', 1), 'update');
+		}	
 		updateActivityLog('Update Payment', 'Payment #'. $pymtID. ' for order #'. $ordNo .' updated successfully', $userID);
 		$res->status = 1;
 		$res->message = "Updated Successfully";

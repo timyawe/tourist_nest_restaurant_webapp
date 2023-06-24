@@ -14,16 +14,16 @@ $json_data = json_decode($json_data_post, true);
 
 $clean_data = array_map('funcSanitise', $json_data);
 
-$ord_tmplt = array("station", "to", "delv_point");
+$ord_tmplt = array("station", "reciepient", "to", "delv_point");
 $ord_fields = createFields($json_data, $ord_tmplt);
 $ord_det_fields = $clean_data['details']; //The array is accessed and saved in variable
 
 if($ord_fields['to'] != 'Go'){
-	$ord_sql = "INSERT INTO Orders (Order_No, OrderStatus, Station, `To`, DeliveryPoint, UserID) VALUES (?,?,?,?,?,?)";
-	$ordbind_types = "sssssi";
+	$ord_sql = "INSERT INTO Orders (Order_No, OrderStatus, Station, Reciepient,`To`, DeliveryPoint, UserID) VALUES (?,?,?,?,?,?,?)";
+	$ordbind_types = "ssssssi";
 }else{
-	$ord_sql = "INSERT INTO Orders (Order_No, OrderStatus, Station, `To`, UserID) VALUES (?,?,?,?,?)";
-	$ordbind_types = "ssssi";
+	$ord_sql = "INSERT INTO Orders (Order_No, OrderStatus, Station, Reciepient,`To`, UserID) VALUES (?,?,?,?,?,?)";
+	$ordbind_types = "sssssi";
 }
 $ord_details_sql = "INSERT INTO OrderDetails (ProductNo, Qty, Rate, Cost, OrderNo) VALUES (?,?,?,?,?)";
 $ord_detbind_types = "sidds";
@@ -36,7 +36,7 @@ $orddet_res = new stdClass();*/
 
 $json_res = new stdClass();
 
-$p_key = genPK('Orders', 'Order_No', 'ORD', 'Order_No');
+$p_key = genPK('Orders', 'Order_No', 'ORD', 'OrderDate');
 array_unshift($ord_fields, $ordbind_types, $p_key, $ord_status);
 $ord_fields['usrID'] = $usrID;
 

@@ -42,6 +42,10 @@ td {
 	text-align: center;
 }
 
+.amount_col{
+	text-align: right;
+}
+
 @media only screen and (max-width: 1111px){
 	#table_content_box{
 		width: 100%;
@@ -49,3 +53,4 @@ td {
 	}
 
 }
+

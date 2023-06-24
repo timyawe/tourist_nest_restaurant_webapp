@@ -347,10 +347,13 @@ ul{
 **/
 
 #details_link_box{
-	padding-top: 7px;	
+	padding-top: 7px;
+	display: flex;
+	justify-content: space-between;
+	
 }
 
-#details_link_box>a:link, #details_link_box>a:visited{
+#details_link_box>a:link, #details_link_box>a:visited, #details_link_box>button{
 	text-decoration: none;
 	background-image: linear-gradient(white,#E0E0E0);
 	padding: 4px 10px;
@@ -362,7 +365,7 @@ ul{
 	
 }
 
-#details_link_box>a:hover, #details_link_box>a:active{
+#details_link_box>a:hover, #details_link_box>a:active, #details_link_box>button:hover{
 	background-image: linear-gradient(orange,rgb(244,117,13));
 	color: #ffffff;
 	border-color: #ffffff;

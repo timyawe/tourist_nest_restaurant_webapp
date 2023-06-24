@@ -29,6 +29,7 @@
 					$routeProvider
 						.when("/orders", {templateUrl: "../views/kitchen_orders.html", controller: "kitchenOrdersCtlr"})
 						.when("/view_order/:ordNo", {templateUrl: "../views/view_order.html", controller: "view_orderCtlr"})
+						.when("/view_offer/:category/:ID", {templateUrl: "../views/view_offer.html", controller: "view_offerCtlr"})
 						.otherwise({redirectTo: "/orders"});
 				});
 				

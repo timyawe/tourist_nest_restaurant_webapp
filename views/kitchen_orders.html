@@ -1,6 +1,6 @@
 <div id="kit_bck_arw_box"><i class="fa fa-arrow-left kit_bck_arw"></i></div>
 <div id="content_banner_box">
-	<h2 id="banner">Orders</h2>
+	<h2 id="banner">{{::station}} Orders</h2>
 </div>
 <div id="sub_content_box">
 	<div id="view_content">
@@ -63,6 +63,27 @@
 					</div>-->
 					<div class="grid_view_content_cell  action_cell">
 						<a href="#!view_order/{{order.ordNo}}"><div><span><i class="fa fa-eye"></i></span></div></a>
+					</div>
+				</div>
+				
+				<div class="grid_view_content kitchen_grid_view" data-ng-repeat="offer in offers" class="animate_repeat" data-ng-style="{'background-color':(offer.isDelivered == '0') ? 'red' : 'orange'}">
+					<div class="grid_view_content_cell">
+						<span>{{$index +1}}</span>
+					</div>
+					<!--<div class="grid_view_content_cell  delv_cell">
+						<span>{{::order.station}}</span>
+					</div>-->
+					<div class="grid_view_content_cell table_cell" ng-click="check($index)">
+						<span>{{::offer.RecipientCategory}}</span>
+					</div>
+					<div class="grid_view_content_cell time_cell">
+						<span>{{::offer._date | date: 'dd/MM/yyyy'}}</span><!-- filter not working -->
+					</div>
+					<div class="grid_view_content_cell status_cell">
+						<!--<span class="status_val">{{::order.status}}</span>-->
+					</div>
+					<div class="grid_view_content_cell  action_cell">
+						<a href="#!view_offer/Offers/{{offer.ID}}"><div><span><i class="fa fa-eye"></i></span></div></a>
 					</div>
 				</div>
 				<div id="no_items_container"  class="grid_view_content animate_show" ng-show="showNoItems"><span id="no_items_span">All Done! All Orders have been delivered <span><i class="fa fa-check-circle"></i></span></span></div>

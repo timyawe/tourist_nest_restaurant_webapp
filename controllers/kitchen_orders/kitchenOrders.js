@@ -3,7 +3,8 @@ kitchenApp.controller("kitchenOrdersCtlr", function($scope, $http/*, userDetails
 	
 	$http.get("../crud/read/getKitchenOrders.php", {params: {station: sessionStorage.getItem("kit_sta")}})
 	.then(function(response){
-		if(response.data.status === 1){
+		$scope.station = sessionStorage.getItem("kit_sta");
+		if(response.data.status_orders === 1){
 			$scope.orders = response.data.message;/* Generating orders list */
 			$scope.showNoItems = false;
 			/*$scope.orderStatusFilter = function(status){
@@ -12,8 +13,14 @@ kitchenApp.controller("kitchenOrdersCtlr", function($scope, $http/*, userDetails
 				}
 			}*/
 			console.log(response.data);
-		}else{
-			$scope.showNoItems = true;console.log(response.data);
+		}
+		if(response.data.status_offers == 1){
+			$scope.offers = response.data.offers;
+			$scope.showNoItems = false;console.log("Yikes");
+		}
+		
+		if(response.data.status_offers != 1 && response.data.status_orders != 1){
+			$scope.showNoItems = true;console.log(response.data,$scope.station);
 		}
 	},function(response){
 		console.log(response.data);
@@ -260,5 +267,75 @@ kitchenApp.controller("view_orderCtlr", function($scope, $timeout, $interval, $h
 	}
 	
 
+});
+
+kitchenApp.controller("view_offerCtlr", function($scope, $http, $routeParams,$timeout/*, userDetails, lineDetails, httpResponse*/){
+
+		if($routeParams.category === "Offers"){
+			$scope.category = "Offers";
+			$scope.show = true;
+		}else if($routeParams.category === "Items Spoilt"){
+			$scope.category = "Items Spoilt";
+		}else{
+			$scope.category = "Missing Items";
+		}
+		//console.log(getEditUrl());
+		$http.get(getEditUrl()).then(function(response){console.log(response.data);
+			$scope.station = response.data.extra[0].Station;
+			$scope.to = response.data.extra[0].RecipientCategory;
+			$scope.extras = response.data.extra_details;
+			$scope.showDeliverBtn = true;
+		},function(response){
+			console.log(response);
+		});
+		
+		function getEditUrl(){
+			if($routeParams.category === "Offers"){
+				return "../crud/read/getOffer.php/?offerID="+ $routeParams.ID;
+			}else if($routeParams.category === "Items Spoilt"){
+				return "../crud/read/getSpoilt.php/?spoiltID="+ $routeParams.ID;
+			}else{
+				return "../crud/read/getMissing.php/?missingID="+ $routeParams.ID;
+			}
+		}
+	
+	$scope.deliver = function(){
+		let userName = prompt("Enter your name");
+		if(!userName){
+			console.log("No name");
+			$timeout(function(){
+				displayResponseBox(0, "No name entered, try again!");
+				
+				//Fadeout response_box after 4sec
+				$timeout(fadeout, 4000);
+				$timeout(resetResponseBox, 6000);
+			}, 2000);
+			
+		}else{
+			toggleLoader("block");
+			//let promisesArr = [$http.post("../crud/update/setOrder.php", {orderstatus: "Delivered", ordNo: $routeParams.ordNo/*, userID: userID*/}), $http.post("../crud/update/setOrderStatus.php", {deliveredby: userName, ordNo: $routeParams.ordNo})];
+			//$http.post("../crud/update/setOrder.php", {orderstatus: "Delivered", deliveredby: userName, ordNo: $routeParams.ordNo/*, userID: userID*/}).then(function(response){
+			$http.post("../crud/update/setOffer.php", {offerID: $routeParams.ID, isDelivered: 1}).then(function(response){
+				
+					$timeout(function(){
+						if(response.data.status === 1){	
+							$scope.showDeliverBtn = false;
+							displayResponseBox(1, "Order is marked as Delivered");
+						}else{
+							displayResponseBox(0, response.data.message);
+						}
+						//Fadeout response_box after 4sec
+						$timeout(fadeout, 4000);
+						$timeout(resetResponseBox, 6000);
+						exitEditMode("offers_btn");
+					}, 2000);
+						
+				console.log(response.data);
+			},function(response){
+				console.log(response.data);
+			});
+		}
+	}
+	
 });
 

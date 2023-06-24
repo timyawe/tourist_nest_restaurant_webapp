@@ -46,6 +46,11 @@ if($pymtconn_dbAccess->status === 1){
 	if($pymtInconn_dbAccess->status === 1){
 		$pymtInID = $pymtInconn_dbAccess->insertID;
 		if(json_decode(dbConn($ordpymt_sql, array($ordpymt_bindtypes, $pymtInID, $ordNo), 'insert'))->status == 1){
+			$ordpymt = intval(json_decode(dbConn("SELECT TotalPaid FROM OrderPayments_grouped WHERE OrderNo = '$ordNo'", array(), 'select'))->message[0]->TotalPaid);
+			$ordbill = intval(json_decode(dbConn("SELECT Bill FROM OrderBill_grouped WHERE OrderNo = '$ordNo'", array(), 'select'))->message[0]->Bill);
+			if($ordpymt == $ordbill){
+				dbConn("UPDATE OrderDetails SET PaidStatus = ? WHERE OrderNo = '$ordNo'", array('i', 1), 'update');
+			}			
 			updateActivityLog('Insert Payment', 'Payment #'. $pymtID. ' for order #' .$ordNo . ' added successfully', $userID);
 			$pymtconn_res->status = 1;
 			$pymtconn_res->message = "Added Successfully, please wait...";

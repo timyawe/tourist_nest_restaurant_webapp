@@ -1,7 +1,7 @@
 <?php
-function genPK($table, $feild, $custom_str, $pk_feild){
+function genPK($table, $feild, $custom_str, $date_feild){
 //This function is used to generate a custom Primary Key for some table insertions
-	$pkey_sql = "SELECT $feild FROM `$table` ORDER BY $pk_feild DESC LIMIT 1";
+	$pkey_sql = "SELECT $feild FROM `$table` ORDER BY $date_feild DESC LIMIT 1";
 	//$rows = json_decode(dbConn($pkey_sql, array(), "select"))->numrows;
 	$id_obj = json_decode(dbConn($pkey_sql, array(), "select"));//->message[0];//->Order_No;
 	if($id_obj->status !== 0){

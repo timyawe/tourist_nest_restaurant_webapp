@@ -17,8 +17,13 @@ $req_tmplt = array('station', 'category', 'requisitiontype' );
 $req_fields = createFields($json_data, $req_tmplt);
 $req_det_fields = $clean_data['details'];//The array is accessed and saved in variable
 
-$req_sql = "INSERT INTO PurchaseOrder (Purchase_No, PurchaseStatus, Category, Station, RequisitionType, UserID) VALUES (?,?,?,?,?,?)";
-$reqbind_types = "sssssi";
+if(isset($clean_data['station'])){
+	$req_sql = "INSERT INTO PurchaseOrder (Purchase_No, PurchaseStatus, Category, Station, RequisitionType, UserID) VALUES (?,?,?,?,?,?)";
+	$reqbind_types = "sssssi";
+}else{
+	$req_sql = "INSERT INTO PurchaseOrder (Purchase_No, PurchaseStatus, Category,  RequisitionType, UserID) VALUES (?,?,?,?,?)";
+	$reqbind_types = "ssssi";
+}
 
 if($clean_data['requisitiontype'] == 'External'){
 	$req_details_sql = "INSERT INTO PurchaseDetails (ProductNo, PurchaseAmount, Qty, Rate, StandardCost, PurchaseNo) VALUES (?,?,?,?,?,?)";
@@ -30,7 +35,7 @@ if($clean_data['requisitiontype'] == 'External'){
 
 $given_sql = "INSERT INTO InternalRequisition_Given (DetailsNo) VALUES (?)";
 
-$p_key = genPK('PurchaseOrder', 'Purchase_No', 'REQ', 'Purchase_No');
+$p_key = genPK('PurchaseOrder', 'Purchase_No', 'REQ', 'PurchaseDate');
 $req_status = "Submitted";
 $usrID = $clean_data['userID'];
 

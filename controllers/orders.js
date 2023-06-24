@@ -193,7 +193,7 @@ theApp.controller("create_orderCtlr", function($scope, $timeout, $http, userDeta
 	/* Validate Form Data and submit */
 	$scope.validate = function (){
 
-		let form_values = {station:$scope.station, to:$scope.to, delv_point:$scope.delv_point, details:order_details, userID: userDetails.getUserID()};
+		let form_values = {station:$scope.station, reciepient: $scope.reciepient, to:$scope.to, delv_point:$scope.delv_point, details:order_details, userID: userDetails.getUserID()};
 		
 		document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
 		document.getElementsByClassName("save_btn")[0].style.cursor = "not-allowed";
@@ -329,7 +329,8 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 		angular.forEach(response.data.ord_details, function(v)  {v.deleted = false})//Add deleted property for toggling deleted class in ngRepeat
 		$scope.order_items = response.data.ord_details;//edit_ordersPage[0].order_items;
 		$scope.getGrandTotal = gTotal(response.data.ord_details);
-		console.log($scope.order_items);
+		$scope.totalPaid = response.data.ordpymt[0].TotalPaid;
+		console.log($scope.order_items, response.data.ordpymt[0].TotalPaid);
 		if(ordStatus === "Pending" || ordStatus === "In Progress"){
 			$scope.showDeliverBtn = true;
 			$scope.showTimer = true;
@@ -339,6 +340,30 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 		console.log(response.data);
 	});
 	
+	
+	$scope.markPaid = function(paidStatus, total, details_no){
+		if(!Number($scope.totalPaid)){
+			alert("This order has no payments, please add payments before marking items as paid.");
+		}else if(total > Number($scope.totalPaid)){
+			alert("Cannot mark item as paid, total is greater than payments. Adjust payments to continue");
+		}else{
+			$http.post("../crud/update/setItemPaid.php", {PaidStatus: paidStatus, Total: total, Details_No: details_no, ordNo: $scope.ordNo}).then(function(response){
+				if(response.data.status == 1){
+					$scope.order_items = response.data.ord_details;
+					$timeout(function(){
+						$scope.$apply();
+						//console.log(response.data.ord_details);
+					}, 2000);
+					console.log(response.data.message);
+				}else{
+					alert(response.data.message);
+				}
+			}, function(response){
+				console.log(response.data);
+			});
+			console.log(Number(paidStatus), total, details_no);
+		}
+	}
 	
 	$scope.deliver = function(){
 		stop_timer();

@@ -409,6 +409,16 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 			}else{
 				return false;
 			}
+		}else{
+			if($routeParams.category === "Eats"){
+				return false;
+			}else{
+				if($scope.reqType == "Internal"){
+					return false;
+				}else{
+					return true;
+				}
+			}
 		}
 	}
 	
@@ -419,9 +429,17 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 			}else{
 				return true;
 			}
-		}/*else{
-			return true;
-		}*/
+		}else{
+			if($routeParams.category === "Eats"){
+				return false;
+			}else{
+				if($scope.reqType == "Internal"){
+					return false;
+				}else{
+					return true;
+				}
+			}
+		}
 	}
 	
 	$scope.showQtyRcvd = function(){
@@ -431,15 +449,24 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 			}else{
 				return true;
 			}
-		}/*else{
-			return true;
-		}*/
+		}else{
+			if($routeParams.category === "Eats"){
+				return false;
+			}else{
+				if($scope.reqType == "Internal"){
+					return false;
+				}else{
+					return true;
+				}
+			}
+		}
 	}
 	
 	//if($routeParams.category === "Eats" || $routeParams.category === undefined){
 	$http.post("../crud/read/getRequisition.php", {reqNo: $routeParams.reqNo, type: $routeParams.type}).then(function(response){
 		$scope.station = response.data.requisition[0].Station;
 		$scope.category = response.data.requisition[0].Category;
+		$scope.reqType = response.data.requisition[0].RequisitionType;
 		if($routeParams.category === "Eats"){
 		angular.forEach(response.data.req_details, function(v)  {//Add deleted property for toggling deleted class in ngRepeat
 			if(v.isChecked === '0'){
@@ -466,7 +493,7 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 						v.QtyGiven = Number(v.QtyGiven);
 						v.qty_recvd = Number(v.qty_recvd);
 					}
-				});
+				});console.log(response.data.req_details);
 			}else{
 				//$scope.showGiven = true;
 				angular.forEach(response.data.req_details, function(v)  {
@@ -504,7 +531,7 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 			}
 		}
 		
-		$scope.requisition_items = response.data.req_details;console.log(response.data.req_details);
+		$scope.requisition_items = response.data.req_details;//console.log(response.data.req_details);
 	},function(response){
 		console.log(response.data);
 	});
@@ -513,7 +540,33 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 	}*/
 	$scope.recieveItem = function(row, index){//Entire row is brought to access the values of the object as needed (Consider this unlike in Create & Edit)
 		//let qty_recvd = document.getElementsByClassName("qty_recvd");
-		if($routeParams.category === "Eats"){
+		if(userDetails.getUserLevel() === "Level1"){	
+			if($routeParams.category === "Eats"){
+				if(row[index].isChecked){
+					row[index].qty_recvd = Number(row[index].qty);
+					recvd_items.push({Details_No: row[index].DetailsNo, RecievedStatus: 1, QtyRecieved: row[index].qty_recvd});
+					//console.log("Danku",recvd_items);
+				}else{
+					row[index].qty_recvd = null;
+					removeItem(recvd_items, index);
+					//console.log("Ooops", recvd_items);
+				}
+			}else{
+				if(row[index].isChecked){
+					if(!row[index].isGiven){
+						alert("Item is not yet given");
+						row[index].isChecked = false;
+					}else{
+						row[index].qty_recvd = row[index].QtyGiven;
+						recvd_items.push({Details_No: row[index].DetailsNo, RecievedStatus: 1, QtyRecieved: row[index].qty_recvd});
+						//console.log("Danku",recvd_items);
+					}
+				}else{
+					row[index].qty_recvd = null;
+					removeItem(recvd_items, index);
+				}
+			}
+		}else{
 			if(row[index].isChecked){
 				row[index].qty_recvd = Number(row[index].qty);
 				recvd_items.push({Details_No: row[index].DetailsNo, RecievedStatus: 1, QtyRecieved: row[index].qty_recvd});
@@ -522,21 +575,7 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 				row[index].qty_recvd = null;
 				removeItem(recvd_items, index);
 				//console.log("Ooops", recvd_items);
-			}
-		}else{
-			if(row[index].isChecked){
-				if(!row[index].isGiven){
-					alert("Item is not yet given");
-					row[index].isChecked = false;
-				}else{
-					row[index].qty_recvd = row[index].QtyGiven;
-					recvd_items.push({Details_No: row[index].DetailsNo, RecievedStatus: 1, QtyRecieved: row[index].qty_recvd});
-					//console.log("Danku",recvd_items);
-				}
-			}else{
-				row[index].qty_recvd = null;
-				removeItem(recvd_items, index);
-			}
+			}			
 		}
 	}
 	
@@ -544,37 +583,55 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 		let qty = row[index].qty_recvd;
 		
 		if($routeParams.category === "Eats"){
-		if(qty === 0){
-			alert("Cannot recieve 0 items, Recv'd will be unchecked instead");
-			row[index].isChecked = false;
-			removeItem(recvd_items, index);
-			row[index].qty_recvd = null;
-			row[index].FinalAmount = null;
-		}else if(qty === null && row[index].isChecked){
-			alert("Quantity recieved is required, Recv'd will be unchecked instead");
-			row[index].isChecked = false;
-			removeItem(recvd_items, index);
-			row[index].qty_recvd = null;
-			row[index].FinalAmount = null;
-		}else if(qty !== null && row[index].isChecked && !row[index].isDisabled){
-			//if(qty !== Number(row[index].qty)){
-				row[index].FinalAmount = qty * Number(row[index].rate);
-				if(recvd_items.length === 1){
-					recvd_items[0].QtyRecieved = qty;
-					recvd_items[0].FinalAmount = row[index].FinalAmount;
-				}else{
-					recvd_items[index].QtyRecieved = qty;
-					recvd_items[index].FinalAmount = row[index].FinalAmount;
-				}
-			//}
-		}
+			if(qty === 0){
+				alert("Cannot recieve 0 items, Recv'd will be unchecked instead");
+				row[index].isChecked = false;
+				removeItem(recvd_items, index);
+				row[index].qty_recvd = null;
+				row[index].FinalAmount = null;
+			}else if(qty === null && row[index].isChecked){
+				alert("Quantity recieved is required, Recv'd will be unchecked instead");
+				row[index].isChecked = false;
+				removeItem(recvd_items, index);
+				row[index].qty_recvd = null;
+				row[index].FinalAmount = null;
+			}else if(qty !== null && row[index].isChecked && !row[index].isDisabled){
+				//if(qty !== Number(row[index].qty)){
+					row[index].FinalAmount = qty * Number(row[index].rate);
+					if(recvd_items.length === 1){
+						recvd_items[0].QtyRecieved = qty;
+						recvd_items[0].FinalAmount = row[index].FinalAmount;
+					}else{
+						recvd_items[index].QtyRecieved = qty;
+						recvd_items[index].FinalAmount = row[index].FinalAmount;
+					}
+				//}
+			}
 		}else{
-			if(!row[index].isDisabledRcv /*|| row[index].isGiven*/){
-				alert("Qty Recieved should equal to Qty Given, adjust Qty Given instead");
-				row[index].qty_recvd = row[index].QtyGiven;
+			if(userDetails.getUserLevel() === "Level1"){	
+				if(!row[index].isDisabledRcv /*|| row[index].isGiven*/){
+					alert("Qty Recieved should equal to Qty Given, adjust Qty Given instead");
+					row[index].qty_recvd = row[index].QtyGiven;
+				}
+			}else{
+				if(Number(row[index].isChecked)){
+					if(qty !== null /* && !row[index].isDisabled*/){
+						row[index].FinalAmount = qty * Number(row[index].rate);
+						if(recvd_items.length === 1){
+							recvd_items[0].QtyRecieved = qty;
+							recvd_items[0].FinalAmount = row[index].FinalAmount;
+						}else{
+							recvd_items[index].QtyRecieved = qty;
+							recvd_items[index].FinalAmount = row[index].FinalAmount;
+						}
+					}//console.log(row[index].isChecked);
+				}else{
+					alert("Mark item as recieved before you continue");
+					row[index].qty_recvd = 0;
+				}
 			}
 		}
-		console.log(qty, index, recvd_items,row[index].qty_recvd);
+		//console.log(qty, index, recvd_items,row[index].qty_recvd);
 	}
 	
 	$scope.updFinAmnt = function(row, index){
@@ -638,7 +695,7 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 		}
 	}
 	
-	$scope.validate = function(){
+	$scope.validate = function(){console.log(postData());
 		if(approve()){
 		if(/*recvd_items.length !== 0*/checkArrSize()){
 			$http.post(postUrl(), /*{recvd_items}*/postData()).then(function(response){
@@ -689,15 +746,27 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 				return true;
 			}
 		}else{
-			if($scope.category === "Drinks"){
-				if(given_items.length === 0){
-					alert("No Item has been marked as given");
+			//if($scope.category === "Drinks"){
+				if($scope.reqType == "Internal"){
+					if(given_items.length === 0){
+						alert("No Item has been marked as given");
+					}else{
+						return true;
+					}
 				}else{
-					return true;
+					if($routeParams.category === "Eats"){
+					 	return true;	
+					 }else{
+						if(recvd_items.length === 0){
+							alert("No Item has been marked as recived");
+						}else{
+							return true;
+						}
+					}
 				}
-			}else{
+			/*}else{
 				return true;
-			}
+			}*/
 		}
 	}
 	
@@ -706,6 +775,7 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 		if(userDetails.getUserLevel() === "Level1"){
 			_data = {reqNo: $routeParams.reqNo, recvd_items: recvd_items};
 		}else{
+			if($scope.reqType == "Internal"){
 			if($routeParams.category === "Eats"){
 				_data = {reqNo: $routeParams.reqNo, PurchaseStatus: $scope.approve};
 			}else{
@@ -715,6 +785,17 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 					_data = {given_items: given_items};
 				}
 			}
+			}else{
+				if($routeParams.category === "Eats"){
+				_data = {reqNo: $routeParams.reqNo, PurchaseStatus: $scope.approve};
+			}else{
+				if($scope.approve !== undefined){
+					_data = {reqNo: $routeParams.reqNo, PurchaseStatus: $scope.approve, recvd_items: recvd_items};
+				}else{
+					_data = {recvd_items: recvd_items};
+				}
+			}
+			}
 		}
 		return _data;
 	}
@@ -723,7 +804,12 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 		if(userDetails.getUserLevel() === "Level1"){
 			return "../crud/update/recieveItems.php";
 		}else{
-			return "../crud/update/approve_giveItems.php";
+			if($scope.reqType == "Internal" || $routeParams.category === "Eats"){
+				return "../crud/update/approve_giveItems.php";
+			}else{
+				return "../crud/update/recieveItems.php";
+			}
+			
 		}
 	}
 });

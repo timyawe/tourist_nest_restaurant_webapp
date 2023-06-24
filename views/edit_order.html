@@ -21,7 +21,7 @@
 					</div>
 
 					<div id="order_status" class="animate_show" ng-show="showTimer">
-						<p id="late_order_label" style="display:none">Order is late, Deliver Now!!</p>
+						<p id="late_order_label" style="display:none">Order is late, Deliver If Ready!!</p>
 						<div id="order_timer_box">
 							<div id="order_time_label" ng-class="{order_time_warning: applyWarnClass, order_time_critical: applyCriticalClass}">Order Timer</div>
 							<span id="order_time">{{ordertime}}</span>
@@ -38,12 +38,12 @@
 						<div class="form_input_row">
 							<label style="width:12em">Delivery Point:</label><input type="text" class="txt_box" value="{{::delv_point}}" readonly />
 						</div>
-						<div class="deliver_btn_box animate_if" ng-if="showDeliverBtn">
+						<!--<div class="deliver_btn_box animate_if" ng-if="showDeliverBtn"> Delivering order is left for the kitchen side of things
 							<button data-ng-click="deliver()">Deliver Now</button>
-						</div>
-						<div class="form_input_row animate_if" ng-if="showVerify">
+						</div>-->
+						<!--<div class="form_input_row animate_if" ng-if="showVerify">
 						<label>Verify:</label><select class="select_box"><option>Not Verified</option><option>Verified</option></select>
-						</div>
+						</div>-->
 					</div>
 				</div>
 				<div id="form_content">
@@ -64,12 +64,15 @@
 							<div class="grid_view_header_cell">
 								<span>Total</span>
 							</div>
+							<div class="grid_view_header_cell">
+								<span>Paid</span>
+							</div>
 							<div class="grid_view_header_cell action_cell">
 								<span><button type="button" class="add_row_btn" data-ng-click="addRow()"><i class="fa fa-plus"></i></button></span>
 							</div>
 						</div>
 						
-						<div id="grid_view_content" data-ng-repeat="order_item in order_items" class="animate_repeat" ng-class="{item_deleted: order_item.deleted}">
+						<div class="grid_view_content" data-ng-repeat="order_item in order_items" class="animate_repeat" ng-class="{item_deleted: order_item.deleted}">
 							<div class="grid_view_content_cell">
 								<span>{{$index+1}}</span>
 							</div>
@@ -85,11 +88,14 @@
 							<div class="grid_view_content_cell">
 								<span><input type="text" class="txt_box" value="{{::order_item.total | number:0}}" readonly /></span>
 							</div>
+							<div class="grid_view_content_cell">
+								<span<button style="cursor: pointer" type="button" ng-click="markPaid(order_item.PaidStatus, order_item.total, order_item.Details_No)"><i ng-class="(order_item.PaidStatus == 1)? 'fa fa-check-circle-o' : 'fa fa-times-circle-o'" ng-style="{'color': (order_item.PaidStatus == 1)? 'green':'red','font-size': (order_item.PaidStatus == 1)? '1.5em':'1.5em'}"></i></button></span>
+							</div>
 							<div class="grid_view_content_cell action_cell">
 								<span data-ng-click="deleteLineItem(order_item.Details_No, $index)"><i ng-class="(!order_item.deleted)? 'fa fa-trash' : 'fa fa-undo'"></i></span><!--class="icon"-->
 							</div>
 						</div>
-						<div id="grid_view_content" class="animate_repeat animate_if" data-ng-repeat="row in rows" ng-if="showEditDetails">
+						<div class="grid_view_content" class="animate_repeat animate_if" data-ng-repeat="row in rows" ng-if="showEditDetails">
 							<div class="grid_view_content_cell">
 								<span>{{row.ID}}</span>
 							</div>
@@ -108,6 +114,9 @@
 							</div>
 							<div class="grid_view_content_cell">
 								<span><input type="text" class="txt_box total_input" data-ng-model="row.total" readonly /></span>
+							</div>
+							<div class="grid_view_content_cell">
+								<span<button style="color: red;font-size:1.5em" type="button"><i class="fa fa-times-circle-o"></i></button></span>
 							</div>
 							<div class="grid_view_content_cell action_cell">
 								<span data-ng-click="removeRow($index)"><i class="fa fa-close"></i></span>

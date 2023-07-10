@@ -92,7 +92,7 @@
 								<span<button style="cursor: pointer" type="button" ng-click="markPaid(order_item.PaidStatus, order_item.total, order_item.Details_No)"><i ng-class="(order_item.PaidStatus == 1)? 'fa fa-check-circle-o' : 'fa fa-times-circle-o'" ng-style="{'color': (order_item.PaidStatus == 1)? 'green':'red','font-size': (order_item.PaidStatus == 1)? '1.5em':'1.5em'}"></i></button></span>
 							</div>
 							<div class="grid_view_content_cell action_cell">
-								<span data-ng-click="deleteLineItem(order_item.Details_No, $index)"><i ng-class="(!order_item.deleted)? 'fa fa-trash' : 'fa fa-undo'"></i></span><!--class="icon"-->
+								<span data-ng-click="deleteLineItem(order_item, $index)"><i ng-class="(!order_item.deleted)? 'fa fa-trash' : 'fa fa-undo'"></i></span><!--class="icon"-->
 							</div>
 						</div>
 						<div class="grid_view_content" class="animate_repeat animate_if" data-ng-repeat="row in rows" ng-if="showEditDetails">

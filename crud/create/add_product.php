@@ -23,7 +23,7 @@ $itms_sld_fields = createFields($clean_data, $itms_sld_templ);
 $pdt_sql = "INSERT INTO Products (Product_No, Description, Category, Status) VALUES (?,?,?,?)";
 $purch_sql = "INSERT INTO Items_Bought (UnitCostPrice, UnitQty, ProductNo) VALUES (?,?,?)";
 $sales_sql = "INSERT INTO Items_Sold (SaleName, UnitSalePrice, MeasureSold, PrepTime, ProductNo) VALUES (?,?,?,?,?)";
-$p_key = genPK('Products', 'Product_No', 'PDT', 'Product_No');
+$p_key = genPK('Products', 'Product_No', 'PDT', 'ID');
 $pdtbind_types = "ssss";
 $purchbind_types = "dss";
 $salesbind_types = "sddis";
@@ -34,8 +34,8 @@ array_unshift($itms_sld_fields, $salesbind_types);
 $itms_bought_fields["pkey"] = $p_key;
 $itms_sld_fields["pkey"] = $p_key;
 
-if(!array_key_exists("item_sold_check", $clean_data)){//echo "Nice";
-	
+if(!array_key_exists("item_sold_check", $clean_data) && !array_key_exists("item_bought_check", $clean_data)){//echo "Nice";
+	//print_r($clean_data);
 	$pdtconn_result = json_decode(dbConn($pdt_sql,$pdt_fields, 'insert'));
 	if($pdtconn_result->status !== 0){
 		$purchconn_res = json_decode(dbConn($purch_sql,$itms_bought_fields, 'insert'));
@@ -56,13 +56,35 @@ if(!array_key_exists("item_sold_check", $clean_data)){//echo "Nice";
 	}else{
 		echo $pdtconn_result;//check it out
 	}
-}else{//print_r($pdt_fields);
+}
+if(array_key_exists("item_sold_check", $clean_data)){//print_r($clean_data);
 	$pdtconn_result = json_decode(dbConn($pdt_sql,$pdt_fields, 'insert'));
 	if($pdtconn_result->status !== 0){
 		echo dbConn($sales_sql,$itms_sld_fields, 'insert');
 	}else{
 		echo $pdtconn_result;
 	}//print_r($itms_sld_fields);
+}
+
+if(array_key_exists("item_bought_check", $clean_data)){//print_r($clean_data);
+	$pdtconn_result = json_decode(dbConn($pdt_sql,$pdt_fields, 'insert'));
+	if($pdtconn_result->status !== 0){
+		$purchconn_res = json_decode(dbConn($purch_sql,$itms_bought_fields, 'insert'));
+		if($purchconn_res->status !== 0){
+			$items_bought_key = $purchconn_res->insertID;
+			$stocklevel_rec = $clean_data['stocklevel_rec'];
+			$stocklevel_res = $clean_data['stocklevel_res'];
+			$stocklevel_bar = $clean_data['stocklevel_bar'];
+			$stocklevelconn_fields = array('iiii', $stocklevel_rec,$stocklevel_res,$stocklevel_bar, $items_bought_key);
+			$stocklevels_sql = "INSERT INTO StockLevels (Reception, Restaurant, Bar, ItemsBoughtID) VALUES (?,?,?,?)";
+			/*$stocklevelconn_res = json_decode(*/echo dbConn($stocklevels_sql, $stocklevelconn_fields, 'insert');/*);
+			if($stocklevelconn_res->status !== 0){
+				echo $stocklevelconn_res;// dbConn($sales_sql,$itms_sld_fields, 'insert');
+			}*/
+		}else{
+			echo $pdtconn_result;
+		}
+	}
 }
 
 function createFields($genarr, $temparr/*, $fieldsarr*/){

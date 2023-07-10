@@ -40,7 +40,7 @@
 						</div>
 					</div>
 						
-					<div class="grid_view_content" data-ng-repeat="extra in extras" class="animate_repeat">
+					<div class="grid_view_content" data-ng-repeat="extra in extras" class="animate_repeat" ng-class="{item_deleted: extra.isDeleted == 1}">
 						<div class="grid_view_content_cell">
 							<span>{{$index+1}}</span>
 						</div>

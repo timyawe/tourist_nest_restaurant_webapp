@@ -20,7 +20,7 @@ $res = new stdClass();
 //echo $ordNo;echo $detailsNo;echo $PaidStatus;
 
 if(!$PaidStatus){
-	$dbAccess = json_decode(dbConn("UPDATE OrderDetails SET PaidStatus = ? WHERE Details_No = $detailsNo", array('i',$PaidStatus), 'update'));
+	$dbAccess = json_decode(dbConn("UPDATE OrderDetails SET PaidStatus = ?, PaidDate = ? WHERE Details_No = $detailsNo", array('is','null'), 'update'));
 }else{
 	$ordpymt = intval(json_decode(dbConn("SELECT TotalPaid FROM OrderPayments_grouped WHERE OrderNo = '$ordNo'" , array(), 'select'))->message[0]->TotalPaid);
 	$items_paid_total = intval(json_decode(dbConn("SELECT if(isnull(sum(total)),0,sum(total)) AS PaidTotal FROM OrderDetailsExtended WHERE OrderNo = '$ordNo' AND PaidStatus = 1" , array(), 'select'))->message[0]->PaidTotal);
@@ -29,7 +29,7 @@ if(!$PaidStatus){
 		$res->message = "Item not marked as paid, order payments not enough to cover item total. Adjust payments to continue";
 		echo json_encode($res);
 	}else{
-		$dbAccess = json_decode(dbConn("UPDATE OrderDetails SET PaidStatus = ? WHERE Details_No = $detailsNo", array('i',$PaidStatus), 'update'));
+		$dbAccess = json_decode(dbConn("UPDATE OrderDetails SET PaidStatus = ?, PaidDate = ? WHERE Details_No = $detailsNo", array('is',1,date('Y-m-d H:i:s')), 'update'));
 	} 
 	//var_dump($ordpymt);var_dump($items_paid_total);
 }

@@ -31,6 +31,7 @@
 									<option value="">Choose Category</option>
 									<option value="Eats">Eats</option>
 									<option value="Drinks">Drinks</option>
+									<option value="Kitchen">Kitchen Items</option>
 								</select>
 							</div>
 						</div>
@@ -56,12 +57,15 @@
 								<div ng-if="showAmounts" class="grid_view_header_cell animate_if">
 									<span>Purchase Amount</span>
 								</div>
+								<div class="grid_view_header_cell animate_if">
+									<span>Last Recieved</span>
+								</div>
 								<div class="grid_view_header_cell action_cell">
 									<span><button data-ng-click="addRow()" type="button" class="add_row_btn"><i class="fa fa-plus"></i></button></span>
 								</div>
 							</div>
 							
-							<div id="grid_view_content" data-ng-repeat="row in rows track by $index" class="animate_repeat">
+							<div class="grid_view_content" data-ng-repeat="row in rows track by $index" class="animate_repeat">
 								<div class="grid_view_content_cell">
 									<span>{{$index +1}}</span>
 								</div>
@@ -84,6 +88,9 @@
 								</div>
 								<div ng-if="showAmounts" class="grid_view_content_cell animate_if">
 									<span><input type="text" class="txt_box " data-ng-model="row.purchaseAmount" data-ng-blur="updPurchAmnt(row, $index)" ng-readonly="row.item === undefined"/></span>
+								</div>
+								<div class="grid_view_content_cell animate_if">
+									<span><input type="text" class="txt_box date_input" data-ng-model="row.item.lastRecieved | date: 'dd/MM/yyyy'" readonly/></span>
 								</div>
 								<div class="grid_view_content_cell action_cell">
 									<span data-ng-click="removeRow($index)"><i class="fa fa-close"></i></span>

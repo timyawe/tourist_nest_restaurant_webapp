@@ -13,7 +13,7 @@ $reqNo_pk = $clean_data['reqNo'];
 $reqType = $clean_data['reqType'];
 $reqDetails = $clean_data['addedLines'];
 
-if($reqType === 'intEats' || $reqType === 'extDrinks'){
+if($reqType === 'intEats' || $reqType === 'intKitchen' || $reqType === 'extDrinks'){
 $req_details_sql = "INSERT INTO PurchaseDetails (ProductNo, PurchaseAmount, Qty, Rate, StandardCost,PurchaseNo) VALUES (?,?,?,?,?,?)";
 $req_detbind_types = "sdidds";
 }else{

@@ -5,8 +5,8 @@ $res_records = new stdClass();
 if(isset($_GET['station'])){
 	$station = $_GET['station'];
 	$sql = "select Product_No AS value, Description AS label, UnitCostPrice AS rate, Category,
-			(if(isnull(reqsTotal),0,reqsTotal) - ((if(isnull(ordersTotal),0,ordersTotal) + if(isnull(offersTotal),0,offersTotal)) + if(isnull(spoiltTotal),0,spoiltTotal) + if(isnull(missingTotal),0,missingTotal))) AS finish,
-			$station as MinStockLevel, if(isnull(RecievedStatus), 1, RecievedStatus) as Recieved
+			(if(isnull(reqsTotal),0,round(reqsTotal/measuresold)) - ((if(isnull(ordersTotal),0,ordersTotal) + if(isnull(offersTotal),0,offersTotal)) + if(isnull(spoiltTotal),0,spoiltTotal) + if(isnull(missingTotal),0,missingTotal))) AS finish,
+			$station as MinStockLevel, if(isnull(RecievedStatus), 1, RecievedStatus) as Recieved, lastRecieved
 			from 
 			((((((products join items_bought on ((products.Product_No = items_bought.ProductNo))) 
 			left join 
@@ -22,7 +22,11 @@ if(isset($_GET['station'])){
 			left join
 				(select ProductNo, $station from itemsboughtextended) as stockLevelQty on product_no = stockLevelQty.productno
 			left join
-				(select productno, RecievedStatus from purchasedetailsextended join purchaseorder on purchaseNo = Purchase_No where RecievedStatus = 0 AND Station = '$station') as lastRecieved on Product_No = lastRecieved.productNo
+				(select productno, RecievedStatus from purchasedetailsextended join purchaseorder on purchaseNo = Purchase_No where RecievedStatus = 0 AND Station = '$station') as recievedStatus on Product_No = recievedStatus.productNo
+			left join
+				(select productno, MeasureSold from items_sold ) as msrSold on Product_No = msrSold.productno
+			left join
+				(select productno, max(date(DateRecieved)) as lastRecieved from purchasedetails join purchaseorder on purchaseNo = Purchase_No where RecievedStatus = 1 AND Station = '$station' GROUP BY ProductNo) as lastRecieved on Product_No = lastRecieved.productNo
 			where (`nest_restaurant`.`products`.`Status` = 'Active')";
 }else{
 	//$sql = "SELECT * FROM ReqItemsList";

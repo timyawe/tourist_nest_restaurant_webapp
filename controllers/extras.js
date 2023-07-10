@@ -170,5 +170,34 @@ theApp.controller("create_extraCtlr", function($scope, $http, $routeParams, user
 				return "../crud/read/getMissing.php/?missingID="+ $routeParams.ID;
 			}
 		}
+		
+		$scope.deleteLineItem = function(row){
+			console.log(row);
+			toggleLoader("block");
+			if(!row.isDeleted){
+				$http.post("../crud/update/setOfferItem.php", {offersID: row.OffersID, offerDetailsID: row.OfferDetailsID, isDeleted: 1, userID: userDetails.getUserID()}).then(function(response){
+					if(response.data.status == 1){
+						row.isDeleted = 1;
+						alert("Item has been marked as deleted, and will be permanently deleted in 30 days");
+						toggleLoader("none");
+					}else{
+						alert(`An error occured: ${response.data.message}`);
+						console.log(response.data);
+						toggleLoader("none");
+					}
+				},function(response){
+					console.log(response);
+					httpResponse.error(0, response.data.message);
+				});
+			}else{
+				$http.post("../crud/update/setOfferItem.php", {offersID: row.OffersID, offerDetailsID: row.OfferDetailsID, isDeleted: 0, userID: userDetails.getUserID()}).then(function(response){
+					if(response.data.status == 1){
+						row.isDeleted = 0;
+						alert("Item has been restored");
+						toggleLoader("none");
+					}
+				});
+			}
+		}
 	}
 });

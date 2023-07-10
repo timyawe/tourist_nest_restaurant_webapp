@@ -15,6 +15,9 @@ if($off_res->status == 1){
 	if($off_dets_res->status == 1){
 		$json_res->status = 1;
 		$json_res->extra = $off_res->message;
+		foreach($off_dets_res->message as $v){
+			$v->isDeleted =  (int)$v->isDeleted;
+		}
 		$json_res->extra_details = $off_dets_res->message;
 		
 		echo json_encode($json_res);

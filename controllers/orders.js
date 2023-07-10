@@ -521,13 +521,21 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 	}
 	
 	/* Function to delete a existing record from the orders details */
-	$scope.deleteLineItem = function(detailsID, index){
-		if($scope.order_items[index].deleted === false){
+	$scope.deleteLineItem = function(lineItem, index){
+		/*if($scope.order_items[index].deleted === false){
 			$scope.order_items[index].deleted = true;
-			deleted_order_lines.push({detailsID/*, index*/});
+			deleted_order_lines.push({detailsID/*, index});
 		}else{
 			$scope.order_items[index].deleted = false;
 			deleted_order_lines.splice(index,1);
+		}*/
+		
+		if(lineItem.deleted === false){
+			lineItem.deleted = true;
+			deleted_order_lines.push({detailsID:lineItem.Details_No, paidStatus:lineItem.PaidStatus, total:lineItem.total});
+		}else{
+			lineItem.deleted = false;
+			deleted_order_lines.splice(index,1);console.log(deleted_order_lines);
 		}
 		
 		if(deleteAllItems()){
@@ -538,7 +546,7 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 				alert("Looks like you're deleting all items, if you continue to submit this order will be deleted");
 			}
 		}
-		//console.log(deleted_order_lines, $scope.order_items[index]);
+		console.log(deleted_order_lines,index/*, $scope.order_items[index]*/);
 	}
 	
 	function deleteAllItems(){
@@ -551,7 +559,7 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 	
 	//Delete Order Line Promise
 	function deletePromise(_data){
-		return $http.delete("../crud/delete/deleteOrderLine.php", {data: _data});
+		return $http.post("../crud/delete/deleteOrderLine.php", /*{data: */_data);
 	}
 	
 	//Add Order Line Promise
@@ -564,7 +572,8 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 		
 		if(!deleteAllItems()){
 			if(deleted_order_lines.length !== 0){
-				promisesArr.push(deletePromise(/*{deletedLines: */deleted_order_lines));
+				promisesArr.push(deletePromise({ordNo: $routeParams.ordNo, deletedLines: deleted_order_lines}));
+				console.log(deletePromise({ordNo: $routeParams.ordNo, deletedLines: deleted_order_lines}))
 				collected = true;
 			}
 			
@@ -573,12 +582,14 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 				collected = true;
 			}
 		}else{
-			if(ordStatus === "Delivered"){
-				alert("This order is already delivered, make sure to add an item before you Save");
-				collected = false;
-			}else{
-				promisesArr.push($http.delete("../crud/delete/deleteOrder.php", {data:{ordNo: $routeParams.ordNo, userID: userID}}));
-				collected = true;
+			if(userDetails.getUserLevel() === "Level1"){
+				if(ordStatus === "Delivered"){
+					alert("This order is already delivered, make sure to add an item before you Save");
+					collected = false;
+				}else{
+					promisesArr.push($http.delete("../crud/delete/deleteOrder.php", {data:{ordNo: $routeParams.ordNo, userID: userID}}));
+					collected = true;
+				}
 			}
 		}
 		
@@ -640,8 +651,8 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 
 });
 
-theApp.controller("view_orderCtlr", function($scope, $timeout, $interval, $http, $routeParams/*, $q, userDetails, httpResponse, lineDetails*/){
-	//let userID = userDetails.getUserID();
+theApp.controller("view_orderCtlr", function($scope, $timeout, $interval, $http, $routeParams, userDetails/*, $q, httpResponse, lineDetails*/){
+	let userID = userDetails.getUserID();
 	let odrStartTime;
 	let ordMaxTime;
 	let ordStatus;
@@ -655,6 +666,9 @@ theApp.controller("view_orderCtlr", function($scope, $timeout, $interval, $http,
 	$scope.showDeliverBtn = false;
 	$scope.showTimer = false;
 	$scope.showOrderMeta = true;
+	$scope.showPaid = true;
+	$scope.showPymtBtn = true;
+	$scope.showDeleteBtn = true;
 	$scope.showVerify = true;
 	//$scope.verify = "Not Verified";
 	
@@ -674,7 +688,7 @@ theApp.controller("view_orderCtlr", function($scope, $timeout, $interval, $http,
 		$scope.ordNo = $routeParams.ordNo;
 		$scope.station = response.data.order[0].Station;
 		$scope.to = response.data.order[0].To;
-		
+		$scope.reciepient = response.data.order[0].Reciepient;
 		if(!response.data.order[0].DeliveryPoint){
 			$scope.delv_point = "Go";
 		}else{
@@ -717,7 +731,7 @@ theApp.controller("view_orderCtlr", function($scope, $timeout, $interval, $http,
 		}
 		angular.forEach(response.data.ord_details, function(v)  {v.deleted = false})//Add deleted property for toggling deleted class in ngRepeat
 		$scope.order_items = response.data.ord_details;//edit_ordersPage[0].order_items;
-		//$scope.getGrandTotal = gTotal(response.data.ord_details);
+		$scope.getGrandTotal = gTotal(response.data.ord_details);
 		console.log($scope.order_items);
 		/*if(ordStatus === "Pending" || ordStatus === "In Progress"){
 			$scope.showDeliverBtn = true;
@@ -733,7 +747,25 @@ theApp.controller("view_orderCtlr", function($scope, $timeout, $interval, $http,
 		console.log(response.data);
 	});
 	
-	
+	$scope.deleteOrder = function(){
+		if(confirm("Are you sure you want to delete this order?") == 1){
+			//console.log("deleted", userID);
+			$http.delete("../crud/delete/deleteOrder.php", {data:{ordNo: $routeParams.ordNo, userID: userID}}).then(function(response){
+				if(response.data.status == 1){
+					httpResponse.success(1, "Deleted Succesfuly, please wait...");
+					document.body.style.cursor = "wait";
+					$timeout(function(){
+						//wait for the httpResponse above to finish and return to the orders list
+						document.getElementById("orders_btn").click();
+						document.body.style.cursor = "auto";
+					}, 7000)
+				}
+			
+			}, function(response){
+				httpResponse.error(0, response.data.status);
+			});
+		}
+	}
 
 });
 
@@ -798,14 +830,14 @@ theApp.controller("OrdpaymentCtlr", function($scope, $timeout, $http, $routePara
 		let pdate = document.getElementsByName("paymentdate")[0].value;// new Date($scope.pdate/*'2022-12-24 04:00:13'*/).toLocaleDateString();
 		let form_values = {pdate:pdate, pamnt:$scope.pamnt, ptype:$scope.ptype, ordNo:$scope.ordNo, userID:userID/*, status:$scope.status*/};
 		
-		$http.get("../crud/read/compareAmount.php", {params: {pamnt: form_values.pamnt, ordNo:$scope.ordNo}}).then(function(response){
+		if($routeParams.pymtID === undefined){
+			$http.get("../crud/read/compareAmount.php", {params: {pamnt: form_values.pamnt, ordNo:$scope.ordNo}}).then(function(response){
 			//console.log(response.data/*.message*/);
-			if(response.data.status === 0){
-				alert(response.data.message);
-				$scope.pamnt = "";
-				//amountOk = false;
-			}else{
-				if($routeParams.pymtID === undefined){
+				if(response.data.status === 0){
+					alert(response.data.message);
+					$scope.pamnt = "";
+					//amountOk = false;
+				}else{
 					$http.post("../crud/create/add_orderpayment.php", form_values).then(function(response){
 						httpResponse.success(1, response.data.message);
 						exitEditMode("payments_btn");
@@ -814,26 +846,26 @@ theApp.controller("OrdpaymentCtlr", function($scope, $timeout, $http, $routePara
 						//document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
 					});
 					//console.log($scope.pdate, pdate);
-				}else{
-					let editedfields = {pymtID: $routeParams.pymtID, ordNo:$scope.ordNo, userID:userID};
-					
-					//* Use this method as one that works to only choose the edited fields
-					angular.forEach($scope.payment_form, function(v, k){
-						if(typeof v === 'object' && v.hasOwnProperty('$modelValue') && v.$dirty){
-							editedfields[k] = v.$modelValue;
-						}
-					});
-					
-					$http.post("../crud/update/setOrderPayment.php", editedfields).then(function(response){
-						httpResponse.success(1, response.data.message);
-						//console.log(response.data);
-					}, function(response){
-						httpResponse.error(0, response.data);
-						//document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
-						//console.log(response.data);
-					});
 				}
-			}
-		});
+			});
+		}else{
+			let editedfields = {pymtID: $routeParams.pymtID, ordNo:$scope.ordNo, userID:userID};
+			
+			//* Use this method as one that works to only choose the edited fields
+			angular.forEach($scope.payment_form, function(v, k){
+				if(typeof v === 'object' && v.hasOwnProperty('$modelValue') && v.$dirty){
+					editedfields[k] = v.$modelValue;
+				}
+			});
+			
+			$http.post("../crud/update/setOrderPayment.php", editedfields).then(function(response){
+				httpResponse.success(1, response.data.message);
+				//console.log(response.data);
+			}, function(response){
+				httpResponse.error(0, response.data);
+				//document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
+				//console.log(response.data);
+			});
+		}
 	}
 });

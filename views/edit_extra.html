@@ -45,13 +45,13 @@
 								<div class="grid_view_header_cell">
 									<span>Qty</span>
 								</div>
-								<!--<div class="grid_view_header_cell action_cell">
-									<span><button type="button" class="add_row_btn" data-ng-click="addRow()"><i class="fa fa-plus"></i></button></span>
-								</div>-->
+								<div class="grid_view_header_cell action_cell">
+									<span><button type="button" class="add_row_btn""><i class="fa fa-plus"></i></button></span><!-- data-ng-click="addRow()-->
+								</div>
 							</div>
 						</div>
 						
-						<div id="grid_view_content" class="animate_repeat" data-ng-repeat="extra in extras">
+						<div class="grid_view_content" class="animate_repeat" data-ng-repeat="extra in extras" ng-class="{item_deleted: extra.isDeleted == 1}">
 							<div class="grid_view_content_cell">
 								<span>{{$index +1}}</span>
 							</div>
@@ -60,6 +60,9 @@
 							</div>
 							<div class="grid_view_content_cell">
 								<span><input type="text" class="txt_box num_field" value="{{::extra.qty}}" readonly /></span>
+							</div>
+							<div class="grid_view_content_cell action_cell">
+								<span data-ng-click="deleteLineItem(extra, $index)"><i ng-class="(extra.isDeleted == 0)? 'fa fa-trash' : 'fa fa-undo'"></i></span><!--class="icon"-->
 							</div>
 						</div>
 						

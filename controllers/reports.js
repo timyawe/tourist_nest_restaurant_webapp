@@ -216,6 +216,10 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 		createEl();
 		if(category == "amounts"){
 			createAmountsSummaryTable()
+			$scope.drinks_sales_total = response.data.drinks_sales_total;
+			$scope.drinks_reqs_total = response.data.drinks_reqs_total;
+			$scope.eats_sales_total = response.data.eats_sales_total;
+			$scope.eats_reqs_total = response.data.eats_reqs_total;
 			$scope.total_sales = response.data.total_sales;
 			$scope.total_reqs = response.data.total_reqs;
 			$scope.total_mm = response.data.total_mm;
@@ -311,7 +315,7 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 		table.appendChild(/*thead*/createTableHead(category, getTableCols(category,rep_cols),thead));
 		tbody.appendChild(getTableData(category, getTableCols(category,rep_cols), createTableBody()));
 		//tbody.appendChild(createQtyTableData(qtyTableCols(rep_cols), createTableBody()));
-		
+		if(category == 'amounts'){createAmountsTotalsRow(tbody)}
 		//Dynamically added component should be compiled using angular, use $compile function 
 		$compile(tbody)($scope);
 		table.appendChild(tbody);
@@ -352,17 +356,6 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 		reqstr.appendChild(reqsamnt_td);
 		tbody.appendChild(reqstr);
 		
-		let mmpymnt_tr = document.createElement('tr');
-		mmpymnt_tr.style.color = "red";
-		let mmpymnt_txt_td = document.createElement('td');
-		mmpymnt_txt_td.appendChild(document.createTextNode('Mobile M. Payment'));
-		let mmpymnt_amnt_td = document.createElement('td');
-		mmpymnt_amnt_td.style.textAlign = "right";
-		mmpymnt_amnt_td.appendChild(document.createTextNode('-{{::total_mm}}'));
-		mmpymnt_tr.appendChild(mmpymnt_txt_td);
-		mmpymnt_tr.appendChild(mmpymnt_amnt_td);
-		tbody.appendChild(mmpymnt_tr);
-		
 		let baltr = document.createElement('tr');
 		let baltxt_td = document.createElement('td')
 		baltxt_td.appendChild(document.createTextNode('Balance'));
@@ -372,6 +365,18 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 		baltr.appendChild(baltxt_td);
 		baltr.appendChild(balamnt_td);
 		tbody.appendChild(baltr);
+		
+		let mmpymnt_tr = document.createElement('tr');
+		mmpymnt_tr.style.color = "red";
+		let mmpymnt_txt_td = document.createElement('td');
+		mmpymnt_txt_td.appendChild(document.createTextNode('Mobile M. Payment'));
+		let mmpymnt_amnt_td = document.createElement('td');
+		mmpymnt_amnt_td.style.textAlign = "right";
+		mmpymnt_amnt_td.appendChild(document.createTextNode('({{::total_mm}})'));
+		mmpymnt_tr.appendChild(mmpymnt_txt_td);
+		mmpymnt_tr.appendChild(mmpymnt_amnt_td);
+		tbody.appendChild(mmpymnt_tr);
+		
 		
 		//Dynamically added component should be compiled using angular, use $compile function 
 
@@ -575,7 +580,52 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 			td.appendChild(txt);
 			tab_row_el.appendChild(td);
 		}
+		
 		return tab_row_el;
+	}
+	
+	function createAmountsTotalsRow(tbody){
+		let totals_row = document.createElement('tr');
+		
+		let drinks_sales_total_lbl_td = document.createElement('td');
+		drinks_sales_total_lbl_td.setAttribute('colspan', 2);
+		drinks_sales_total_lbl_td.appendChild(document.createTextNode('Total'));
+		totals_row.appendChild(drinks_sales_total_lbl_td);
+		let drinks_sales_total_amt_td = document.createElement('td');
+		drinks_sales_total_amt_td.appendChild(document.createTextNode('{{::drinks_sales_total}}'));
+		drinks_sales_total_amt_td.classList.add('amount_col');
+		totals_row.appendChild(drinks_sales_total_amt_td);
+		
+		let drinks_reqs_total_lbl_td = document.createElement('td');
+		drinks_reqs_total_lbl_td.setAttribute('colspan', 2);
+		drinks_reqs_total_lbl_td.appendChild(document.createTextNode('Total'));
+		totals_row.appendChild(drinks_reqs_total_lbl_td);
+		let drinks_reqs_total_amt_td = document.createElement('td');
+		drinks_reqs_total_amt_td.appendChild(document.createTextNode('{{::drinks_reqs_total}}'));
+		drinks_reqs_total_amt_td.classList.add('amount_col');
+		totals_row.appendChild(drinks_reqs_total_amt_td);
+		
+		let eats_sales_total_lbl_td = document.createElement('td');
+		eats_sales_total_lbl_td.setAttribute('colspan', 2);
+		eats_sales_total_lbl_td.appendChild(document.createTextNode('Total'));
+		totals_row.appendChild(eats_sales_total_lbl_td);
+		let eats_sales_total_amt_td = document.createElement('td');
+		eats_sales_total_amt_td.appendChild(document.createTextNode('{{::eats_sales_total}}'));
+		eats_sales_total_amt_td.classList.add('amount_col');
+		totals_row.appendChild(eats_sales_total_amt_td);
+		
+		let eats_reqs_total_lbl_td = document.createElement('td');
+		eats_reqs_total_lbl_td.setAttribute('colspan', 2);
+		eats_reqs_total_lbl_td.appendChild(document.createTextNode('Total'));
+		totals_row.appendChild(eats_reqs_total_lbl_td);
+		let eats_reqs_total_amt_td = document.createElement('td');
+		eats_reqs_total_amt_td.appendChild(document.createTextNode('{{::eats_reqs_total}}'));
+		eats_reqs_total_amt_td.classList.add('amount_col');
+		totals_row.appendChild(eats_reqs_total_amt_td);
+		
+		totals_row.style.fontWeight = 'bold';
+		tbody.appendChild(totals_row);
+		return tbody;
 	}
 	
 	function filterItemType(){

@@ -40,28 +40,10 @@
 									<td ng-style="{'color': ('{{deliveredStatus}}' == 'Late')? 'red': 'green'}">Delivered Status:</td> <td>{{::deliveredStatus}}</td>
 								</tr>
 								</table>
-									<!--<div>
-										<p><pre>Time Created:     {{::startTime}}</pre></p>
-									</div>
-									<div>
-										<p><pre>Created By:         {{::createdBy}}</pre></p>
-									</div>
-									<div>
-										<p><pre>Recieved By:       {{::recievedBy}}</pre></p>
-									</div>
-									<div>
-										<p><pre>Delivered By:      {{::deliveredBy}}</pre></p>
-									</div>
-									<div>
-										<p><pre>Time Delivered:  {{::deliveredTime}}</pre></p>
-									</div>
-									<div>
-										<p><pre>Order Max TIme: {{::ordMaxTime}}min(s)</pre></p>
-									</div>
-									<div>
-										<p<pre ng-style="{'color': ('{{deliveredStatus}}' == 'Late')? 'red': 'green'}">Delivered Status: {{::deliveredStatus}}</pre></p>
-									</div>-->
 								</div>
+							</div>
+							<div>
+								<a href="#!order_payments/{{::ordNo}}" class="pymt_btn animate_show" ng-show="showPymtBtn">Payments</a>
 							</div>
 							<div id="order_status" class="animate_show" ng-show="showTimer">
 								<p id="late_order_label" style="display:none">Order is late, Deliver If Ready!!</p>
@@ -78,9 +60,9 @@
 								<div class="form_input_row">
 									<label>To:</label><input type="text" class="txt_box" value="{{::delv_point}}" readonly />
 								</div>
-								<!--<div class="form_input_row">
-									<label style="width:12em">Delivery Point:</label><input type="text" class="txt_box" value="{{::delv_point}}" readonly />
-								</div>-->
+								<div class="form_input_row">
+									<label>Reciepient:</label><input type="text" class="txt_box" value="{{::reciepient}}" readonly />
+								</div>
 								<div class="deliver_btn_box animate_if"  ng-if="showDeliverBtn">
 									<button data-ng-click="deliver()">Deliver Now</button>
 								</div>
@@ -114,6 +96,9 @@
 									<div class="grid_view_header_cell">
 										<span>Delivered</span>
 									</div>
+									<div class="grid_view_header_cell" ng-if="showPaid">
+										<span>Paid</span>
+									</div>
 									<!--<div class="grid_view_header_cell action_cell">
 										<span><button type="button" class="add_row_btn" data-ng-click="addRow()"><i class="fa fa-plus"></i></button></span>
 									</div>-->
@@ -137,6 +122,9 @@
 									</div>
 									<div class="grid_view_content_cell">
 										<span<button style="cursor: pointer" type="button" ng-click="deliverItem(order_item.DeliveredStatus,order_item.Details_No)"><i ng-class="(order_item.DeliveredStatus == 1)? 'fa fa-check-circle-o' : 'fa fa-times-circle-o'" ng-style="{'color': (order_item.DeliveredStatus == 1)? 'green':'red','font-size': (order_item.DeliveredStatus == 1)? '1.5em':'1.5em'}"></i></button></span>
+									</div>
+									<div class="grid_view_content_cell" ng-if="showPaid">
+										<span<button style="cursor: pointer" type="button" ng-click="markPaid(order_item.PaidStatus, order_item.total, order_item.Details_No)"><i ng-class="(order_item.PaidStatus == 1)? 'fa fa-check-circle-o' : 'fa fa-times-circle-o'" ng-style="{'color': (order_item.PaidStatus == 1)? 'green':'red','font-size': (order_item.PaidStatus == 1)? '1.5em':'1.5em'}"></i></button></span>
 									</div>
 									<!--<div class="grid_view_content_cell action_cell">
 										<span data-ng-click="deleteLineItem(order_item.Details_No, $index)"><i ng-class="(!order_item.deleted)? 'fa fa-trash' : 'fa fa-undo'"></i></span>
@@ -165,15 +153,16 @@
 									<div class="grid_view_content_cell action_cell">
 										<span data-ng-click="removeRow($index)"><i class="fa fa-close"></i></span>
 									</div>
-								</div>
+								</div>-->
 								
 								<div id="grid_view_footer">
 									<span>Total</span><span>{{getGrandTotal}}</span>
-								</div>-->
+								</div>
 							</div>
 						</div>
 						<div id="form_footer">
 							<div>
+								<input data-ng-show="showDeleteBtn" type="button" class="cancel_btn" value="Delete Order" ng-click="deleteOrder()"/>
 								<input data-ng-show="showRecievedBtn" type="button" class="save_btn animate_show" value="Mark as Recieved" data-ng-click="recieve()"/> <!--data-ng-disabled="order_form.$invalid"/> || !order_form.$dirty && order_form.$valid"/>-->
 								<input data-ng-show="showSubmitBtn" type="button" class="save_btn animate_show" value="Submit" data-ng-click="recieve()"/>
 								<input type="button" class="cancel_btn" value="Cancel" onclick="history.back()"/>

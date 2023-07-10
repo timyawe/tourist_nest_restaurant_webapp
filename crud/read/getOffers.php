@@ -15,6 +15,7 @@ if($res_conn->status === 1){
 		//$v->amount = number_format($v->amount);
 		//$v->payment = number_format($v->payment);
 		$v->_date = date("d/m/Y", strtotime($v->_date));
+		$v->isDeleted = (int)$v->isDeleted;
 	}
 	$res_records->message = $res_conn->message;
 	echo json_encode($res_records);

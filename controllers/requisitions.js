@@ -51,10 +51,10 @@ theApp.controller("create_requisitionCtlr", function($scope, $timeout, $http, us
 		$scope.rows = [{ID:1, item: undefined, qty:null, rate:null, total:null, purchaseAmount:null, itemSelected: false}];
 		req_details.length = 0;
 		if(userDetails.getUserLevel() === "Level1"){
-			if($scope.category === "Eats" || $scope.category === undefined){
-				$scope.showAmounts = true;
-			}else{
+			if($scope.category === "Drinks" /*|| $scope.category === undefined*/){
 				$scope.showAmounts = false;
+			}else{
+				$scope.showAmounts = true;
 			}
 		}else{
 			$scope.showAmounts = true;
@@ -148,7 +148,7 @@ theApp.controller("create_requisitionCtlr", function($scope, $timeout, $http, us
 	}
 	
 	function type(){
-		if($scope.category === "Eats"){
+		if($scope.category === "Eats" || $scope.category === "Kitchen"){
 			return "External";
 		}else{
 			if(userDetails.getUserLevel() === "Level1"){
@@ -163,10 +163,10 @@ theApp.controller("create_requisitionCtlr", function($scope, $timeout, $http, us
 
 function showAmountsDesc(userLevel, category){
 	if(userLevel === "Level1"){
-		if(category === "Eats" || category === undefined){
-			return true;
-		}else{
+		if(category === "Drinks" /*|| category === undefined*/){
 			return false;
+		}else{
+			return true;
 		}
 	}else{
 		return true;
@@ -186,10 +186,10 @@ theApp.controller("edit_requisitionCtlr", function($scope, $http, $routeParams, 
 		$scope.requisition_items = response.data.req_details;
 		$scope.getGrandTotal = gTotal(response.data.req_details);
 		if(userDetails.getUserLevel() === "Level1"){
-			if($scope.category === "Eats" || $scope.category === undefined){
-				$scope.showAmounts = true;
-			}else{
+			if($scope.category === "Drinks" /*|| $scope.category === undefined*/){
 				$scope.showAmounts = false;
+			}else{
+				$scope.showAmounts = true;
 			}
 		}else{
 			$scope.showAmounts = true;
@@ -311,14 +311,18 @@ theApp.controller("edit_requisitionCtlr", function($scope, $http, $routeParams, 
 				if(userDetails.getUserLevel() === "Level1"){
 					 if($scope.category === "Drinks"){
 							reqType = "intDrinks";
-						}else{
+						}else if($scope.category === "Eats"){
 							reqType = "intEats";
+						}else if($scope.category === "Kitchen"){
+							reqType = "intKitchen";
 						}
 					}else{
 						if($scope.category === "Drinks"){
 							reqType = "extDrinks";
-						}else{
+						}else if($scope.category === "Eats"){
 							reqType = "extEats";
+						}else if($scope.category === "Kitchen"){
+							reqType = "extKitchen";
 						}
 					}
 				promisesArr.push(addPromise({reqNo: $routeParams.reqNo, reqType: reqType, addedLines: editreq_details}));
@@ -384,30 +388,30 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 	
 	$scope.showGiven = function(){
 		//if(userDetails.getUserLevel() === "Level1"){
-			if($routeParams.category === "Eats"){
-				return false;
-			}else{
+			if($routeParams.category === "Drinks"){
 				return true;
+			}else{
+				return false;
 			}
 		//}
 	}
 	
 	$scope.showQtyGiven = function(){
 		//if(userDetails.getUserLevel() === "Level1"){
-			if($routeParams.category === "Eats"){
-				return false;
-			}else{
+			if($routeParams.category === "Drinks"){
 				return true;
+			}else{
+				return false;
 			}
 		//}
 	}
 	
 	$scope.showFinalAmount = function(){
 		if(userDetails.getUserLevel() === "Level1"){
-			if($routeParams.category === "Eats"){
-				return true;
-			}else{
+			if($routeParams.category === "Drinks"){
 				return false;
+			}else{
+				return true;
 			}
 		}else{
 			if($routeParams.category === "Eats"){
@@ -466,8 +470,8 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 	$http.post("../crud/read/getRequisition.php", {reqNo: $routeParams.reqNo, type: $routeParams.type}).then(function(response){
 		$scope.station = response.data.requisition[0].Station;
 		$scope.category = response.data.requisition[0].Category;
-		$scope.reqType = response.data.requisition[0].RequisitionType;
-		if($routeParams.category === "Eats"){
+		$scope.reqType = response.data.requisition[0].RequisitionType;console.log(response.data.req_details);
+		if($routeParams.category === "Eats" || $routeParams.category === "Kitchen"){
 		angular.forEach(response.data.req_details, function(v)  {//Add deleted property for toggling deleted class in ngRepeat
 			if(v.isChecked === '0'){
 				
@@ -515,7 +519,7 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 						v.isChecked = true;
 						v.isDisabledRcv = true;
 					}
-				});
+				});console.log(response.data.req_details);
 			}
 			
 		}
@@ -541,7 +545,7 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 	$scope.recieveItem = function(row, index){//Entire row is brought to access the values of the object as needed (Consider this unlike in Create & Edit)
 		//let qty_recvd = document.getElementsByClassName("qty_recvd");
 		if(userDetails.getUserLevel() === "Level1"){	
-			if($routeParams.category === "Eats"){
+			if($routeParams.category === "Eats" || $routeParams.category === "Kitchen"){
 				if(row[index].isChecked){
 					row[index].qty_recvd = Number(row[index].qty);
 					recvd_items.push({Details_No: row[index].DetailsNo, RecievedStatus: 1, QtyRecieved: row[index].qty_recvd});
@@ -582,7 +586,7 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 	$scope.updQtyRcvd = function(row, index){
 		let qty = row[index].qty_recvd;
 		
-		if($routeParams.category === "Eats"){
+		if($routeParams.category === "Eats" || $routeParams.category === "Kitchen"){
 			if(qty === 0){
 				alert("Cannot recieve 0 items, Recv'd will be unchecked instead");
 				row[index].isChecked = false;
@@ -754,7 +758,7 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 						return true;
 					}
 				}else{
-					if($routeParams.category === "Eats"){
+					if($routeParams.category === "Eats" || $routeParams.category === "Kitchen"){
 					 	return true;	
 					 }else{
 						if(recvd_items.length === 0){
@@ -776,7 +780,7 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 			_data = {reqNo: $routeParams.reqNo, recvd_items: recvd_items};
 		}else{
 			if($scope.reqType == "Internal"){
-			if($routeParams.category === "Eats"){
+			if($routeParams.category === "Eats" || $routeParams.category === "Kitchen"){
 				_data = {reqNo: $routeParams.reqNo, PurchaseStatus: $scope.approve};
 			}else{
 				if($scope.approve !== undefined){
@@ -786,7 +790,7 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 				}
 			}
 			}else{
-				if($routeParams.category === "Eats"){
+				if($routeParams.category === "Eats" || $routeParams.category === "Kitchen"){
 				_data = {reqNo: $routeParams.reqNo, PurchaseStatus: $scope.approve};
 			}else{
 				if($scope.approve !== undefined){
@@ -804,7 +808,7 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 		if(userDetails.getUserLevel() === "Level1"){
 			return "../crud/update/recieveItems.php";
 		}else{
-			if($scope.reqType == "Internal" || $routeParams.category === "Eats"){
+			if($scope.reqType == "Internal" || $routeParams.category === "Eats" || $routeParams.category === "Kitchen"){
 				return "../crud/update/approve_giveItems.php";
 			}else{
 				return "../crud/update/recieveItems.php";

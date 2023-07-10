@@ -105,6 +105,9 @@ if(!empty($filter_arr)){
 	$missingwhere_clause_prev = " where month(DateOccurred) < ". date('n');
 }
 
+$offrwhere_clause .= " AND isDeleted <> 1 ";
+$offrwhere_clause_prev .= " AND isDeleted <> 1 ";
+
 $prev_subqueries = [];
 $prev_subqueries['orders'] = " left join (select productno, sum(qty) as prevOrdersTotal from orderdetails join orders on Order_No = OrderNo $ordwhere_clause_prev group by productno) as prevOrdersQty on Product_No = prevOrdersQty.productno ";
 $prev_subqueries['requisitions'] = "left join (select ProductNo, sum(qtyrecieved) as prevReqsTotal from purchasedetails join purchaseorder on purchaseNo = purchase_no $reqwhere_clause_prev group by ProductNo) as prevReqsQty on Product_No = prevReqsQty.productNo ";
@@ -173,7 +176,8 @@ function injectPrevSubqueries($arr, $subquery_arr){
 
 $reportsql = "select product_no, if(salename='' or IsNull(salename),description,SaleName) as item, ". injectStartStr($json_data['rep_cols']) . implode(",", $rep_cols). injectFinishStr($json_data['rep_cols']) ." from products left join items_sold on Product_No = ProductNo ". injectPrevSubqueries($json_data['rep_cols'], $rep_prev_subqueries) . implode("",$rep_subqueries);
 if(isset($item_name)){$reportsql = $reportsql. " where Product_No = '$item_name'";}
-if(isset($item_cat)){$reportsql = $reportsql. " where Category = '$item_cat'";}
+if(isset($item_cat)){$reportsql = $reportsql. " where Category = '$item_cat'";}else{$reportsql .= " where Category != 'Kitchen'";}
+$reportsql .= " ORDER BY Category, Product_No";
 //echo $reportsql;
 
 $res_records = new stdClass();

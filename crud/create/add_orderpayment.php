@@ -49,7 +49,7 @@ if($pymtconn_dbAccess->status === 1){
 			$ordpymt = intval(json_decode(dbConn("SELECT TotalPaid FROM OrderPayments_grouped WHERE OrderNo = '$ordNo'", array(), 'select'))->message[0]->TotalPaid);
 			$ordbill = intval(json_decode(dbConn("SELECT Bill FROM OrderBill_grouped WHERE OrderNo = '$ordNo'", array(), 'select'))->message[0]->Bill);
 			if($ordpymt == $ordbill){
-				dbConn("UPDATE OrderDetails SET PaidStatus = ? WHERE OrderNo = '$ordNo'", array('i', 1), 'update');
+				dbConn("UPDATE OrderDetails SET PaidStatus = ?, PaidDate = ?  WHERE OrderNo = '$ordNo'", array('is', 1,date('Y-m-d H:i:s')), 'update');
 			}			
 			updateActivityLog('Insert Payment', 'Payment #'. $pymtID. ' for order #' .$ordNo . ' added successfully', $userID);
 			$pymtconn_res->status = 1;

@@ -2,13 +2,13 @@
 theApp.service("lineDetails", function($http){
 
 	this.getItems = function(url, params){
-		return $http.get(url, params).then(function(response){
+		return $http.get(url, params).then(function(response){//console.log(response.data);
 			return response.data;
 		});
 	}
 	
 	this.checkItem = function(row, idx, line_details_arr, rows_arr, category){//x
-		if(row.item !== undefined){
+		if(row.item !== undefined){console.log(row);
 			if(category == 'order'){
 				applyRate(category);
 			}else{
@@ -16,15 +16,19 @@ theApp.service("lineDetails", function($http){
 				let minstock = Number(row.item.MinStockLevel);
 				let isRecieved = Number(row.item.Recieved);
 				let item = row.item.label;
-				if(!isRecieved){
+				if(!isRecieved){console.log(row);
 					alert(`${item} was previously requested for but not recieved, recieve item insted`);
 					row.item = undefined;
 				}else{
-					if(finish > minstock || !minstock ){
-						alert(`${item} doesn't require restocking`);
-						row.item = undefined;
-					}else{
+					if(!minstock){
 						applyRate(category);
+					}else{
+						if(finish > minstock /*|| !minstock */){
+							alert(`${item} doesn't require restocking`);
+							row.item = undefined;console.log(finish , minstock );
+						}else{
+							applyRate(category);
+						}
 					}
 				}
 			}
@@ -36,7 +40,7 @@ theApp.service("lineDetails", function($http){
 			line_details_arr.splice(idx, 1);
 		}
 		
-		function applyRate(category){
+		function applyRate(category){console.log(line_details_arr, row.item);
 			if(line_details_arr.length > 0){
 				if(!comparePdts(row.item, line_details_arr)){
 					//adding the order details' objects to array by the current index
@@ -69,7 +73,7 @@ theApp.service("lineDetails", function($http){
 				if(row.qty !== null){
 					this.checkQty(row,idx,line_details_arr);
 				}
-				console.log(line_details_arr, row.item);
+				
 			}
 		}
 	}
@@ -101,11 +105,16 @@ theApp.service("lineDetails", function($http){
 	this.checkQty = function(row, idx, line_details_arr, category){
 		let qty = row.qty;
 		let finish = Number(row.item.finish);
+		let onlySold = Number(row.item.onlySold);
 		
 		if(category == 'order'){
-			if(qty > finish){
-				alert("Cannot update Qty, quantity entered is more than quantity available for sale");
-				row.qty = null;
+			if(row.item.value != 'PDT028'){console.log(row);//if selling chips, ignore finish check coz irish qty is varying
+				if(qty > finish && !onlySold){
+					alert("Cannot update Qty, quantity entered is more than quantity available for sale");
+					row.qty = null;
+				}else{
+					computeSubTotal(row,idx,line_details_arr);
+				}
 			}else{
 				computeSubTotal(row,idx,line_details_arr);
 			}

@@ -65,8 +65,11 @@
 						</div>
 						<div class="grid_view_content_cell action_cell">
 							<span>
-								<a ng-show="!{{activeStation}} && requisition.status == 'Approved'" href="" class="animate_show">
-									<i ng-class="{'fa fa-ban':!{{activeStation}} && requisition.status == 'Approved', 'fa fa-check-circle':!{{activeStation}} && requisition.status == 'Submitted', 'fa fa-download':{{activeStation}} && requisition.status == 'Approved', 'fa fa-edit':{{activeStation}} && requisition.status == 'Submitted' }"></i>
+								<a ng-show="!{{activeStation}} && requisition.status == 'Approved' && requisition.isFullyGiven == 1" href="" class="animate_show">
+									<i ng-class="{'fa fa-ban':!{{activeStation}} && requisition.status == 'Approved' && requisition.isFullyGiven == 1, 'fa fa-check-circle':!{{activeStation}} && requisition.status == 'Submitted', 'fa fa-download':{{activeStation}} && requisition.status == 'Approved', 'fa fa-edit':{{activeStation}} && requisition.status == 'Submitted' }"></i>
+								</a>
+								<a ng-show="!{{activeStation}} && requisition.status == 'Approved' && requisition.isFullyGiven == 0" href="#!approve_requisition/{{requisition.reqNo}}/{{requisition.type}}/{{requisition.category}}" class="animate_show">
+									<i ng-class="{'fa fa-ban':!{{activeStation}} && requisition.status == 'Approved' && requisition.isFullyGiven == 1, 'fa fa-check-circle':!{{activeStation}} && requisition.status == 'Approved' && !requisition.isFullyGiven == 0, 'fa fa-download':{{activeStation}} && requisition.status == 'Approved', 'fa fa-edit':{{activeStation}} && requisition.status == 'Submitted' }"></i>
 								</a>
 								<a ng-show="!{{activeStation}} && requisition.status == 'Submitted'" href="#!approve_requisition/{{requisition.reqNo}}/{{requisition.type}}/{{requisition.category}}" class="animate_show">
 									<i ng-class="{'fa fa-ban':!{{activeStation}} && requisition.status == 'Approved', 'fa fa-check-circle':!{{activeStation}} && requisition.status == 'Submitted', 'fa fa-download':{{activeStation}} && requisition.status == 'Approved', 'fa fa-edit':{{activeStation}} && requisition.status == 'Submitted' }"></i>

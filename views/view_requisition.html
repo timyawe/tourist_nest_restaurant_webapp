@@ -1,0 +1,181 @@
+<div id="content_banner_box">
+	<h2 id="banner">Requisitions</h2>
+</div>
+	
+<div id="sub_content_box">
+	<div id="view_content">
+		<div id="details_link_box">
+			<a id="reqs_btn" href="#!requisitions">Manage Requisitions</a>
+		</div>
+		<div id="details_box">	
+			<div id="details_header_box">
+				<h3>View Requisition</h3>
+			</div>
+			<div id="details_content_box">
+				<form id="details_form" name="requisition_form" novalidate>
+					<div id="loader" style="display:none"></div>
+					<div id="response_box" style="display:none"></div>
+					<div id="form_header">
+						<div>
+							<div id="order_meta" ng-if="isAdmin">
+								<table id="table_view_order">
+									<tr>
+										<td>Time Created:</td>     <td>{{::dateCreated | date: 'dd/MM/yyyy'}}</td>
+									</tr>
+									<tr>
+										<td>Created By:</td>         <td>{{::staff}}</td>
+									</tr>
+									<!--<tr>
+										<td>Station:</td>       <td>{{::recievedBy}}</td>
+									</tr>-->
+									<tr>
+										<td>Status:</td>      <td>{{::status}}</td>
+									</tr>
+									<!--<tr>
+										<td>Category:</td>  <td>{{::deliveredTime}}</td>
+									</tr>-->
+									<tr>
+										<td>Type:</td> <td>{{::reqType}}</td>
+									</tr>
+									<tr>
+										<td>Time Closed:</td> <td>{{::closedDate}}</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+						
+						<div class="form_input_col">
+							<div class="form_input_row">
+								<label>Station:</label><input type="text" class="txt_box" value="{{::station}}" readonly />
+							</div>
+							<div class="form_input_row">
+								<label>For:</label><input type="text" class="txt_box" data-ng-model="category" readonly />
+							</div>
+						</div>
+					</div>
+					<div id="form_content">
+						<div id="grid_view">
+							<div id="grid_view_header" style="font-size: .8em">
+								<div class="grid_view_header_cell">
+									<span>#</span>
+								</div>
+								<div class="grid_view_header_cell pdt_cell">
+									<span>Item</span>
+								</div>
+								<div class="grid_view_header_cell">
+									<span>Qty</span>
+								</div>
+								<div class="grid_view_header_cell" ng-hide="hideAmounts">
+									<span>Rate</span>
+								</div>
+								<div class="grid_view_header_cell" ng-hide="hideAmounts">
+									<span>Total</span>
+								</div>
+								<div class="grid_view_header_cell" ng-hide="hideAmounts">
+									<span>Purchase Amount</span>
+								</div>
+								<div class="grid_view_header_cell animate_if"><!-- style="flex-grow: 0"-->
+									<span>Given</span>
+								</div>
+								<div class="grid_view_header_cell animate_if"><!-- style="flex-grow: 1"-->
+									<span>Qty Given</span>
+								</div>
+								<div class="grid_view_header_cell animate_if"><!-- style="flex-grow: 0"-->
+									<span>Recv'd</span>
+								</div>
+								<div class="grid_view_header_cell animate_if"><!-- style="flex-grow: 0"-->
+									<span>Qty Recv'd</span>
+								</div>
+								<div class="grid_view_header_cell animate_if" ng-hide="hideAmounts">
+									<span>Final Amount</span>
+								</div>
+								<div class="grid_view_header_cell action_cell" ng-if="isAdmin">
+									<span><!--<button type="button" class="add_row_btn" data-ng-click="addRow()"><i class="fa fa-plus"></i></button>-->Delete</span>
+								</div>
+							</div>
+							
+							<div class="grid_view_content" data-ng-repeat="request_item in requisition_items" class="animate_class" ng-class="{item_deleted: request_item.deleted}" style="font-size: .8em"> 
+								<div class="grid_view_content_cell">
+									<span>{{$index+1}}</span>
+								</div>
+								<div class="grid_view_content_cell pdt_cell">
+									<span><input type="text" class="txt_box" value="{{::request_item.item}}" readonly />
+								</div>
+								<div class="grid_view_content_cell">
+									<span><input type="text" class="txt_box num_field" value="{{request_item.qty}}" ng-readonly="!isAdmin"/></span>
+								</div>
+								<div class="grid_view_content_cell" ng-hide="hideAmounts">
+									<span><input type="text" class="txt_box curr_field" value="{{::request_item.rate | number:0}}" readonly /></span>
+								</div>
+								<div class="grid_view_content_cell" ng-hide="hideAmounts">
+									<span><input type="text" class="txt_box curr_field" value="{{::request_item.total | number:0}}" readonly /></span>
+								</div>
+								<div class="grid_view_content_cell" ng-hide="hideAmounts">
+									<span><input type="text" class="txt_box " value="{{request_item.PurchaseAmount | number:0}}" readonly /></span>
+								</div>
+								<div class="grid_view_content_cell animate_if"><!-- style="flex-grow: 0"-->
+									<span><input type="checkbox" style="-webkit-transform: scale(1.3);" ng-model="request_item.isGiven" ng-change="giveItem(requisition_items, $index)" ng-disabled="request_item.isDisabledGvn"/></span>
+								</div>
+								<div class="grid_view_content_cell animate_if"><!-- style="flex-grow: 1"-->
+									<span><input type="text" class="txt_box num_field" ng-model="request_item.QtyGiven" ng-readonly="!request_item.isGiven || {{reqType == 'External'}}" ng-blur="updQtyGvn(request_item, $index)"/></span>
+								</div>
+								<div class="grid_view_content_cell animate_if"><!-- style="flex-grow: 0"-->
+									<!-- Take entire row in function arguments using the array(requisition_items) to access the cells as needed -->
+									<span><input type="checkbox" class="check" style="-webkit-transform: scale(1.3);" ng-model="request_item.isRecieved" ng-change="recieveItem(request_item, $index)" ng-disabled="request_item.isDisabledRcv"/></span>
+								</div>
+								<div class="grid_view_content_cell animate_if"><!-- style="flex-grow: 0"-->
+									<span><input type="text" class="txt_box num_field" ng-model="request_item.qty_recvd" ng-readonly="!isAdmin && !request_item.isRecieved || {{reqType == 'Internal'}} || !isAdmin" ng-blur="updQtyRcvd(request_item, $index)" /></span>
+								</div>
+								<div class="grid_view_content_cell animate_if" ng-hide="hideAmounts"><!-- style="flex-grow: 0"-->
+									<span><input type="text" class="txt_box curr_field" ng-model="request_item.FinalAmount" ng-readonly="!request_item.isRecieved || {{reqType == 'Internal'}}" ng-blur="updFinAmnt(request_item, $index)"/></span>
+								</div>
+								<div class="grid_view_content_cell action_cell" ng-if="isAdmin">
+									<span data-ng-click="deleteLineItem(request_item.DetailsNo, $index)"><i ng-class="(!request_item.deleted)? 'fa fa-trash' : 'fa fa-undo'"></i></span>
+								</div>
+							</div>
+							
+							<!--<div class="grid_view_content" data-ng-repeat="row in rows track by $index"  class="animate_repeat animate_if" ng-if="showEditDetails">
+								<div class="grid_view_content_cell">
+									<span>{{row.ID}}</span>
+								</div>
+								<div class="grid_view_content_cell pdt_cell">
+									<span>
+										<select class="select_box" data-ng-options="item.label for item in items | filter:category" data-ng-model="row.item" data-ng-change="reqChangeItem(row, $index)" required>
+											<option value="">Choose Item</option>
+										</select>
+									</span>
+								</div>
+								<div class="grid_view_content_cell">
+									<span><input type="number" class="txt_box qty_input" data-ng-model="row.qty" data-ng-blur="reqComputeSubTotal(row,$index)" ng-readonly="row.item === undefined" required /></span>
+								</div>
+								<div  ng-if="showAmounts" class="grid_view_content_cell">
+									<span><input type="text" class="txt_box rate_input" data-ng-model="row.item.rate" readonly /></span>
+								</div>
+								<div  ng-if="showAmounts" class="grid_view_content_cell">
+									<span><input type="text" class="txt_box total_input" data-ng-model="row.total" readonly /></span>
+								</div>
+								<div ng-if="showAmounts" class="grid_view_content_cell">
+									<span><input type="text" class="txt_box " data-ng-model="row.purchaseAmount" data-ng-blur="updPurchAmnt(row, $index)" ng-readonly="row.item === undefined"/></span>
+								</div>
+								<div class="grid_view_content_cell action_cell">
+									<span data-ng-click="removeRow($index)"><i class="fa fa-close"></i></span>
+								</div>
+							</div>-->
+							
+							<div id="grid_view_footer">
+								<span>Total</span><span>{{getGrandTotal}}</span>
+							</div>
+						</div>
+					</div>
+					<div id="form_footer">
+						<div>
+							<input ng-show="isAdmin" type="button" class="save_btn" value="Submit" data-ng-click="validate()" data-ng-disabled="requisition_form.$invalid" />
+							<input type="button" class="cancel_btn" value="Cancel" onclick="history.back()" />
+						</div>
+						<span data-ng-show="requisition_form.$dirty && requisition_form.$invalid" class="animate_show"><pre class="form_error_note">*Highlited fields are required</pre></span>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

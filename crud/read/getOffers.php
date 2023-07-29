@@ -2,11 +2,11 @@
 require_once $_SERVER['DOCUMENT_ROOT'].'/db/conn.php';
 $res_records = new stdClass();
 
-if(isset($_GET['station'])){
+if(!$_GET['station']){
 	$station = $_GET['station'];
 	$sql = "SELECT * FROM OffersExtended WHERE Station = '$station' AND Year(_date) = Year(current_date()) AND Month(_date) = Month(current_date()) ORDER BY _date DESC";
 }else{
-	$sql = "SELECT * FROM OffersExtended ORDER BY _date DESC";
+	$sql = "SELECT * FROM OffersExtended WHERE Year(_date) = Year(current_date()) AND Month(_date) = Month(current_date()) ORDER BY _date DESC";
 }
 
 $res_conn = json_decode(dbConn($sql, array(), 'select'));

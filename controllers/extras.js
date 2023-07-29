@@ -87,7 +87,7 @@ theApp.controller("create_extraCtlr", function($scope, $http, $routeParams, user
 						alert("Cannot update Qty, quantity entered is more than quantity available for sale");
 						row.qty = null;
 					}else{
-						details[index] = {pdtNo: row.item.value, qty: row.qty};
+						details[index] = {pdtNo: row.item.value, qty: row.qty, PurchaseRate: row.item.PurchaseRate};
 					}
 				}
 			}else{

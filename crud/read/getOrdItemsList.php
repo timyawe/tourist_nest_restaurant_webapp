@@ -4,7 +4,7 @@ $res_records = new stdClass();
 
 if(isset($_GET['station'])){
 	$station = $_GET['station'];
-	$sql = "select Product_No AS value, if((SaleName = ''),Description,SaleName) AS label, UnitSalePrice AS rate,
+	$sql = "select Product_No AS value, if((SaleName = ''),Description,SaleName) AS label, UnitSalePrice AS rate, UnitCostPrice as PurchaseRate,
 			(if(isnull(reqsTotal),0,reqsTotal/MeasureSold) - ((if(isnull(ordersTotal),0,ordersTotal) + if(isnull(offersTotal),0,offersTotal)) + if(isnull(spoiltTotal),0,spoiltTotal) + if(isnull(missingTotal),0,missingTotal))) AS finish, if(isnull(items_bought.ProductNo), 1,0) as onlySold,MeasureSold,reqsTotal
 			from 
 			((((((products join items_sold on ((products.Product_No = items_sold.ProductNo)))
@@ -14,7 +14,7 @@ if(isset($_GET['station'])){
 			left join 
 				(select ProductNo, sum(QtyRecieved) AS reqsTotal from purchasedetails join purchaseorder on purchaseNo = purchase_no WHERE Station = '$station' group by ProductNo) AS `reqsqty` on((Product_No = reqsqty.ProductNo))) 
 			left join 
-				(select ProductNo, sum(Qty) AS offersTotal from offersdetails join offers on OffersID = offers.ID WHERE Station = '$station' group by ProductNo) AS `offersqty` on((Product_No = offersqty.productNo))) 
+				(select ProductNo, sum(Qty) AS offersTotal from offersdetails join offers on OffersID = offers.ID WHERE Station = '$station' AND isDeleted <> 1 group by ProductNo) AS `offersqty` on((Product_No = offersqty.productNo))) 
 			left join 
 				(select ProductNo, sum(Qty) AS spoiltTotal from spoiltdetails join items_spoilt on SpoiltID = items_spoilt.ID WHERE Station = '$station' group by ProductNo)  AS `spoiltqty` on((Product_No = spoiltqty.productNo))) 
 			left join 

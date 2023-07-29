@@ -12,8 +12,8 @@ $clean_data = array_map('funcSanitise', $json_data);
 $ordNo_pk = $clean_data['ordNo'];
 $ordDetails = $clean_data['addedLines'];
 
-$ord_details_sql = "INSERT INTO OrderDetails (ProductNo, Qty, Rate, Cost, OrderNo) VALUES (?,?,?,?,?)";
-$ord_detbind_types = "sidds";
+$ord_details_sql = "INSERT INTO OrderDetails (ProductNo, PurchaseRate, Qty, Rate, Cost, OrderNo) VALUES (?,?,?,?,?,?)";
+$ord_detbind_types = "sdidds";
 
 //echo mutateOrderDetails($ordDetails, $ord_detbind_types, $ordNo_pk, $ord_details_sql);
 $ordDetsConnRes = json_decode(mutateOrderDetails($ordDetails, $ord_detbind_types, $ordNo_pk, $ord_details_sql));

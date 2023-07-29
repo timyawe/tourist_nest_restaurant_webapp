@@ -8,8 +8,17 @@
 			<a href="#!create_requisition">Request Items</a>
 		</div>
 		<div id="details_box">	
-			<div id="details_header_box">
+			<div id="details_header_box" style="display: flex; justify-content: space-between">
 				<h3>Manage Requisitions</h3>
+				<div id="filter_box" style="display: flex; flex-direction: column">
+					<button id="applyFilter_btn" style="float: right" ng-click="startFilter()">Filter Requisitions</button>
+					<div ng-show="filterApplied" class="animate_show" style="display: flex">
+						<!--<select><option>Choose Filter</option><option>By Item</option></select>-->
+						<select ng-model="$parent.item_name" ng-change="changeItemFilter()" ng-options="item.label for item in items track by item.value">
+							<option value="">Choose Item</option>
+						</select>
+					</div>
+				</div>
 			</div>
 			<div id="details_content_box">
 				<div id="grid_view">
@@ -40,50 +49,55 @@
 						</div>
 					</div>
 					<div id="details_content_box"><div id="loader"></div>
-					<div  style="max-height: 200px; overflow-y:auto">
-					<div class="grid_view_content" data-ng-repeat="requisition in requisitions" class="animate_repeat">
-						<div class="grid_view_content_cell">
-							<span>{{$index+1}}</span>
+						<div  style="max-height: 200px; overflow-y:auto">
+							<div class="grid_view_content" data-ng-repeat="requisition in requisitions" class="animate_repeat">
+								<div class="grid_view_content_cell">
+									<span>{{$index+1}}</span>
+								</div>
+								<div class="grid_view_content_cell">
+									<span>{{::requisition._date}}</span>
+								</div>
+								<div class="grid_view_content_cell">
+									<span>{{::requisition.category}}</span>
+								</div>
+								<div class="grid_view_content_cell">
+									<span>{{::requisition.station}}</span>
+								</div>
+								<div class="grid_view_content_cell">
+									<span>{{::requisition.status}}</span>
+								</div>
+								<div class="grid_view_content_cell">
+									<span>{{::requisition.staff}}</span>
+								</div>
+								<div class="grid_view_content_cell">
+									<span>{{::requisition.amount}}</span>
+								</div>
+								<div class="grid_view_content_cell action_cell">
+									<span>
+										<a ng-show="!{{activeStation}} && requisition.status == 'Approved' && requisition.isFullyGiven == 1" href="#!view_requisition/{{requisition.reqNo}}/{{requisition.type}}" class="animate_show">
+											<i ng-class="{'fa fa-eye':!{{activeStation}} && requisition.status == 'Approved' && requisition.isFullyGiven == 1, 'fa fa-check-circle':!{{activeStation}} && requisition.status == 'Submitted', 'fa fa-download':{{activeStation}} && requisition.status == 'Approved', 'fa fa-edit':{{activeStation}} && requisition.status == 'Submitted' }"></i>
+										</a>
+										<a ng-show="!{{activeStation}} && requisition.status == 'Approved' && requisition.isFullyGiven == 0" href="#!approve_requisition/{{requisition.reqNo}}/{{requisition.type}}/{{requisition.category}}" class="animate_show">
+											<i ng-class="{'fa fa-eye':!{{activeStation}} && requisition.status == 'Approved' && requisition.isFullyGiven == 1, 'fa fa-check-circle':!{{activeStation}} && requisition.status == 'Approved' && !requisition.isFullyGiven == 0, 'fa fa-download':{{activeStation}} && requisition.status == 'Approved', 'fa fa-edit':{{activeStation}} && requisition.status == 'Submitted' }"></i>
+										</a>
+										<a ng-show="!{{activeStation}} && requisition.status == 'Submitted'" href="#!approve_requisition/{{requisition.reqNo}}/{{requisition.type}}/{{requisition.category}}" class="animate_show">
+											<i ng-class="{'fa fa-eye':!{{activeStation}} && requisition.status == 'Approved', 'fa fa-check-circle':!{{activeStation}} && requisition.status == 'Submitted', 'fa fa-download':{{activeStation}} && requisition.status == 'Approved', 'fa fa-edit':{{activeStation}} && requisition.status == 'Submitted' }"></i>
+										</a>
+										<a ng-show="{{activeStation}} && requisition.status == 'Approved'" href="#!recieve_items/{{requisition.reqNo}}/{{requisition.type}}/{{requisition.category}}" class="animate_show">
+											<i ng-class="{'fa fa-eye':!{{activeStation}} && requisition.status == 'Approved', 'fa fa-check-circle':!{{activeStation}} && requisition.status == 'Submitted', 'fa fa-download':{{activeStation}} && requisition.status == 'Approved', 'fa fa-edit':{{activeStation}} && requisition.status == 'Submitted' }"></i>
+										</a>
+										<a ng-show="{{activeStation}} && requisition.status == 'Submitted'" href="#!edit_requisition/{{requisition.reqNo}}/{{requisition.type}}" class="animate_show">
+											<i ng-class="{'fa fa-eye':!{{activeStation}} && requisition.status == 'Approved', 'fa fa-check-circle':!{{activeStation}} && requisition.status == 'Submitted', 'fa fa-download':{{activeStation}} && requisition.status == 'Approved', 'fa fa-edit':{{activeStation}} && requisition.status == 'Submitted' }"></i>
+										</a>
+									</span>
+								</div>
+							</div>
 						</div>
-						<div class="grid_view_content_cell">
-							<span>{{::requisition._date}}</span>
-						</div>
-						<div class="grid_view_content_cell">
-							<span>{{::requisition.category}}</span>
-						</div>
-						<div class="grid_view_content_cell">
-							<span>{{::requisition.station}}</span>
-						</div>
-						<div class="grid_view_content_cell">
-							<span>{{::requisition.status}}</span>
-						</div>
-						<div class="grid_view_content_cell">
-							<span>{{::requisition.staff}}</span>
-						</div>
-						<div class="grid_view_content_cell">
-							<span>{{::requisition.amount}}</span>
-						</div>
-						<div class="grid_view_content_cell action_cell">
-							<span>
-								<a ng-show="!{{activeStation}} && requisition.status == 'Approved' && requisition.isFullyGiven == 1" href="" class="animate_show">
-									<i ng-class="{'fa fa-ban':!{{activeStation}} && requisition.status == 'Approved' && requisition.isFullyGiven == 1, 'fa fa-check-circle':!{{activeStation}} && requisition.status == 'Submitted', 'fa fa-download':{{activeStation}} && requisition.status == 'Approved', 'fa fa-edit':{{activeStation}} && requisition.status == 'Submitted' }"></i>
-								</a>
-								<a ng-show="!{{activeStation}} && requisition.status == 'Approved' && requisition.isFullyGiven == 0" href="#!approve_requisition/{{requisition.reqNo}}/{{requisition.type}}/{{requisition.category}}" class="animate_show">
-									<i ng-class="{'fa fa-ban':!{{activeStation}} && requisition.status == 'Approved' && requisition.isFullyGiven == 1, 'fa fa-check-circle':!{{activeStation}} && requisition.status == 'Approved' && !requisition.isFullyGiven == 0, 'fa fa-download':{{activeStation}} && requisition.status == 'Approved', 'fa fa-edit':{{activeStation}} && requisition.status == 'Submitted' }"></i>
-								</a>
-								<a ng-show="!{{activeStation}} && requisition.status == 'Submitted'" href="#!approve_requisition/{{requisition.reqNo}}/{{requisition.type}}/{{requisition.category}}" class="animate_show">
-									<i ng-class="{'fa fa-ban':!{{activeStation}} && requisition.status == 'Approved', 'fa fa-check-circle':!{{activeStation}} && requisition.status == 'Submitted', 'fa fa-download':{{activeStation}} && requisition.status == 'Approved', 'fa fa-edit':{{activeStation}} && requisition.status == 'Submitted' }"></i>
-								</a>
-								<a ng-show="{{activeStation}} && requisition.status == 'Approved'" href="#!recieve_items/{{requisition.reqNo}}/{{requisition.type}}/{{requisition.category}}" class="animate_show">
-									<i ng-class="{'fa fa-ban':!{{activeStation}} && requisition.status == 'Approved', 'fa fa-check-circle':!{{activeStation}} && requisition.status == 'Submitted', 'fa fa-download':{{activeStation}} && requisition.status == 'Approved', 'fa fa-edit':{{activeStation}} && requisition.status == 'Submitted' }"></i>
-								</a>
-								<a ng-show="{{activeStation}} && requisition.status == 'Submitted'" href="#!edit_requisition/{{requisition.reqNo}}/{{requisition.type}}" class="animate_show">
-									<i ng-class="{'fa fa-ban':!{{activeStation}} && requisition.status == 'Approved', 'fa fa-check-circle':!{{activeStation}} && requisition.status == 'Submitted', 'fa fa-download':{{activeStation}} && requisition.status == 'Approved', 'fa fa-edit':{{activeStation}} && requisition.status == 'Submitted' }"></i>
-								</a>
-							</span>
-						</div>
-					</div></div>
-					<div id="no_items_container"  class="grid_view_content animate_show" ng-show="showNoItems"><span id="no_items_span">No pending Requisitions <span><i class="fa fa-check-circle"></i></span></span></div>
+						<div id="no_items_container"  class="grid_view_content animate_show" ng-show="showNoItems"><span id="no_items_span">No pending Requisitions <span><i class="fa fa-check-circle"></i></span></span></div>
+					</div>
+					<div id="grid_view_footer" class="animate_show"  ng-show="!showNoItems">
+						<span>Total</span><span>{{total}}</span>
+					</div>
 				</div>
 			</div>
 		</div>

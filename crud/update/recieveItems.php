@@ -13,6 +13,8 @@ $reqID = array_shift($clean_data);//echo $reqID;
 $recd_fail = [];//holds item lines which have failed to update
 
 foreach($clean_data['recvd_items'] as $v){
+	date_default_timezone_set("Africa/Nairobi");
+	$v['DateRecieved'] = date('Y-m-d H:i:s');
 	$detNo = array_shift($v);
 	$fields_arr = array_keys($v);
 	array_unshift($v, createBindTypes($v));

@@ -48,6 +48,7 @@ if($pymtconn_dbAccess->status === 1){
 		if(json_decode(dbConn($ordpymt_sql, array($ordpymt_bindtypes, $pymtInID, $ordNo), 'insert'))->status == 1){
 			$ordpymt = intval(json_decode(dbConn("SELECT TotalPaid FROM OrderPayments_grouped WHERE OrderNo = '$ordNo'", array(), 'select'))->message[0]->TotalPaid);
 			$ordbill = intval(json_decode(dbConn("SELECT Bill FROM OrderBill_grouped WHERE OrderNo = '$ordNo'", array(), 'select'))->message[0]->Bill);
+			//date_default_timezone_set("Africa/Nairobi");
 			if($ordpymt == $ordbill){
 				dbConn("UPDATE OrderDetails SET PaidStatus = ?, PaidDate = ?  WHERE OrderNo = '$ordNo'", array('is', 1,date('Y-m-d H:i:s')), 'update');
 			}			

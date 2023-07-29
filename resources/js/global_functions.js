@@ -88,7 +88,7 @@ function exitEditMode(btnID){
 	printWin.document.write(`td {
 		font-family: arial, sans-serif;
 		overflow-y: auto;
-		padding: 5px;
+		padding: 3px;
 		border: 1px solid black;
 		white-space: nowrap;
 		letter-spacing: 0.5px;

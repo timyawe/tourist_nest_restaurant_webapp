@@ -10,12 +10,12 @@ if($json_data['station'] != 'All'){
 }
 
 if(array_key_exists('from_period', $json_data)){
-	$from_period = $json_data['from_period'];
+	$from_period = date("H:i", strtotime($json_data['from_period']));//echo $from_period;
 }
 
 
 if(array_key_exists('to_period', $json_data)){
-	$to_period = $json_data['to_period'];
+	$to_period = date("H:i", strtotime($json_data['to_period']));
 }
 
 if(array_key_exists('from_date', $json_data) && array_key_exists('to_date', $json_data)){

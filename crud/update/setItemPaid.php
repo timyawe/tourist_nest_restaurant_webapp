@@ -29,6 +29,7 @@ if(!$PaidStatus){
 		$res->message = "Item not marked as paid, order payments not enough to cover item total. Adjust payments to continue";
 		echo json_encode($res);
 	}else{
+		//date_default_timezone_set("Africa/Nairobi");
 		$dbAccess = json_decode(dbConn("UPDATE OrderDetails SET PaidStatus = ?, PaidDate = ? WHERE Details_No = $detailsNo", array('is',1,date('Y-m-d H:i:s')), 'update'));
 	} 
 	//var_dump($ordpymt);var_dump($items_paid_total);

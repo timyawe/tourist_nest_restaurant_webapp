@@ -3,6 +3,9 @@ theApp.controller("report_filterCtlr", function($scope, $timeout, lineDetails, u
 	
 	if(userDetails.getUserLevel() === "Level1"){
 		$scope.station = userDetails.getStation();//Pre-select station based on current station
+		$scope.showRepCat = false;//wether to show report catgeries
+	}else{
+		$scope.showRepCat = true;
 	}
 	
 	$scope.changeStation = function(){
@@ -33,6 +36,7 @@ theApp.controller("report_filterCtlr", function($scope, $timeout, lineDetails, u
 			$scope.showItemCategory = false;
 			//$scope.showFields_amounts = false;
 			$scope.showItemAmountsDate = false;
+			$scope.showItemAcc_sec = false;
 		}else if($scope.rep_cat == "General"){
 			$scope.showType = true;
 			$scope.showFields = false;console.log($scope.rep_type);
@@ -43,6 +47,7 @@ theApp.controller("report_filterCtlr", function($scope, $timeout, lineDetails, u
 			$scope.showItemCategory = false;
 			//$scope.showFields_amounts = false;
 			$scope.showItemAmountsDate = false;
+			$scope.showItemAcc_sec = false;
 		}else if($scope.rep_cat == "amounts"){
 			$scope.showItemQtyFilter_sec = false;
 			$scope.showItemCategory = true;
@@ -50,6 +55,13 @@ theApp.controller("report_filterCtlr", function($scope, $timeout, lineDetails, u
 			//$scope.showFields_amounts = true;
 			$scope.showType = false;
 			$scope.showFields = false;
+			$scope.showItemAcc_sec = false;
+		}else if($scope.rep_cat == "accountabilities"){
+			$scope.showItemCategory = true;
+			$scope.showItemAcc_sec = true;
+			$scope.showFields = false;
+			$scope.showType = false;
+			$scope.showItemAmountsDate = false;
 		}
 		
 	};
@@ -130,6 +142,19 @@ theApp.controller("report_filterCtlr", function($scope, $timeout, lineDetails, u
 		}
 	}
 	
+	$scope.changeAccDateFilter = function(){
+		if($scope.item_acc_date_filter == "monthly"){
+			$scope.showAccMonthlyFilter = true;
+			$scope.showAccDateRangeFilter = false;
+		}else if($scope.item_acc_date_filter == "range"){
+			$scope.showAccDateRangeFilter = true;
+			$scope.showAccMonthlyFilter = false;
+		}else{
+			$scope.showAccMonthlyFilter = false;
+			$scope.showAccDateRangeFilter = false;
+		}
+	}
+	
 	$scope.validate = function(){
 		
 		function checkForm(){
@@ -159,7 +184,7 @@ theApp.controller("report_filterCtlr", function($scope, $timeout, lineDetails, u
 				if($scope.rep_cat == "quantities" && form_values.rep_cols.length == 0){
 					formComplete = false;
 				}
-			}else{
+			}else if($scope.rep_cat == "amounts"){
 				if(!angular.isDefined($scope.amounts_date)){
 					formComplete = false;
 				}
@@ -167,6 +192,24 @@ theApp.controller("report_filterCtlr", function($scope, $timeout, lineDetails, u
 				/*if($scope.rep_cat == "amounts" && form_values.rep_cols.length == 0){
 					formComplete = false;
 				}*/
+			}if($scope.rep_cat == "accountabilities"){
+				if(!angular.isDefined($scope.item_cat)){
+					formComplete = false;
+				}
+								
+				if(!angular.isDefined($scope.item_acc_date_filter)){
+					formComplete = false;
+				}else{
+					if($scope.item_acc_date_filter == "monthly"){
+						if(!angular.isDefined($scope.item_acc_date_filter_year) || !angular.isDefined($scope.item_acc_date_filter_month)){
+							formComplete = false;
+						}
+					}else{
+						if(!angular.isDefined($scope.fro_date) || !angular.isDefined($scope.to_date)){
+							formComplete = false;
+						}
+					}
+				}
 			}
 			return formComplete;
 		}
@@ -183,7 +226,7 @@ theApp.controller("report_filterCtlr", function($scope, $timeout, lineDetails, u
 		}
 		
 		if(checkForm()){
-			if($scope.rep_cat == "quantities"){
+			if($scope.rep_cat == "quantities"){//alert(form_values.from_period);
 				if(form_values.rep_cols.length == 4){
 					form_values.rep_cols.push("missing");
 				}
@@ -214,6 +257,10 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 	$http.get(getUrl(category), {params: {_data: filter_items}}).then(function(response){
 		console.log(response.data);
 		createEl();
+		/*if(response.data.status_offers == 1){
+			createAmountsOffersTable();
+			$scope.offers_table_rows = response.data.message_offers;
+		}*/
 		if(category == "amounts"){
 			createAmountsSummaryTable()
 			$scope.drinks_sales_total = response.data.drinks_sales_total;
@@ -225,7 +272,18 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 			$scope.total_mm = response.data.total_mm;
 			$scope.summary_bal = response.data.summary_bal;
 		}
+		
+		if(category == "accountabilities"){
+			$scope.bought_total = response.data.bought_total;
+			$scope.kit_bought_subtotal = response.data.kit_bought_subtotal;
+			$scope.sold_sale_total = response.data.sold_sale_total;
+			$scope.sold_cost_total = response.data.sold_cost_total;
+			$scope.offered_cost_total = response.data.offered_cost_total;
+			$scope.spoilt_cost_total = response.data.spoilt_cost_total;
+		}
+		
 		$scope.table_rows = response.data.message;
+		$scope.offers_table_rows = response.data.message_offers;
 		toggleLoader("none");
 	},function(response){
 		//createEl();
@@ -237,25 +295,25 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 	let from_period, to_period;
 	
 	if(filter_items.from_period){
-		if(filter_items.from_period == "19:00:00"){
+		/*if(filter_items.from_period == "19:00:00"){
 			from_period = "Night";
 		}else{
 			from_period = "Day";
-		}
+		}*/from_period = filter_items.from_period;
 	}
 	
 	if(filter_items.to_period){
-		if(filter_items.to_period == "19:00:00"){
+		/*if(filter_items.to_period == "19:00:00"){
 			to_period = "Night";
 		}else{
 			to_period = "Day";
-		}
+		}*/to_period = filter_items.to_period;
 	}
 	
 	if(category == "amounts"){
 		let report_date = new Date(filter_items.amounts_date).toLocaleDateString();
 		$scope.report_desc = `${station} Purchases And Sales Report of ${report_date}`;
-	}else{
+	}else if(category == "quantities"){
 		if(Array.isArray(type)){
 			if(type.length === 1){
 				if(type.includes('period')){
@@ -279,6 +337,14 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 				}
 			}
 		}
+	}else if(category == "accountabilities"){
+		let month_name;
+		if(filter_items.item_acc_date_filter == "monthly"){
+			let date = new Date()
+			date.setMonth(Number(filter_items.item_acc_date_filter_month)-1);
+			month_name = date.toLocaleString('en', {month: 'long'});//Intl.DateTimeFormat('en', {month: 'long'}).format(new Date('7'));
+		}
+		$scope.report_desc = `${station} ${filter_items.item_cat} Monthly Accountability For ${month_name} ${filter_items.item_acc_date_filter_year}`;
 	}
 	
 	function getUrl(cat){
@@ -288,6 +354,12 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 			url = "../crud/read/getReport.php";
 		}else if(cat == "amounts"){
 			url = "../crud/read/getAmountsReport.php";
+		}else if(cat == "accountabilities"){
+			if(filter_items.item_cat == "Drinks"){
+				url = "../crud/read/getDrinksAccReport.php";
+			}else{
+				url = "../crud/read/getEatsKitAccReport.php";
+			}
 		}
 		
 		return url;
@@ -315,12 +387,15 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 		table.appendChild(/*thead*/createTableHead(category, getTableCols(category,rep_cols),thead));
 		tbody.appendChild(getTableData(category, getTableCols(category,rep_cols), createTableBody()));
 		//tbody.appendChild(createQtyTableData(qtyTableCols(rep_cols), createTableBody()));
+		if(category == 'amounts'){createAmountsOffersTable(tbody);}
 		if(category == 'amounts'){createAmountsTotalsRow(tbody)}
+		if(category == 'accountabilities'){createAccTotalsRow(tbody,filter_items.item_cat)}
 		//Dynamically added component should be compiled using angular, use $compile function 
 		$compile(tbody)($scope);
 		table.appendChild(tbody);
 		document.querySelector('#table_content_box').appendChild(table);
 	}
+	
 	
 	function createAmountsSummaryTable(){
 		let table = document.createElement('table');
@@ -391,6 +466,8 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 			table_cols = qtyTableCols(rep_cols_arr);
 		}else if(cat == "amounts"){
 			table_cols = amtTableCols(rep_cols_arr);
+		}else if(cat == "accountabilities"){
+			table_cols = accTableCols(rep_cols_arr);
 		}
 		return table_cols;
 	}
@@ -419,6 +496,21 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 	function amtTableCols(rep_cols_arr){
 		let table_cols;
 		table_cols = {item: "Item", Qty: "Qty", Amount: "Amount", itemBought: "Item", QtyBought: "Qty", AmountSpent: "Amount",itemSoldEats: "Item", QtySoldEats: "Qty", AmountEats: "Amount", itemBoughtEats: "Item", QtyBoughtEats: "Qty", AmountSpentEats: "Amount"};
+		
+		if(rep_cols_arr !== undefined){
+			rep_cols.forEach((el, idx) =>{
+				table_cols[el] = el;console.log("Noth");
+			});
+			//rep_cols.map((el) => {table_cols[el] = el;console.log( el);})
+		}
+		
+		return table_cols;
+	}
+	
+	function accTableCols(rep_cols_arr){
+		let table_cols;
+		table_cols = {no_col:'#', item: "Item", QtyBought: "Qty Bought", AmountBought: "Amount", QtySold: "Qty Sold", QtySoldSale: "Qty Sold (Sale Price)", QtySoldCost: "Qty Sold (Cost Price)", QtyOffered: "Qty Offered", QtyOfferedCost: "Qty Offered (Cost Price)", QtySpoilt: "Qty Spoilt", QtySpoiltCost: "Qty Spoilt (Cost Price)"};
+
 		
 		if(rep_cols_arr !== undefined){
 			rep_cols.forEach((el, idx) =>{
@@ -476,6 +568,18 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 			thead.appendChild(head_row);
 			
 			return thead;
+		}else if(cat == "accountabilities"){
+			let head_row = document.createElement('tr');
+			for(let table_col in tab_cols_arr){
+				let th = document.createElement('th');
+				let txt = document.createTextNode(tab_cols_arr[table_col]);
+				th.appendChild(txt);
+				head_row.appendChild(th);
+			}
+			thead.appendChild(head_row);
+			
+			return thead;
+			
 		}else{
 
 			let head_row = document.createElement('tr');
@@ -532,6 +636,8 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 			table_data = createQtyTableData(tab_cols_arr, body_row_el);
 		}else if(cat == "amounts"){
 			table_data = createAmtTableData(tab_cols_arr, body_row_el);
+		}else if(cat == "accountabilities"){
+			table_data = createAccTableData(tab_cols_arr, body_row_el);
 		}
 		return table_data;
 	}
@@ -584,6 +690,75 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 		return tab_row_el;
 	}
 	
+	function createAccTableData(tab_cols_arr, tab_row_el){
+		for(let table_col in tab_cols_arr){
+			let td = document.createElement('td');
+			let txt;
+			if(tab_cols_arr[table_col] == "#"){
+				txt = document.createTextNode('{{$index+1}}');
+			}else{
+				txt = document.createTextNode(`{{table_row.${table_col}}}`);
+			}
+			
+			if(tab_cols_arr[table_col] == "Qty Bought" || tab_cols_arr[table_col] == "Qty Sold" || tab_cols_arr[table_col] == "Qty Offered" || tab_cols_arr[table_col] == "Qty Spoilt"){
+				td.classList.add('qty_col');
+			}
+			if(tab_cols_arr[table_col] == "Amount" || tab_cols_arr[table_col] == "Qty Sold (Sale Price)" || tab_cols_arr[table_col] == "Qty Sold (Cost Price)" || tab_cols_arr[table_col] == "Qty Offered (Cost Price)" || tab_cols_arr[table_col] == "Qty Spoilt (Cost Price)"){
+				td.classList.add('amount_col');
+			}
+			td.appendChild(txt);
+			tab_row_el.appendChild(td);
+		}
+		
+		return tab_row_el;
+	}
+	
+	function createAmountsOffersTable(tbody){
+		//let table = document.createElement('table');
+		//let tbody = document.createElement('tbody');
+		
+		let blank_row = document.createElement('tr');
+		let head_row = document.createElement('tr');
+		let td = document.createElement('td');
+		td.setAttribute("colspan", 12);
+		td.style.textAlign = 'center';
+		let txt = document.createTextNode("Offers");
+		td.appendChild(txt);
+		head_row.appendChild(td);
+		
+		tbody.appendChild(blank_row);
+		tbody.appendChild(head_row);
+		
+		let offers_body_row = document.createElement('tr');
+		offers_body_row.dataset.ngRepeat = "offers_table_row in offers_table_rows track by $index";//Adding data related attributes
+		offers_body_row.classList.add("animate_repeat"/*, "ng-scope"*/);
+		
+		let tab_cols = {DrinksItem: 'DrinksItem', DrinksQty: 'DrinksQty', DrinksAmount: 'DrinksAmount', Drinksblnk1: 'Drinksblnk1', Drinksblnk2: 'Drinksblnk2', Drinksblnk3: 'Drinksblnk3', EatsItem: 'EatsItem', EatsQty: 'EatsQty', EatsAmount: 'EatsAmount', Eatsblnk1: 'Eatsblnk1', Eatsblnk2: 'Eatsblnk2', Eatsblnk3: 'Eatsblnk3' };
+		
+		for(let table_col in tab_cols){
+			let td = document.createElement('td');
+			let txt;
+			
+			txt = document.createTextNode(`{{offers_table_row.${table_col}}}`);
+			
+			if(tab_cols[table_col] == "DrinksQty" || tab_cols[table_col] == "EatsQty"){
+				td.classList.add('qty_col');
+			}
+			if(tab_cols[table_col] == "DrinksAmount" || tab_cols[table_col] == "EatsAmount"){
+				td.classList.add('amount_col');
+			}
+			td.appendChild(txt);
+			offers_body_row.appendChild(td);
+		}
+		
+		tbody.appendChild(offers_body_row);
+		//table.appendChild(offers_body_row);
+		//$compile(tbody)($scope);
+		//table.appendChild(tbody);
+		//document.querySelector('#table_content_box').appendChild(table);
+		
+	}
+	
 	function createAmountsTotalsRow(tbody){
 		let totals_row = document.createElement('tr');
 		
@@ -625,6 +800,69 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 		
 		totals_row.style.fontWeight = 'bold';
 		tbody.appendChild(totals_row);
+		return tbody;
+	}
+	
+	function createAccTotalsRow(tbody, item_cat){
+		if(item_cat == "Eats"){	
+			let subtotals_row = document.createElement('tr');
+			
+			let subtotal_lbl_td = document.createElement('td');
+			subtotal_lbl_td	.setAttribute('colspan', 3);
+			
+			subtotal_lbl_td.appendChild(document.createTextNode('Kitchen Items SubTotal'));
+			subtotals_row.appendChild(subtotal_lbl_td);
+			
+			let kit_subtotal_amt_td = document.createElement('td');
+			kit_subtotal_amt_td.appendChild(document.createTextNode('{{::kit_bought_subtotal}}'));
+			kit_subtotal_amt_td.classList.add('amount_col');
+			subtotals_row.appendChild(kit_subtotal_amt_td);
+			
+			subtotals_row.style.fontWeight = 'bold';
+			tbody.appendChild(subtotals_row);
+		}
+		
+		let totals_row = document.createElement('tr');
+		
+		let total_lbl_td = document.createElement('td');
+		total_lbl_td.setAttribute('colspan', 2);
+
+		total_lbl_td.appendChild(document.createTextNode('Total'));
+		totals_row.appendChild(total_lbl_td);
+		
+		totals_row.appendChild(document.createElement('td'));
+		let bought_total_amt_td = document.createElement('td');
+		bought_total_amt_td.appendChild(document.createTextNode('{{::bought_total}}'));
+		bought_total_amt_td.classList.add('amount_col');
+		totals_row.appendChild(bought_total_amt_td);
+		
+		totals_row.appendChild(document.createElement('td'));
+		let sold_sale_total_amt_td = document.createElement('td');
+		sold_sale_total_amt_td.appendChild(document.createTextNode('{{::sold_sale_total}}'));
+		sold_sale_total_amt_td.classList.add('amount_col');
+		totals_row.appendChild(sold_sale_total_amt_td);
+		
+		//totals_row.appendChild(document.createTextNode('td'));
+		let sold_cost_total_amt_td = document.createElement('td');
+		sold_cost_total_amt_td.appendChild(document.createTextNode('{{::sold_cost_total}}'));
+		sold_cost_total_amt_td.classList.add('amount_col');
+		totals_row.appendChild(sold_cost_total_amt_td);
+		
+		totals_row.appendChild(document.createElement('td'));
+		let offered_cost_total_amt_td = document.createElement('td');
+		offered_cost_total_amt_td.appendChild(document.createTextNode('{{::offered_cost_total}}'));
+		offered_cost_total_amt_td.classList.add('amount_col');
+		totals_row.appendChild(offered_cost_total_amt_td);
+		
+		totals_row.appendChild(document.createElement('td'));
+		let spoilt_cost_total_amt_td = document.createElement('td');
+		spoilt_cost_total_amt_td.appendChild(document.createTextNode('{{::spoilt_cost_total}}'));
+		spoilt_cost_total_amt_td.classList.add('amount_col');
+		totals_row.appendChild(spoilt_cost_total_amt_td);
+		
+		totals_row.style.fontWeight = 'bold';
+		tbody.appendChild(totals_row);
+
 		return tbody;
 	}
 	

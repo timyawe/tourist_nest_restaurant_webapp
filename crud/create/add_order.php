@@ -25,8 +25,8 @@ if($ord_fields['to'] != 'Go'){
 	$ord_sql = "INSERT INTO Orders (Order_No, OrderStatus, Station, Reciepient,`To`, UserID) VALUES (?,?,?,?,?,?)";
 	$ordbind_types = "sssssi";
 }
-$ord_details_sql = "INSERT INTO OrderDetails (ProductNo, Qty, Rate, Cost, OrderNo) VALUES (?,?,?,?,?)";
-$ord_detbind_types = "sidds";
+$ord_details_sql = "INSERT INTO OrderDetails (ProductNo, PurchaseRate, Qty, Rate, Cost, OrderNo) VALUES (?,?,?,?,?,?)";
+$ord_detbind_types = "sdidds";
 
 $ord_status = "Pending";
 $usrID = $clean_data['userID'];

@@ -11,13 +11,14 @@
 		<link type="text/css" rel="stylesheet" href="../resources/css/layout.css" />
 		<link type="text/css" rel="stylesheet" href="../resources/css/forms.css" />
 		<link type="text/css" rel="stylesheet" href="../resources/css/tables.css" />
+		<link type="text/css" rel="stylesheet" href="../resources/css/print.css" media="print" />
 		<link rel="stylesheet" href="../resources/css/ngAnimateStyles.css" />
 		
 	</head>
 	<body>
 		<script>
 			window.addEventListener("load", function(){
-				if(!sessionStorage.getItem("user")){
+				if(!localStorage.getItem("user")){
 					location.replace("/app/login.html");
 				}
 			});
@@ -48,6 +49,7 @@
 					<li class="nav_lnks_lst"><a href="#!requisitions" onclick="editTitle('Restaurant: Requisitions')">Requisitions</a></li>
 					<li class="nav_lnks_lst"><a href="#!extras" onclick="editTitle('Restaurant: Extras')">Extras</a></li>
 					<li class="nav_lnks_lst"><a href="#!reports" onclick="editTitle('Restaurant: Reports')">Reports</a></li>
+					<li class="nav_lnks_lst"><a href="#!search" onclick="editTitle('Restaurant: Search')">Search</a></li>
 				</ul>
 			</div>
 			<div id="main_content_box" data-ng-view class="animate_view">
@@ -89,7 +91,7 @@
 				});
 			}
 			
-			let user = JSON.parse(sessionStorage.getItem("user"));
+			let user = JSON.parse(localStorage.getItem("user"));
 			
 			if(user.Station){
 				welcome_banner = `Hello ${user.FirstName} From ${user.Station}`;
@@ -123,7 +125,7 @@
 					.when("/edit_requisition/:reqNo/:type", {templateUrl: "../views/edit_requisition.html", controller: "edit_requisitionCtlr"})
 					.when("/recieve_items/:reqNo/:type/:category",{templateUrl: "../views/recieve_items.html", controller: "recv_requisitionCtlr"})
 					.when("/approve_requisition/:reqNo/:type/:category", {templateUrl: "../views/recieve_items.html", controller: "recv_requisitionCtlr"})
-					//.when("/approve_requisition/:reqNo/:category", {templateUrl: "../views/recieve_items.html"})
+					.when("/view_requisition/:reqNo/:type", {templateUrl: "../views/view_requisition.html", controller: "view_requisitionCtlr"})
 					.when("/account", {templateUrl: "../views/account.html", controller: "accountCtlr"})
 					.when("/products", {templateUrl: "../views/products.html", controller: "productsCtlr"})
 					.when("/create_product", {templateUrl: "../views/edit_product.html", controller: "edit_productCtlr"})
@@ -175,7 +177,7 @@
 				if(confirm("Are you sure you want to log out? \nAny unsaved changes won't be saved!") == true){
 					updateActivityLog(user.ID).then(res => {
 						if(res == 1){
-							sessionStorage.removeItem("user");
+							localStorage.removeItem("user");
 							location.replace("/app/login.html");
 						}else{
 							console.log("Fail", res);

@@ -75,7 +75,7 @@ loginBtn.addEventListener("click", function(){
 					staBox.style.display = "flex";
 					loginBtn.value = "Continue";
 				}else{
-					sessionStorage.setItem("user", JSON.stringify(res));
+					localStorage.setItem("user", JSON.stringify(res));
 					setTimeout(toggleLoader("none"), 2000);
 					location.replace("/app/home.html");
 				}
@@ -84,7 +84,7 @@ loginBtn.addEventListener("click", function(){
 			}else{
 				if(station.value != ""){
 					res.Station = station.value;
-					sessionStorage.setItem("user", JSON.stringify(res));
+					localStorage.setItem("user", JSON.stringify(res));
 					setTimeout(toggleLoader("none"), 2000);
 					location.replace("/app/home.html");
 					//console.log(res, "danku")

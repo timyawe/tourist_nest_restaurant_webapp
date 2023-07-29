@@ -12,9 +12,12 @@ if(isset($_GET['station'])){
 			where `status` <> 'Closed' GROUP BY reqNo";
 }
 
+$reqTotalsql = "SELECT sum(if(isnull(finalamount),if(isnull(purchaseamount),(total),(purchaseamount)),(finalamount))) as reqTotal from purchasedetailsextended left join Purchaseorder on Purchase_No = PurchaseNo where RecievedStatus = 0 AND PurchaseStatus <> 'Closed'";
+$reqTotal = json_decode(dbConn($reqTotalsql, array(), 'select'))->message[0]->reqTotal;
 $res_conn = json_decode(dbConn($sql, array(), 'select'));
 if($res_conn->status === 1){
 	foreach($res_conn->message as $v){
+		//$reqTotal += $v->amount;
 		$v->amount = number_format($v->amount);
 		//$v->payment = number_format($v->payment);
 		if(date("d/m/Y", strtotime($v->_date)) != date('d/m/Y')){
@@ -25,6 +28,7 @@ if($res_conn->status === 1){
 	}
 	$res_records->status = $res_conn->status;
 	$res_records->message = $res_conn->message;
+	$res_records->reqTotal = number_format($reqTotal);
 	echo json_encode($res_records);
 }else{
 	$res_records->status = $res_conn->status;

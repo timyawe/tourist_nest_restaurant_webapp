@@ -1,24 +1,75 @@
-theApp.controller("requisitionsCtlr", function($scope, $http, userDetails){
+theApp.controller("requisitionsCtlr", function($scope, $http, userDetails,lineDetails){
 	
-	/*Generating requisitions list */
-	$http.get("../crud/read/getRequisitions.php", {params: {station: userDetails.getStation()}}).then(function(response){
-		console.log(response.data);if(response.data.status == 1){
-			if(userDetails.getStation() === undefined){
-				$scope.activeStation = false;
-			}else{
-				$scope.activeStation = true;
+	/*$scope.startFilter = function(){
+		if($scope.filterApplied == true){
+			$scope.filterApplied = false;
+			if(sessionStorage.getItem('req_filter') !== null){
+				sessionStorage.removeItem('req_filter');
+				$window.location.reload();//forces page reload
 			}
-			$scope.showNoItems = false;
-			$scope.requisitions = response.data.message;//response.data.userLevel = "Level3";console.log("Danke" ,$scope.requisitions);
+		}else{
+			$scope.filterApplied = true;
+		}
+	}
+	
+	/* Generating the options of the Item select tag *
+	
+	lineDetails.getItems("../crud/read/getReqItemsList.php", {params: {station: userDetails.getStation()}}).then(res => $scope.items =res);
+	
+	$scope.changeItemFilter = function(){
+		//toggleLoader("block");
+		console.log($scope.item_name.value)
+		$http.get("../crud/read/filterRequisitions.php", {params: {station: userDetails.getStation(), item: $scope.item_name.value}}).then(function(response){
+			if(response.data.status === 1){
+				$scope.requisitions = response.data.message;
+				sessionStorage.setItem("req_filter", JSON.stringify(response.data.message));
+				$timeout(function(){
+					$scope.$apply();
+				}, 1000);
+				$scope.showNoItems = false;
+				toggleLoader("none");
+				document.getElementById("applyFilter_btn").innerHTML = "Remove Filter";
+			}else{
+				$scope.requisitions = undefined;
+				$timeout(function(){
+					$scope.$apply();
+				}, 1000);
+				$scope.showNoItems = true;
+			}
 			toggleLoader("none");
 			console.log(response.data);
-		}else if(response.data.status == 2){
-			$scope.showNoItems = true;
-			toggleLoader("none");console.log(response.data);
-		}
-	}, function(response){
-		console.log(response.data);
-	});
+		});
+	}
+	
+	if(sessionStorage.getItem('req_filter') !== null){
+		document.getElementById("applyFilter_btn").innerHTML = "Remove Filter";
+		toggleLoader("none");
+		$scope.filterApplied = true;
+		$scope.requisitions = JSON.parse(sessionStorage.getItem('req_filter'));
+		console.log('done');
+	}else{
+		/*Generating requisitions list */
+		$http.get("../crud/read/getRequisitions.php", {params: {station: userDetails.getStation()}}).then(function(response){
+			console.log(response.data);if(response.data.status == 1){
+				if(userDetails.getStation() === undefined){
+					$scope.activeStation = false;
+				}else{
+					$scope.activeStation = true;
+				}
+				$scope.showNoItems = false;
+				//angular.forEach(response.data.message, function(v){reqTotal = reqTotal + Number(v.amount)});
+				$scope.requisitions = response.data.message;//response.data.userLevel = "Level3";console.log("Danke" ,$scope.requisitions);
+				$scope.total = response.data.reqTotal;
+				toggleLoader("none");
+				console.log(response.data);
+			}else if(response.data.status == 2){
+				$scope.showNoItems = true;
+				toggleLoader("none");console.log(response.data);
+			}
+		}, function(response){
+			console.log(response.data);
+		});
+	//}
 		
 });
 
@@ -497,6 +548,14 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 						v.QtyGiven = Number(v.QtyGiven);
 						v.qty_recvd = Number(v.qty_recvd);
 					}
+					
+					if(v.isChecked === '0'){
+						v.isDisabledRcv = false;
+						v.isChecked = false;
+					}else{
+						v.isChecked = true;
+						v.isDisabledRcv = true;
+					}
 				});console.log(response.data.req_details);
 			}else{
 				//$scope.showGiven = true;
@@ -701,22 +760,20 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 	
 	$scope.validate = function(){console.log(postData());
 		if(approve()){
-		if(/*recvd_items.length !== 0*/checkArrSize()){
-			$http.post(postUrl(), /*{recvd_items}*/postData()).then(function(response){
-				if(response.data.status = 1){
-					httpResponse.success(1, response.data.message);
-				}else{
-					httpResponse.success(0, response.data.message);
-				}
-				document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
-				console.log(response.data);
-			}, function(response){console.log(postData());
-				httpResponse.error(0, response.data);	
-			});//console.log(postUrl(), postData());
-			
-		}/*else{
-			alert("No Item has been marked as recieved");
-		}*/
+			if(checkArrSize()){
+				$http.post(postUrl(),postData()).then(function(response){
+					if(response.data.status = 1){
+						httpResponse.success(1, response.data.message);
+					}else{
+						httpResponse.success(0, response.data.message);
+					}
+					document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
+					console.log(response.data);
+				}, function(response){console.log(postData());
+					httpResponse.error(0, response.data);	
+				});//console.log(postUrl(), postData());
+				
+			}
 		}
 	}
 	function removeItem(arr, idx){
@@ -817,3 +874,188 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 		}
 	}
 });
+
+theApp.controller("view_requisitionCtlr", function($scope, $http, $routeParams, userDetails,lineDetails){
+	let edited_rows = [];
+	
+	if(userDetails.getUserLevel() === "Level3"){
+		$scope.isAdmin = true;
+	}else{
+		$scope.isAdmin = false;
+	}
+	
+	$http.post("../crud/read/getViewRequisition.php", {reqNo: $routeParams.reqNo, type: $routeParams.type}).then(function(response){
+		if(response.data.status == 1){
+			$scope.station = response.data.requisition[0].Station;
+			$scope.category = response.data.requisition[0].Category;
+			$scope.reqType = response.data.requisition[0].RequisitionType;console.log(response.data.req_details);
+			if($scope.reqType == 'Internal'){
+				$scope.hideAmounts = true;
+			}else{
+				$scope.hideAmounts = false;
+			}
+			
+			$scope.dateCreated = response.data.requisition[0].PurchaseDate;
+			$scope.staff = response.data.requisition[0].FirstName;
+			$scope.status = response.data.requisition[0].PurchaseStatus;
+			
+			angular.forEach(response.data.req_details, function(v){
+				if($scope.reqType === "External"){
+					v.isGiven = true;
+					//v.isDisabled = true;
+					v.QtyGiven = Number(v.qty);
+				}else{
+					if(v.isGiven == 1){
+						v.isGiven = true;
+					}else{
+						v.isGiven = false;
+					}
+				}				
+			});
+			
+			angular.forEach(response.data.req_details, function(v){
+				if(v.isRecieved == 1){
+					v.isRecieved = true;
+				}else{
+					v.isRecieved = false;
+				}				
+			});
+			
+			$scope.requisition_items = response.data.req_details;
+			$scope.closedDate = response.data.req_details[0].lastRecieved;
+			$scope.getGrandTotal = gTotal(response.data.req_details);
+		}else{
+			console.log(response.data);
+		}
+	}, function(response){
+		console.log(response.data);
+		
+	});
+	
+	$scope.updQtyGvn = function(row, index){
+		if(!isNaN(row.QtyGiven)){
+			if($routeParams.type === "Internal"){
+				if(row.isGiven){
+					if(row.isRecieved){
+						row.qty_recvd = row.QtyGiven;
+						edited_rows[index] = {Details_No:row.DetailsNo, QtyGiven: row.QtyGiven, QtyRecieved: row.QtyGiven};
+						//console.log(edited_rows);
+					}
+				}else{
+					alert("Item is not yet given");
+				}
+			}
+		}else{
+			alert("Please enter numbers only");
+			row.QtyGiven = null;
+		}
+	}
+	
+	$scope.recieveItem = function(row, index){
+		if(!row.isRecieved){
+			row.qty_recvd = null;
+			edited_rows[index] = {Details_No:row.DetailsNo, RecievedStatus: 0};
+		}else{
+		//Does opposite if item is not recieved
+			if(confirm("Sorry, cannot recieve item from here. Do you want to undo the previous action?")){
+				row.isRecieved = true;
+				row.qty_recvd = Number(row.qty);
+				edited_rows.splice(index, 1);
+			}else{
+				row.isRecieved = false;
+				row.qty_recvd = null;
+			}
+		}
+		
+		//console.log(row,edited_rows);
+		
+	}
+	
+	$scope.updQtyRcvd = function(row, index){
+		let qty = Number(row.qty_recvd);
+		if(qty != row.QtyGiven){
+			if($routeParams.type === "External"){
+				if(!row.isRecieved){
+					alert("Mark item as recieved before you continue");
+					row.qty_recvd = null;
+				}else{
+					if(qty === 0){
+						alert("Cannot recieve 0 items, Recv'd will be unchecked instead");
+						row.isRecieved = false;
+						edited_rows[index] = {Details_No:row.DetailsNo, RecievedStatus: 0};
+						row.qty_recvd = null;
+						row.FinalAmount = null;//console.log(edited_rows);
+					}else if(isNaN(qty)){
+						alert("Please enter only numbers");
+						row.isRecieved = false;
+						edited_rows[index] = {Details_No:row.DetailsNo, RecievedStatus: 0};
+						row.qty_recvd = null;
+						row.FinalAmount = null;//console.log(edited_rows);
+					}else if(qty !== null && row.isRecieved){
+						row.FinalAmount = qty * Number(row.rate);
+						edited_rows[index] = {Details_No:row.DetailsNo, RecievedStatus: 1, QtyRecieved: qty, FinalAmount: row.FinalAmount};
+						//console.log(edited_rows);
+					}
+				}
+			}else{
+				alert("Qty Recieved should equal to Qty Given, adjust Qty Given instead");
+				row.qty_recvd = row.QtyGiven;
+			}
+		}
+	}
+	
+	$scope.updFinAmnt = function(row, index){
+		let finAmnt = Number(row.FinalAmount);
+				
+		if(!isNaN(finAmnt)){
+			edited_rows[index] = {Details_No:row.DetailsNo, /*QtyRecieved:Number(row.qty_recvd),*/ FinalAmount: row.FinalAmount};
+			//console.log(edited_rows);
+		}else{
+			alert("Please enter only digits");
+			row.FinalAmount = null;
+		}
+	}
+	
+	let deleted_rows = [];
+	$scope.deleteLineItem = function(DetailsNo, index){
+		deleted_rows.push(DetailsNo);
+		if(confirm("Are you sure you want to delete this item?")){
+			$http.delete("../crud/delete/deleteReqLine.php", {data:deleted_rows}).then(function(response){
+				if(response.data.status == 1){
+					alert(response.data.message);
+				}else{
+					alert(response.data.message);
+				}
+			});
+		}
+		console.log(DetailsNo);
+	}
+	
+	$scope.validate = function(){
+		if(edited_rows.length == 0){
+			alert("Nothing was edited");
+		}else{
+			angular.forEach(edited_rows, function(k,v){
+				//if(v == undefined){
+					console.log(k,v);
+					//edited_rows.splice(k,1);
+				//}
+			});
+			$http.post("../crud/update/setRequisition.php", {userID:userDetails.getUserID(), reqType: $scope.reqType, reqDetails: edited_rows}).then(function(response){
+				if(response.data.status == 1){
+					alert(response.data.message);
+					console.log(response.data);
+				}else{
+					alert(response.data.message);
+					console.log(response.data);
+				}
+			}, function(response){
+				console.log(response.data);
+			});
+			console.log(edited_rows);
+		}
+	}
+});
+
+
+

@@ -17,17 +17,18 @@
 								<option value="">Choose Station...</option>
 								<option value="Reception">Reception</option>
 								<option value="Restaurant">Restaurant</option>
-								<option value="Hall">Hall</option>
+								<option value="Bar">Bar</option>
 								<option value="All">All</option>
 							</select>
 						</div>
 						<div class="form_input_row">
-							<label style="width: initial">Category:</label>
+							<label style="width: 10em; text-align: left">Report Category:</label>
 							<select class="select_box" name="category" ng-model="rep_cat" ng-change="changeCategory()" required >
 								<option value="">Choose Report Category...</option>
 								<!--<option value="General">General</option>-->
 								<option value="amounts">Item Amounts</option>
 								<option value="quantities">Item Quantities</option>
+								<option value="accountabilities" ng-if="showRepCat">Accountabilities</option>
 							</select>
 						</div>
 					</div>
@@ -79,22 +80,22 @@
 						
 						<div ng-if="showDate" class="animate_if">
 							<div class="form_input_row">
-								<label style="width: initial">From:</label><input type="date" name="from_date" class="txt_box" ng-model="$parent.$parent.fro_date" ng-blur="checkToDate()"/>
-								<label style="width: initial">Period</label>
-								<select name="from_period" ng-model="$parent.from_period">
+								<label style="width: 10em; text-align: left">From:</label><input type="date" name="from_date" class="txt_box" ng-model="$parent.$parent.fro_date" ng-blur="checkToDate()"/>
+								<label style="width: 10em; text-align: left">Period</label><input type="time" name="from_period" class="txt_box" ng-model="$parent.from_period">
+								<!--<select name="from_period" ng-model="$parent.from_period">
 									<option value="">Choose Period...</option>
 									<option value="19:00:00">Night</option>
 									<option value="07:00:00">Day</option>
-								</select>  
+								</select>-->
 							</div>
 							<div class="form_input_row">
-								<label style="width: initial">To:</label><input type="date" name="to_date" class="txt_box" ng-model="$parent.$parent.to_date" ng-blur="checkFromDate()"/>
-								<label style="width: initial">Period</label>
-								<select name="to_period" ng-model="$parent.to_period">
+								<label style="width: 10em; text-align: left">To:</label><input type="date" name="to_date" class="txt_box" ng-model="$parent.$parent.to_date" ng-blur="checkFromDate()"/>
+								<label style="width: 10em; text-align: left">Period</label><input type="time" name="to_period" class="txt_box" ng-model="$parent.to_period">
+								<!--<select name="to_period" ng-model="$parent.to_period">
 									<option value="">Choose Period...</option>
 								  	<option value="19:00:00">Night</option>
 									<option value="07:00:00">Day</option>
-								</select>
+								</select>-->
 							</div>
 						</div>
 						
@@ -146,6 +147,68 @@
 								<option value="Eats">Eats</option>
 							</select>
 						</div>
+					</div>
+					
+					<div ng-if="showItemAcc_sec" class="animate_if">
+						<div class="form_input_row">
+							<label style="width: 10em; text-align: left">Date Filter:</label>
+							<select class="select_box" name="item_acc_date_filter" ng-model="$parent.item_acc_date_filter" ng-change="changeAccDateFilter()">
+								<option value="">Choose Filter...</option>
+								<option value="monthly">Monthly</option>
+								<option value="range">Date Range</option>
+							</select>
+						</div>
+						
+						<div ng-if="showAccMonthlyFilter" calss="animate_if">
+							<div class="form_input_row">
+								<label style="width: 10em; text-align: left">Year:</label>
+								<select class="select_box" name="item_acc_date_filter_year" ng-model="$parent.$parent.item_acc_date_filter_year" >
+									<option value="">Choose Year...</option>
+									<option value="2022">2022</option>
+									<option value="2023">2023</option>
+								</select>
+							</div>
+							
+							<div class="form_input_row">
+								<label style="width: 10em; text-align: left">Month:</label>
+								<select class="select_box" name="item_acc_date_filter_month" ng-model="$parent.$parent.item_acc_date_filter_month" >
+									<option value="">Choose Month...</option>
+									<option value="01">January</option>
+									<option value="02">Febuary</option>
+									<option value="03">March</option>
+									<option value="04">April</option>
+									<option value="05">May</option>
+									<option value="06">June</option>
+									<option value="07">July</option>
+									<option value="08">August</option>
+									<option value="09">September</option>
+									<option value="10">October</option>
+									<option value="11">November</option>
+									<option value="12">December</option>
+								</select>
+							</div>
+						</div>
+						
+						<div ng-if="showAccDateRangeFilter" class="animate_if">
+							<div class="form_input_row">
+								<label style="width: 10em; text-align: left"">From:</label><input type="date" name="from_date" class="txt_box" ng-model="$parent.$parent.fro_date" ng-blur="checkToDate()"/>
+								<label style="width: initial">Period</label><input type="time" name="from_period" class="txt_box">
+								<!--<select name="from_period" ng-model="$parent.from_period">
+									<option value="">Choose Period...</option>
+									<option value="19:00:00">Night</option>
+									<option value="07:00:00">Day</option>
+								</select>-->
+							</div>
+							<div class="form_input_row">
+								<label style="width: 10em; text-align: left"">To:</label><input type="date" name="to_date" class="txt_box" ng-model="$parent.$parent.to_date" ng-blur="checkFromDate()"/>
+								<!--<label style="width: initial">Period</label>
+								<select name="to_period" ng-model="$parent.to_period">
+									<option value="">Choose Period...</option>
+								  	<option value="19:00:00">Night</option>
+									<option value="07:00:00">Day</option>
+								</select>-->
+							</div>
+						</div>			
 					</div>
 										
 					<div id="form_footer" ng-if="report_filter_form.$valid" class="animate_if">

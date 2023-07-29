@@ -47,7 +47,7 @@ theApp.service("lineDetails", function($http){
 					if(category != 'order'){
 						line_details_arr[idx] = {pdtNo:row.item.value, purchaseAmount:row.purchaseAmount};
 					}else{
-						line_details_arr[idx] = {pdtNo:row.item.value};
+						line_details_arr[idx] = {pdtNo:row.item.value, PurchaseRate:row.item.PurchaseRate};
 					}
 					
 					//Apply the total if the qty field is already filled
@@ -66,7 +66,7 @@ theApp.service("lineDetails", function($http){
 				if(category != 'order'){
 					line_details_arr[idx] = {pdtNo:row.item.value, purchaseAmount:row.purchaseAmount};
 				}else{
-					line_details_arr[idx] = {pdtNo:row.item.value};
+					line_details_arr[idx] = {pdtNo:row.item.value, PurchaseRate:row.item.PurchaseRate};
 				}
 				
 				//Apply the total if the qty field is already filled

@@ -12,6 +12,18 @@ theApp.controller("edit_productCtlr", function($scope, $timeout, $http, $routePa
 	/* Pre-select the Status field */
 	$scope.status = "Active";
 	
+	$scope.changeCheckSold = function(){
+		if($scope.item_sold_check){
+			$scope.item_bought_check = false;
+		}
+	}
+	
+	$scope.changeCheckBought = function(){
+		if($scope.item_bought_check){
+			$scope.item_sold_check = false;
+		}
+	}
+	
 	/*Generate record for editing */
 	if($routeParams.pdtID !== undefined){
 		$scope.pagetitle = "Edit Product";
@@ -97,6 +109,11 @@ theApp.controller("edit_productCtlr", function($scope, $timeout, $http, $routePa
 						editedfields[k] = capitaliseFirstLetter(v.$modelValue);
 					}else{
 						editedfields[k] = v.$modelValue;
+					}
+					if(k === 'reception' || k === 'restaurant' || k === 'bar'){
+						editedfields['stocklevel_edit'] = 1;
+					}else{
+						editedfields['stocklevel_edit'] = 0;
 					}
 				}
 			});

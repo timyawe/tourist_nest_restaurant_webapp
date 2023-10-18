@@ -5,7 +5,7 @@
 <div id="sub_content_box">
 	<div id="view_content">
 		<div id="details_link_box">
-			<a href="#!requisitions">Manage Requisitions</a>
+			<a id="reqs_btn" href="#!requisitions">Manage Requisitions</a>
 		</div>
 		<div id="details_box">	
 			<div id="details_header_box">
@@ -41,6 +41,9 @@
 								<div class="grid_view_header_cell">
 									<span>Qty</span>
 								</div>
+								<div ng-if="showAmounts" class="grid_view_header_cell" >
+									<span>Msmt</span>
+								</div>
 								<div ng-if="showAmounts" class="grid_view_header_cell">
 									<span>Rate</span>
 								</div>
@@ -55,7 +58,7 @@
 								</div>
 							</div>
 							
-							<div id="grid_view_content" data-ng-repeat="request_item in requisition_items" class="animate_class" ng-class="{item_deleted: request_item.deleted}"> 
+							<div class="grid_view_content" data-ng-repeat="request_item in requisition_items" class="animate_class" ng-class="{item_deleted: request_item.deleted}"> 
 								<div class="grid_view_content_cell">
 									<span>{{$index+1}}</span>
 								</div>
@@ -64,6 +67,9 @@
 								</div>
 								<div class="grid_view_content_cell">
 									<span><input type="text" class="txt_box num_field" value="{{request_item.qty}}"/></span>
+								</div>
+								<div ng-if="showAmounts" class="grid_view_content_cell" >
+									<span><input type="text" class="txt_box" style="text-align: center" data-ng-model="request_item.UnitQty" readonly /></span>
 								</div>
 								<div ng-if="showAmounts" class="grid_view_content_cell">
 									<span><input type="text" class="txt_box curr_field" value="{{::request_item.rate | number:0}}" readonly /></span>
@@ -79,7 +85,7 @@
 								</div>
 							</div>
 							
-							<div id="grid_view_content" data-ng-repeat="row in rows track by $index"  class="animate_repeat animate_if" ng-if="showEditDetails">
+							<div class="grid_view_content" data-ng-repeat="row in rows track by $index"  class="animate_repeat animate_if" ng-if="showEditDetails">
 								<div class="grid_view_content_cell">
 									<span>{{row.ID}}</span>
 								</div>

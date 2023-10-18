@@ -41,9 +41,9 @@ if(!array_key_exists("item_sold_check", $clean_data) && !array_key_exists("item_
 		$purchconn_res = json_decode(dbConn($purch_sql,$itms_bought_fields, 'insert'));
 		if($purchconn_res->status !== 0){
 			$items_bought_key = $purchconn_res->insertID;
-			$stocklevel_rec = $clean_data['stocklevel_rec'];
-			$stocklevel_res = $clean_data['stocklevel_res'];
-			$stocklevel_bar = $clean_data['stocklevel_bar'];
+			$stocklevel_rec = $clean_data['reception'];
+			$stocklevel_res = $clean_data['restaurant'];
+			$stocklevel_bar = $clean_data['bar'];
 			$stocklevelconn_fields = array('iiii', $stocklevel_rec,$stocklevel_res,$stocklevel_bar, $items_bought_key);
 			$stocklevels_sql = "INSERT INTO StockLevels (Reception, Restaurant, Bar, ItemsBoughtID) VALUES (?,?,?,?)";
 			$stocklevelconn_res = json_decode(dbConn($stocklevels_sql, $stocklevelconn_fields, 'insert'));
@@ -72,9 +72,9 @@ if(array_key_exists("item_bought_check", $clean_data)){//print_r($clean_data);
 		$purchconn_res = json_decode(dbConn($purch_sql,$itms_bought_fields, 'insert'));
 		if($purchconn_res->status !== 0){
 			$items_bought_key = $purchconn_res->insertID;
-			$stocklevel_rec = $clean_data['stocklevel_rec'];
-			$stocklevel_res = $clean_data['stocklevel_res'];
-			$stocklevel_bar = $clean_data['stocklevel_bar'];
+			$stocklevel_rec = $clean_data['reception'];
+			$stocklevel_res = $clean_data['restaurant'];
+			$stocklevel_bar = $clean_data['bar'];
 			$stocklevelconn_fields = array('iiii', $stocklevel_rec,$stocklevel_res,$stocklevel_bar, $items_bought_key);
 			$stocklevels_sql = "INSERT INTO StockLevels (Reception, Restaurant, Bar, ItemsBoughtID) VALUES (?,?,?,?)";
 			/*$stocklevelconn_res = json_decode(*/echo dbConn($stocklevels_sql, $stocklevelconn_fields, 'insert');/*);

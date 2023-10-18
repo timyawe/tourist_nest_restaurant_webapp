@@ -262,7 +262,7 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 			$scope.offers_table_rows = response.data.message_offers;
 		}*/
 		if(category == "amounts"){
-			createAmountsSummaryTable()
+			createAmountsSummaryTable(response.data.notDelivered)
 			$scope.drinks_sales_total = response.data.drinks_sales_total;
 			$scope.drinks_reqs_total = response.data.drinks_reqs_total;
 			$scope.eats_sales_total = response.data.eats_sales_total;
@@ -397,10 +397,22 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 	}
 	
 	
-	function createAmountsSummaryTable(){
+	function createAmountsSummaryTable(notDeliveredState){
 		let table = document.createElement('table');
 		let thead = document.createElement('thead');
 		let tbody = document.createElement('tbody');
+		
+		if(Number(notDeliveredState) > 0){
+			let notDeliveredNote_div = document.createElement('div');
+			let notDeliveredNote_par = document.createElement('p');
+			let note_txt = document.createTextNode('*Pending Orders: Ensure all orders before 7pm are delivered to finalise report');
+			notDeliveredNote_par.appendChild(note_txt);
+			notDeliveredNote_div.appendChild(notDeliveredNote_par);
+			notDeliveredNote_par.style.color = 'red';
+			
+			table.appendChild(notDeliveredNote_div);
+			
+		}
 		
 		let head_row = document.createElement('tr');
 		let th = document.createElement('th');
@@ -528,11 +540,13 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 			
 			let drinks_th = document.createElement('th');
 			drinks_th.setAttribute('colspan', 6);
-			drinks_th.appendChild(document.createTextNode('Drinks'));
+			drinks_th.appendChild(document.createTextNode('DRINKS'));
+			drinks_th.style.fontWeight = 'bold';
 			item_cat_headrow.appendChild(drinks_th);
 			let eats_th = document.createElement('th');
 			eats_th.setAttribute('colspan', 6);
-			eats_th.appendChild(document.createTextNode('Eats'));
+			eats_th.appendChild(document.createTextNode('EATS'));
+			eats_th.style.fontWeight = 'bold';
 			item_cat_headrow.appendChild(eats_th);
 			
 			thead.appendChild(item_cat_headrow);
@@ -542,18 +556,23 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 			let drinks_sales_th = document.createElement('th');
 			drinks_sales_th.setAttribute('colspan', 3);
 			drinks_sales_th.appendChild(document.createTextNode('Sales'));
+			drinks_sales_th.style.fontWeight = 'bold';
 			sales_reqs_headrow.appendChild(drinks_sales_th);
 			let drinks_reqs_th = document.createElement('th');
 			drinks_reqs_th.setAttribute('colspan', 3);
 			drinks_reqs_th.appendChild(document.createTextNode('Purchases'));
+			drinks_reqs_th.style.fontWeight = 'bold';
+			drinks_reqs_th.classList.add("left_border");
 			sales_reqs_headrow.appendChild(drinks_reqs_th);
 			let eats_sales_th = document.createElement('th');
 			eats_sales_th.setAttribute('colspan', 3);
 			eats_sales_th.appendChild(document.createTextNode('Sales'));
+			eats_sales_th.style.fontWeight = 'bold';
 			sales_reqs_headrow.appendChild(eats_sales_th);
 			let eats_reqs_th = document.createElement('th');
 			eats_reqs_th.setAttribute('colspan', 3);
 			eats_reqs_th.appendChild(document.createTextNode('Purchases'));
+			eats_reqs_th.style.fontWeight = 'bold';
 			sales_reqs_headrow.appendChild(eats_reqs_th);
 			
 			thead.appendChild(sales_reqs_headrow);
@@ -563,6 +582,7 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 				let th = document.createElement('th');
 				let txt = document.createTextNode(tab_cols_arr[table_col]);
 				th.appendChild(txt);
+				th.style.fontWeight = 'bold';
 				head_row.appendChild(th);
 			}
 			thead.appendChild(head_row);
@@ -682,6 +702,15 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 			}
 			if(tab_cols_arr[table_col] == "Amount"){
 				td.classList.add('amount_col');
+			}
+			if(table_col == 'AmountSpentEats'){//highlights cell red orange if the price has changed based on standard cost
+				td.dataset.ngStyle = "{'background-color':(table_row.isChanged == '1') ? '#ff5349' : ''}";
+			}
+			if(table_col == 'Amount'){
+				td.dataset.ngStyle = "{'background-color':(table_row.sp_flag == '1') ? '#ff5349' : ''}";
+			}
+			if(table_col == 'AmountEats'){
+				td.dataset.ngStyle = "{'background-color':(table_row.sp_eatsflag == '1') ? '#ff5349' : ''}";
 			}
 			td.appendChild(txt);
 			tab_row_el.appendChild(td);

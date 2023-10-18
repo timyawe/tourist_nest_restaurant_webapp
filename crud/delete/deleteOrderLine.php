@@ -8,22 +8,33 @@ $clean_data = array_map('funcSanitise', $json_data);
 
 $del_fail = [];//print_r($clean_data['ordNo']);
 $deleted_total = 0;
+$ordNo = $clean_data['ordNo'];
 foreach ($clean_data['deletedLines'] as $k => $v){
 	$detailsID = $v['detailsID'];
 	//print_r( $detailsID);
 	if(json_decode(dbConn("DELETE FROM OrderDetails WHERE Details_No = '$detailsID' LIMIT 1", array(), 'delete'))->status != 1){
 		array_push($del_fail, $detailsID);
-	}else{
+		
+	}//else{
 		if($v['paidStatus'] == 1){
 			$deleted_total += $v['total'];
 		}
-	}
+	//}
 }
 
 if($deleted_total > 0){
-	$ordNo = $clean_data['ordNo'];
-	$paymntID = json_decode(dbConn("SELECT paymtID FROM OrderPaymentsExtended WHERE OrderNo = $ordNo AND amount >= $deleted_total", array(), 'select'))->message;
-	dbConn("UPDATE Payments SET Amount = Amount - ? WHERE Payment_ID = $paymntID", array('i', $deleted_total), 'update');
+	
+	$paymentsql = json_decode(dbConn("SELECT paymtID, amount FROM OrderPaymentsExtended WHERE OrderNo = '$ordNo' AND amount >= $deleted_total", array(), 'select'));
+	$paymntID = $paymentsql->message[0]->paymtID;
+	$paidAmount = $paymentsql->message[0]->amount;
+	$newAmount = $paidAmount - $deleted_total;
+	//echo $paidAmount . ' '.$deleted_total;
+	//echo "UPDATE Payments SET Amount = ? WHERE Payment_ID = $paymntID, array('i', $newAmount), 'update'";
+	if($newAmount == 0){
+		dbConn("DELETE FROM Payments WHERE Payment_ID = '$paymntID' LIMIT 1", array(), 'delete');
+	}else{
+		dbConn("UPDATE Payments SET Amount = ? WHERE Payment_ID = $paymntID", array('i', $newAmount), 'update');
+	}
 }
 
 $json_res = new stdClass();

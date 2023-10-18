@@ -50,7 +50,7 @@ if($pymtconn_dbAccess->status === 1){
 			$ordbill = intval(json_decode(dbConn("SELECT Bill FROM OrderBill_grouped WHERE OrderNo = '$ordNo'", array(), 'select'))->message[0]->Bill);
 			//date_default_timezone_set("Africa/Nairobi");
 			if($ordpymt == $ordbill){
-				dbConn("UPDATE OrderDetails SET PaidStatus = ?, PaidDate = ?  WHERE OrderNo = '$ordNo'", array('is', 1,date('Y-m-d H:i:s')), 'update');
+				dbConn("UPDATE OrderDetails SET PaidStatus = ?, PaidDate = ?  WHERE OrderNo = '$ordNo' AND PaidStatus = 0", array('is', 1,date('Y-m-d H:i:s')), 'update');
 			}			
 			updateActivityLog('Insert Payment', 'Payment #'. $pymtID. ' for order #' .$ordNo . ' added successfully', $userID);
 			$pymtconn_res->status = 1;

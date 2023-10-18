@@ -77,6 +77,10 @@ theApp.controller("ordersCtlr", function($scope, $http, $routeParams,$timeout,$w
 							$scope.orders = response.data.message;/* Generating orders list */
 							toggleLoader("none");
 							console.log(response.data);
+						}else{
+							toggleLoader("none");
+							console.log(response.data);
+							$scope.showNoItems = true;
 						}/*
 					}else{
 						$scope.orders = response.data.pendingorders_records;
@@ -106,6 +110,14 @@ theApp.controller("create_orderCtlr", function($scope, $timeout, $http, userDeta
 		}
 	}
 
+	$scope.spPriceTrigger = function(){
+		if($scope.sp_price_check){
+			$scope.showSpPrice = true;
+		}else{
+			$scope.showSpPrice = false;
+		}
+	}
+
 	let order_details = [];//to contain order details for form submission
 
 	/* Generate Order details Grand Total */
@@ -124,7 +136,10 @@ theApp.controller("create_orderCtlr", function($scope, $timeout, $http, userDeta
 	
 	/* Computing the Item total from Qty */
 	$scope.changeQty = function(/*qty,item*/row, idx) {lineDetails.checkQty(/*qty,item*/row, idx, order_details, 'order');} 
-
+	
+	/* Changing special price of item */
+	$scope.changeSpPrice = function(idx, sp_price) {order_details[idx].SpecialPrice = sp_price; /*console.log(order_details,sp_price)*/} 
+		
 	$scope.q = function(){
 		console.log($scope.delv_point)
 	}
@@ -182,7 +197,7 @@ theApp.controller("create_orderCtlr", function($scope, $timeout, $http, userDeta
 	lineDetails.getItems("../crud/read/getOrdItemsList.php", {params: {station: userDetails.getStation()}}).then(res => $scope.items =res);
 	
 	/* Array to hold the number of rows of the orders details */
-	$scope.rows = [{ID:1, item: undefined, qty:null, rate:null, total:null, itemSelected: false}];
+	$scope.rows = [{ID:1, item: undefined, qty:null, rate:null, total:null, specialprice:null,itemSelected: false}];
 
 	/* Function to add a row to the orders details */
 	$scope.addRow = () => {lineDetails.addRow_create($scope.rows, order_details);}
@@ -193,7 +208,10 @@ theApp.controller("create_orderCtlr", function($scope, $timeout, $http, userDeta
 	/* Validate Form Data and submit */
 	$scope.validate = function (){
 
-		let form_values = {station:$scope.station, reciepient: $scope.reciepient, to:$scope.to, delv_point:$scope.delv_point, details:order_details, userID: userDetails.getUserID()};
+		if(userDetails.getUserID() == -3 || userDetails.getUserID() == -4){
+			alert("You can't add orders at this time");
+		}else{
+		let form_values = {station:$scope.station, reciepient: $scope.reciepient, to:$scope.to, delv_point:$scope.delv_point, special_price:$scope.sp_price_check, details:order_details, userID: userDetails.getUserID()};
 		
 		document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
 		document.getElementsByClassName("save_btn")[0].style.cursor = "not-allowed";
@@ -231,6 +249,7 @@ theApp.controller("create_orderCtlr", function($scope, $timeout, $http, userDeta
 			}, 2000);
 			
 		});
+	}
 	}
 
 });
@@ -323,6 +342,9 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 		$scope.station = response.data.order[0].Station;
 		$scope.to = response.data.order[0].To;
 		$scope.delv_point = response.data.order[0].DeliveryPoint;
+		if(response.data.order[0].hasSpecialPrice == 1){
+			$scope.showSpPrice = true;
+		}
 		odrStartTime = response.data.order[0].OrderDate;
 		ordMaxTime = ordPreptime(response.data.ord_details);
 		ordStatus = response.data.order[0].OrderStatus;
@@ -529,21 +551,30 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 			$scope.order_items[index].deleted = false;
 			deleted_order_lines.splice(index,1);
 		}*/
-		
-		if(lineItem.deleted === false){
-			lineItem.deleted = true;
-			deleted_order_lines.push({detailsID:lineItem.Details_No, paidStatus:lineItem.PaidStatus, total:lineItem.total});
+		if(lineItem.PaidStatus == 1){
+			if(confirm("This item is already paid for, do you want to delete anyway?")){
+				deleteItem();
+			}
 		}else{
-			lineItem.deleted = false;
-			deleted_order_lines.splice(index,1);console.log(deleted_order_lines);
+			deleteItem();
 		}
 		
-		if(deleteAllItems()){
-			if(ordStatus === "Delivered"){
-				alert("This order is already delivered, make sure to add an item before you submit");
-				//$scope.order_form.$invalid = true;
+		function deleteItem(){
+			if(lineItem.deleted === false){
+				lineItem.deleted = true;
+				deleted_order_lines.push({detailsID:lineItem.Details_No, paidStatus:lineItem.PaidStatus, total:lineItem.total});
 			}else{
-				alert("Looks like you're deleting all items, if you continue to submit this order will be deleted");
+				lineItem.deleted = false;
+				deleted_order_lines.splice(index,1);console.log(deleted_order_lines);
+			}
+			
+			if(deleteAllItems()){
+				if(ordStatus === "Delivered"){
+					alert("This order is already delivered, make sure to add an item before you submit");
+					//$scope.order_form.$invalid = true;
+				}else{
+					alert("Looks like you're deleting all items, if you continue to submit this order will be deleted");
+				}
 			}
 		}
 		console.log(deleted_order_lines,index/*, $scope.order_items[index]*/);
@@ -596,6 +627,9 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 		return collected;
 	}
 	
+	if(userDetails.getUserID() == -3 || userDetails.getUserID() == -4){
+			alert("You can't add orders at this time");
+	}else{
 	$scope.validate = function (){ 
 		if(collectPromises()){
 			document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
@@ -616,7 +650,7 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 								//wait for the httpResponse above to finish and return to the orders list
 								document.getElementById("orders_btn").click();
 								document.body.style.cursor = "auto";
-							}, 7000)
+							}, 8000)
 						}else{
 							stop_timer();
 							//document.getElementsByClassName("pymt_btn").style.display = "none";
@@ -631,7 +665,7 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 								document.body.style.cursor = "auto";
 							}, 7000)
 						}
-						httpResponse.success(1, "Updated Succesfuly");
+						//httpResponse.success(1, "Updated Succesfuly");
 					}else{
 						httpResponse.success(0, "The operation failed, Please try again");console.log(response[0].data);
 					}
@@ -648,11 +682,12 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 		}
 		//console.log("Hado #33: Sokatsui", editorder_details, deleted_order_lines);
 	}
-
+	}
 });
 
 theApp.controller("view_orderCtlr", function($scope, $timeout, $interval, $http, $routeParams, userDetails/*, $q, httpResponse, lineDetails*/){
 	let userID = userDetails.getUserID();
+	let userType = userDetails.getUserType();
 	let odrStartTime;
 	let ordMaxTime;
 	let ordStatus;
@@ -663,13 +698,19 @@ theApp.controller("view_orderCtlr", function($scope, $timeout, $interval, $http,
 	//$scope.iconClass = function(id){ return del_icon;}
 	//console.log(icon.length);//.classList.add(del_icon);
 	
+	let isAdmin;
+	if(userType != 'user'){
+		isAdmin = true;
+	}else{
+		isAdmin = false;
+	}
 	$scope.showDeliverBtn = false;
 	$scope.showTimer = false;
-	$scope.showOrderMeta = true;
+	$scope.showOrderMeta = isAdmin;
 	$scope.showPaid = true;
 	$scope.showPymtBtn = true;
-	$scope.showDeleteBtn = true;
-	$scope.showVerify = true;
+	$scope.showDeleteBtn = isAdmin;
+	$scope.showVerify = isAdmin;
 	//$scope.verify = "Not Verified";
 	
 	changeVerification = function(){
@@ -693,6 +734,10 @@ theApp.controller("view_orderCtlr", function($scope, $timeout, $interval, $http,
 			$scope.delv_point = "Go";
 		}else{
 			$scope.delv_point = response.data.order[0].DeliveryPoint;
+		}
+		
+		if(response.data.order[0].hasSpecialPrice == 1){
+			$scope.showSpPrice = true;
 		}
 		
 		$scope.startDate = new Date(response.data.order[0].OrderDate).toLocaleDateString("en-GB");
@@ -827,6 +872,9 @@ theApp.controller("OrdpaymentCtlr", function($scope, $timeout, $http, $routePara
 	
 	/* Validate Form Data and submit */
 	$scope.validate = function (){
+		if(userDetails.getUserID() == 5){
+			alert("You are not allowed to add payments");
+	}else{
 		let pdate = document.getElementsByName("paymentdate")[0].value;// new Date($scope.pdate/*'2022-12-24 04:00:13'*/).toLocaleDateString();
 		let form_values = {pdate:pdate, pamnt:$scope.pamnt, ptype:$scope.ptype, ordNo:$scope.ordNo, userID:userID/*, status:$scope.status*/};
 		
@@ -867,5 +915,6 @@ theApp.controller("OrdpaymentCtlr", function($scope, $timeout, $http, $routePara
 				//console.log(response.data);
 			});
 		}
+	}
 	}
 });

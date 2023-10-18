@@ -13,7 +13,7 @@
 				<div id="filter_box" style="display: flex; flex-direction: column">
 					<button id="applyFilter_btn" style="float: right" ng-click="startFilter()">Filter Orders</button>
 					<div ng-show="filterApplied" class="animate_show" style="display: flex">
-						<!--<select><option>Choose Filter</option><option>By Item</option></select>-->
+						
 						<select ng-model="$parent.item_name" ng-change="changeItemFilter()" ng-options="item.label for item in items track by item.value">
 							<option value="">Choose Item</option>
 						</select>
@@ -55,7 +55,7 @@
 					
 					<div id="details_content_box"><div id="loader"></div>
 					<div  style="max-height: 250px; overflow-y:auto">
-					<div class="grid_view_content" data-ng-repeat="order in orders" class="animate_repeat" data-ng-class="{pending_order: order.status == 'Pending', progress_order: order.status == 'In Progress', delivered_order: order.status == 'Delivered' }">
+					<div class="grid_view_content" data-ng-repeat="order in orders" class="animate_repeat" data-ng-class="{pending_order: order.status == 'Pending', progress_order: order.status == 'In Progress', delivered_order: order.status == 'Delivered', NYP_order: order.status == 'NYP' }">
 						<div class="grid_view_content_cell">
 							<span>{{$index +1}}</span>
 						</div>
@@ -82,12 +82,13 @@
 						</div>-->
 						<div class="grid_view_content_cell  action_cell">
 							<span>
-								<a ng-show="!{{isAdmin}}" href="#!edit_order/{{order.ordNo}}"><i class="fa fa-edit"></i></a>
+								<a ng-show="!{{isAdmin}} && order.status != 'NYP'" href="#!edit_order/{{order.ordNo}}"><i class="fa fa-edit"></i></a>
+								<a ng-show="!{{isAdmin}} && order.status == 'NYP'" href="#!view_order/{{order.ordNo}}"><i class="fa fa-eye"></i></a>
 								<a ng-show="{{isAdmin}}" href="#!view_order/{{order.ordNo}}"><div><i class="fa fa-eye"></i></div></a>
 							</span>
 						</div>
 					</div>
-					<div id="no_items_container"  class="grid_view_content animate_show" ng-show="showNoItems"><span style="color: red">There are no Orders that match your filter selection <span><i class="fa fa-times-circle-o"></i></span></span></div>
+					<div id="no_items_container"  class="grid_view_content animate_show" ng-show="showNoItems"><span style="color: red">There are no Orders at this time, try adding an order <!--<span><i class="fa fa-times-circle-o"></i></span>--></span></div>
 					</div>
 				</div>
 			</div>

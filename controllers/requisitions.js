@@ -233,7 +233,13 @@ theApp.controller("edit_requisitionCtlr", function($scope, $http, $routeParams, 
 	$http.post("../crud/read/getRequisition.php", {reqNo: $routeParams.reqNo, type: $routeParams.type}).then(function(response){
 		$scope.station = response.data.requisition[0].Station;
 		$scope.category = response.data.requisition[0].Category;
-		angular.forEach(response.data.req_details, function(v)  {v.deleted = false})//Add deleted property for toggling deleted class in ngRepeat
+		angular.forEach(response.data.req_details, function(v)  {
+			v.deleted = false;
+			
+			if(Number(v.qty) > 1){
+				v.UnitQty = `${v.UnitQty}S`;
+			} 	
+		})//Add deleted property for toggling deleted class in ngRepeat
 		$scope.requisition_items = response.data.req_details;
 		$scope.getGrandTotal = gTotal(response.data.req_details);
 		if(userDetails.getUserLevel() === "Level1"){
@@ -533,6 +539,10 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 				v.isChecked = true;
 				v.isDisabledRcv = true;
 			}
+			
+			if(Number(v.qty) > 1){
+				v.UnitQty = `${v.UnitQty}S`;
+			}
 			//v.qty_recvd = null;
 		})
 		}else{
@@ -642,6 +652,7 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 		}
 	}
 	
+	let items_changed = [];
 	$scope.updQtyRcvd = function(row, index){
 		let qty = row[index].qty_recvd;
 		
@@ -659,16 +670,18 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 				row[index].qty_recvd = null;
 				row[index].FinalAmount = null;
 			}else if(qty !== null && row[index].isChecked && !row[index].isDisabled){
-				//if(qty !== Number(row[index].qty)){
+				if(qty !== Number(row[index].qty)){
 					row[index].FinalAmount = qty * Number(row[index].rate);
 					if(recvd_items.length === 1){
 						recvd_items[0].QtyRecieved = qty;
 						recvd_items[0].FinalAmount = row[index].FinalAmount;
+						items_changed.push(row[index].item);
 					}else{
 						recvd_items[index].QtyRecieved = qty;
 						recvd_items[index].FinalAmount = row[index].FinalAmount;
+						items_changed.push(row[index].item);
 					}
-				//}
+				}
 			}
 		}else{
 			if(userDetails.getUserLevel() === "Level1"){	
@@ -705,8 +718,10 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 		if(/*finAmnt != null ||*/ !isNaN(finAmnt)/* && finAmnt !== 0*/){
 			if(recvd_items.length === 1){
 				recvd_items[0].FinalAmount = finAmnt;
+				items_changed.push(row[index].item);
 			}else{
 				recvd_items[index].FinalAmount = finAmnt;
+				items_changed.push(row[index].item);
 			}
 		}else /*if(finAmnt === 't')*/{
 			alert("Please enter only digits");
@@ -761,21 +776,39 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 	$scope.validate = function(){console.log(postData());
 		if(approve()){
 			if(checkArrSize()){
-				$http.post(postUrl(),postData()).then(function(response){
-					if(response.data.status = 1){
-						httpResponse.success(1, response.data.message);
-					}else{
-						httpResponse.success(0, response.data.message);
-					}
-					document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
-					console.log(response.data);
-				}, function(response){console.log(postData());
-					httpResponse.error(0, response.data);	
-				});//console.log(postUrl(), postData());
-				
+				if(confirmEditedItems(items_changed)){
+					$http.post(postUrl(),postData()).then(function(response){
+						if(response.data.status = 1){
+							httpResponse.success(1, response.data.message);
+						}else{
+							httpResponse.success(0, response.data.message);
+						}
+						document.getElementsByClassName("save_btn")[0].setAttribute("disabled", true);
+						console.log(response.data);
+					}, function(response){console.log(postData());
+						httpResponse.error(0, response.data);	
+					});//console.log(postUrl(), postData());
+				}
 			}
 		}
 	}
+	
+	function confirmEditedItems(arr){
+		let isConfirmed;
+		if(arr.length > 0){
+			arr = [... new Set(arr)]//removes duplicate values
+			if(confirm(`You have changed the following items:\n \n${arr.toString()}.\n \nDo you want to continue?`)){
+				isConfirmed = true; 
+			}else{
+				isConfirmed = false;
+			}
+		}else{
+			isConfirmed = true; 
+		}
+		
+		return isConfirmed;
+	}
+	
 	function removeItem(arr, idx){
 		if(arr.length === 1){
 			arr.splice(0,1);
@@ -1017,18 +1050,18 @@ theApp.controller("view_requisitionCtlr", function($scope, $http, $routeParams, 
 	}
 	
 	let deleted_rows = [];
-	$scope.deleteLineItem = function(DetailsNo, index){
-		deleted_rows.push(DetailsNo);
-		if(confirm("Are you sure you want to delete this item?")){
+	$scope.deleteLineItem = function(row, index){
+		deleted_rows.push({detailsID: row.DetailsNo});
+		if(confirm(`Are you sure you want to delete [${row.item}]?`)){
 			$http.delete("../crud/delete/deleteReqLine.php", {data:deleted_rows}).then(function(response){
 				if(response.data.status == 1){
-					alert(response.data.message);
+					alert(response.data.message);console.log(response.data.message);
 				}else{
-					alert(response.data.message);
+					alert(response.data.message);console.log(response.data);
 				}
 			});
 		}
-		console.log(DetailsNo);
+		//console.log(DetailsNo);
 	}
 	
 	$scope.validate = function(){

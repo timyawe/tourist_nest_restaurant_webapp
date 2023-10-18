@@ -50,6 +50,9 @@
 									<option value="Group">Group (3+ people)</option>
 								</select>
 							</div>
+							<div class="form_input_row">
+								<label style="width:7em; text-align: left">Special Price:</label><input type="checkbox" style="transform: scale(1.8);" data-ng-model="sp_price_check" data-ng-change="spPriceTrigger()"/>
+							</div>
 						</div>
 					</div>
 					<div id="form_content">
@@ -70,6 +73,9 @@
 								<div class="grid_view_header_cell">
 									<span>Total</span>
 								</div>
+								<div class="grid_view_header_cell animate_if" style="flex-grow: 2; width: 3em" ng-if="showSpPrice">
+									<span>Special Price</span>
+								</div>
 								<div class="grid_view_header_cell action_cell">
 									<span><button type="button" class="add_row_btn" data-ng-click="addRow()"><i class="fa fa-plus"></i></button></span>
 								</div>
@@ -87,13 +93,16 @@
 									</span>
 								</div>
 								<div class="grid_view_content_cell">
-									<span><input type="number" class="txt_box qty_input" data-ng-model="row.qty" data-ng-blur="changeQty(row,$index)" ng-readonly="row.item === undefined" required /></span>
+									<span><input type="number" class="txt_box qty_input" data-ng-model="row.qty" data-ng-change="changeQty(row,$index)" ng-readonly="row.item === undefined" required /></span>
 								</div>
 								<div class="grid_view_content_cell">
 									<span><input type="text" class="txt_box rate_input" data-ng-model="row.item.rate" readonly /></span>
 								</div>
 								<div class="grid_view_content_cell">
 									<span><input type="text" class="txt_box total_input" data-ng-model="row.total" readonly /></span>
+								</div>
+								<div class="grid_view_content_cell animate_if" style="flex-grow: 2; width: 3em" ng-if="showSpPrice">
+									<span><input type="text" class="txt_box total_input" data-ng-model="row.specialprice" data-ng-blur="changeSpPrice($index,row.specialprice)"/></span>
 								</div>
 								<div class="grid_view_content_cell action_cell">
 									<span data-ng-click="removeRow($index)"><i class="fa fa-close"></i></span>

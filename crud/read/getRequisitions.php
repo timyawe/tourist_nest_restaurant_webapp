@@ -4,12 +4,12 @@ $res_records = new stdClass();
 
 if(isset($_GET['station'])){
 	$station = $_GET['station'];
-	$sql = "SELECT * FROM PurchaseOrdersExtended WHERE Station = '$station' AND Status <> 'Closed'";
+	$sql = "SELECT * FROM PurchaseOrdersExtended WHERE Station = '$station' AND Status <> 'Closed' ORDER BY _date, category ";
 }else{
 	//$sql = "SELECT * FROM PurchaseOrdersExtended WHERE Status <> 'Closed'";
 	$sql = "SELECT reqNo, _date, category, station, `status`, staff, `type`, amount, ifnull(givenstatus,1) isFullyGiven FROM nest_restaurant.purchaseordersextended 
 				left join (select purchaseno, givenstatus from internalrequisition_given_ext left join purchaseorder on internalrequisition_given_ext.purchaseno = purchaseorder.Purchase_No where givenstatus = 0 and RequisitionType = 'Internal') as given on reqno = given.purchaseno
-			where `status` <> 'Closed' GROUP BY reqNo";
+			where `status` <> 'Closed' GROUP BY reqNo ORDER BY _date, category";
 }
 
 $reqTotalsql = "SELECT sum(if(isnull(finalamount),if(isnull(purchaseamount),(total),(purchaseamount)),(finalamount))) as reqTotal from purchasedetailsextended left join Purchaseorder on Purchase_No = PurchaseNo where RecievedStatus = 0 AND PurchaseStatus <> 'Closed'";

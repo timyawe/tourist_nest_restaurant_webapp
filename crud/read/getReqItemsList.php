@@ -4,7 +4,7 @@ $res_records = new stdClass();
 
 if(isset($_GET['station'])){
 	$station = $_GET['station'];
-	$sql = "select Product_No AS value, Description AS label, UnitCostPrice AS rate, Category,
+	$sql = "select Product_No AS value, Description AS label, UnitCostPrice AS rate, Category,UnitQty,
 			(if(isnull(reqsTotal),0,round(reqsTotal/measuresold)) - ((if(isnull(ordersTotal),0,ordersTotal) + if(isnull(offersTotal),0,offersTotal)) + if(isnull(spoiltTotal),0,spoiltTotal) + if(isnull(missingTotal),0,missingTotal))) AS finish,
 			$station as MinStockLevel, if(isnull(RecievedStatus), 1, RecievedStatus) as Recieved, lastRecieved
 			from 
@@ -14,7 +14,7 @@ if(isset($_GET['station'])){
 			left join 
 				(select ProductNo, sum(QtyRecieved) AS reqsTotal from purchasedetails join purchaseorder on purchaseNo = purchase_no WHERE Station = '$station' group by ProductNo) AS `reqsqty` on((Product_No = reqsqty.ProductNo))) 
 			left join 
-				(select ProductNo, sum(Qty) AS offersTotal from offersdetails join offers on OffersID = offers.ID WHERE Station = '$station' group by ProductNo) AS `offersqty`  on((Product_No = offersqty.productNo))) 
+				(select ProductNo, sum(Qty) AS offersTotal from offersdetails join offers on OffersID = offers.ID WHERE Station = '$station' AND isDeleted <> 1 group by ProductNo) AS `offersqty`  on((Product_No = offersqty.productNo))) 
 			left join 
 				(select ProductNo, sum(Qty) AS spoiltTotal from spoiltdetails join items_spoilt on SpoiltID = items_spoilt.ID WHERE Station = '$station' group by ProductNo)  AS `spoiltqty`  on((Product_No = spoiltqty.productNo))) 
 			left join 
@@ -30,10 +30,10 @@ if(isset($_GET['station'])){
 			where (`nest_restaurant`.`products`.`Status` = 'Active')";
 }else{
 	//$sql = "SELECT * FROM ReqItemsList";
-	$sql = "select products.product_no as `value`, `description` as label, if(rate != round(rate,0), round(rate,3),round(rate,0)) as rate, category/*, ifnull(qty,0) as requestedTotal*/ ,ifnull(qtyRecieved,0) as recievedTotal ,sum(qtyGiven) as givenTotal, ifnull(qtyRecieved,0) - ifnull(sum(qtygiven),0) as finish, MinStockLevel, if(isnull(RecievedStatus), 1, RecievedStatus) as Recieved 
+	$sql = "select products.product_no as `value`, `description` as label, if(rate != round(rate,0), round(rate,3),round(rate,0)) as rate, category/*,UnitQty, ifnull(qty,0) as requestedTotal*/ ,ifnull(qtyRecieved,0) as recievedTotal ,sum(qtyGiven) as givenTotal, ifnull(qtyRecieved,0) - ifnull(sum(qtygiven),0) as finish, MinStockLevel, ifnull(RecievedStatus,1) as Recieved 
 		   from products 
-		   left join (select ProductNo, sum(qty) as qty, sum(qtyRecieved) as qtyRecieved /*,qtyGiven ,GivenStatus, RecievedStatus*/ from purchasedetails join purchaseorder on Purchase_No = PurchaseNo where RequisitionType = 'External' group by ProductNo) as recievedInfo on products.product_no = recievedInfo.productno
-		   left join (select Product_No, /*qty, qtyRecieved ,*/qtyGiven ,GivenStatus, RecievedStatus from internalrequisition_given_ext /*left join purchaseorder on Purchase_No = PurchaseNo where RequisitionType = 'External'*/) as givenInfo on products.product_no = givenInfo.product_no
+		   left join (select ProductNo, sum(qty) as qty, sum(qtyRecieved) as qtyRecieved /*,qtyGiven ,GivenStatus*/, RecievedStatus from purchasedetails join purchaseorder on Purchase_No = PurchaseNo where RequisitionType = 'External' group by ProductNo) as recievedInfo on products.product_no = recievedInfo.productno
+		   left join (select Product_No, /*qty, qtyRecieved ,*/qtyGiven ,GivenStatus/*, RecievedStatus*/ from internalrequisition_given_ext /*left join purchaseorder on Purchase_No = PurchaseNo where RequisitionType = 'External'*/) as givenInfo on products.product_no = givenInfo.product_no
 		   left join (select productno, UnitCostPrice AS rate,store as MinStockLevel from items_bought join stocklevels on items_bought.ID = ItemsBoughtID) as stocklevelsInfo on stocklevelsInfo.ProductNo = products.product_no
 		   where `Status` = 'Active' group by products.Product_No";
 }

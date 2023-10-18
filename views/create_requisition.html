@@ -48,6 +48,9 @@
 								<div class="grid_view_header_cell">
 									<span>Qty</span>
 								</div>
+								<div ng-if="showAmounts" class="grid_view_header_cell animate_if" >
+									<span>Msmt</span>
+								</div>
 								<div ng-if="showAmounts" class="grid_view_header_cell animate_if">
 									<span>Rate</span>
 								</div>
@@ -79,6 +82,9 @@
 								</div>
 								<div class="grid_view_content_cell">
 									<span><input type="number" class="txt_box qty_input" data-ng-model="row.qty" data-ng-blur="reqComputeSubTotal(row,$index)" ng-readonly="category === undefined || row.item === undefined" required /></span>
+								</div>
+								<div ng-if="showAmounts" class="grid_view_content_cell animate_if" >
+									<span><input type="text" class="txt_box" style="text-align: center" data-ng-model="row.item.UnitQty" readonly /></span>
 								</div>
 								<div ng-if="showAmounts" class="grid_view_content_cell animate_if">
 									<span><input type="text" class="txt_box rate_input" data-ng-model="row.item.rate" readonly /></span>

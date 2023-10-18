@@ -21,6 +21,25 @@ $pdt_fields = createFields($clean_data, $pdt_template);
 $itms_bought_fields = createFields($clean_data, $itms_bought_templ);
 $itms_sld_fields = createFields($clean_data, $itms_sld_templ);
 
+if($clean_data['stocklevel_edit'] == 1){
+	$stocklevel_fields = createFields($clean_data, array('reception', 'restaurant', 'bar'));
+	$itemsBoughtID = json_decode(dbConn("SELECT Items_bought.ID FROM items_bought join products on Product_No = ProductNo WHERE Product_No = '$pdtID'", array(), 'select'))->message[0]->ID;
+	//print_r( $stocklevel_fields);
+	$stocklevelfinal_arr = array_diff_assoc($stocklevel_fields, comparisonRecord('Stocklevels', 'ItemsBoughtID', $itemsBoughtID));//array_diff_assoc compares both key and value
+	//print_r( $stocklevelfinal_arr);
+	if(!empty($stocklevelfinal_arr)){
+		$stocklevel_fields_arr = array_keys($stocklevel_fields);
+		array_unshift($stocklevelfinal_arr, createBindTypes($stocklevelfinal_arr));
+		if(json_decode(dbConn(createUpdateSql($stocklevel_fields_arr, 'Stocklevels', 'ItemsBoughtID', $itemsBoughtID),$stocklevelfinal_arr, 'update'))->status == 1){
+			$isStockLevelEdited = 1;
+		}else{
+			$isStockLevelEdited = 0;
+		}
+	}else{
+		$isStockLevelEdited = 0;
+	}
+}
+
 if(!empty($pdt_fields)){
 	$pdtfinal_arr = array_diff($pdt_fields, comparisonRecord('Products', 'Product_No', $pdtID));
 	
@@ -68,7 +87,7 @@ if(!empty($itms_bought_fields)){
 }
 if(!empty($itms_sld_fields)){
 	$pdt_sld_final_arr = array_diff($itms_sld_fields, comparisonRecord('Items_Sold', 'ProductNo', $pdtID));
-	
+	//print_r($pdt_sld_final_arr);
 	if(!empty($pdt_sld_final_arr)){
 		$pdt_sld_fields_arr = array_keys($pdt_sld_final_arr);
 		
@@ -90,7 +109,7 @@ if(!empty($itms_sld_fields)){
 }
 
 $json_res = new stdClass();
-if(isset($isPdtEdited) && $isPdtEdited == 1 || isset($isPdtBghtEdited) && $isPdtBghtEdited == 1 || isset($isPdtSldEdited) && $isPdtSldEdited == 1){
+if(isset($isPdtEdited) && $isPdtEdited == 1 || isset($isPdtBghtEdited) && $isPdtBghtEdited == 1 || isset($isPdtSldEdited) && $isPdtSldEdited == 1 || isset($isStockLevelEdited) && $isStockLevelEdited == 1){
 	$json_res->suc_status = 1;
 	$json_res->suc_message = "Updated Succesfully";
 }else if(isset($isPdtEdited) && $isPdtEdited == 2 || isset($isPdtBghtEdited) && $isPdtBghtEdited == 2 || isset($isPdtSldEdited) && $isPdtSldEdited == 2){
@@ -98,13 +117,13 @@ if(isset($isPdtEdited) && $isPdtEdited == 1 || isset($isPdtBghtEdited) && $isPdt
 	$json_res->info_message = "No fields were edited";
 }else{
 	$json_res->err_status = 0;
-	$json_res->err_message = "One or more fields was not updated";
+	$json_res->err_message = "One or more fields was not updated $isStockLevelEdited";
 	$json_res->pdtmsg = $pdtEdtMsg;
 	$json_res->pdtbmsg = $pdtBghtEdtMsg;
 	$json_res->pdtsmsg = $pdtSldEdtMsg;
 }
 
-echo json_encode($json_res);
+echo /*$isStockLevelEdited;*/json_encode($json_res);
 
 function createFields($genarr, $temparr){
 	$fieldsarr = [];

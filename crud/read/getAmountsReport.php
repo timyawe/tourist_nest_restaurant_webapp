@@ -14,19 +14,39 @@ if(isset($json_data['amounts_date'])){
 	$_date = $json_data['amounts_date'];
 }
 
-if(date('Y-m-d', strtotime($_date)) > date('Y-m-d', strtotime('2023-07-25'))){//used for wether to restrict items with payments before 7pm or not. 
-	$drinks_salesreportsql = "SELECT details_no, if(`SaleName`= '', `Description`,SaleName) as item,sum(qty) as Qty, format(sum(cost),0) as Amount FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE orderdate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND PaidStatus = 1 AND PaidDate < '$_date' + INTERVAL 19 HOUR AND category = 'Drinks'  GROUP BY orderdetails.productno ORDER BY sum(cost) DESC";
-	$drinks_sales_nyp_reportsql = "SELECT details_no, if(`SaleName`= '', `Description`,SaleName) as item,sum(qty) as Qty,'NYP' as Amount FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE orderdate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND category = 'Drinks' AND PaidStatus = 0 /*delete*/  OR orderdate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND category = 'Drinks' AND PaidStatus = 1 and paiddate > '$_date' + INTERVAL 19 HOUR /*delete*/ GROUP BY orderdetails.productno ORDER BY sum(qty) DESC";
-	$drinks_PB_reportsql = "SELECT details_no, concat(if(`SaleName`= '', `Description`,SaleName), ' ', 'P/B') as item,sum(qty) as Qty, format(sum(cost),0) as Amount FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE Orderdate < '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND PaidStatus = 1 AND PaidDate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND PaidDate < '$_date' + INTERVAL 19 HOUR AND category = 'Drinks' GROUP BY orderdetails.productno ORDER BY sum(Cost) DESC";
-	$drinks_reqreportsql = "SELECT details_no, `Description` AS itemBought, round(SUM(qtyRecieved)) AS QtyBought, format(if(isnull(sum(finalamount)),if(isnull(sum(purchaseamount)),sum(standardcost),sum(purchaseamount)),sum(finalamount)),0) AS AmountSpent FROM purchasedetails JOIN purchaseorder ON Purchase_No = PurchaseNo LEFT JOIN products ON Product_No = ProductNo WHERE Date(DateRecieved) = '$_date' AND products.Category = 'Drinks' AND RequisitionType = 'External' GROUP BY ProductNo";
-	$eats_salesreportsql = "SELECT details_no, if(`SaleName`= '', `Description`,SaleName) as itemSoldEats,sum(qty) as QtySoldEats, /*rate,*/ format(sum(cost),0) as AmountEats/*, OrderNo, orderdetails.productno, OrderDate*/ FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE orderdate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND category = 'Eats' AND PaidStatus = 1 AND PaidDate < '$_date' + INTERVAL 19 HOUR GROUP BY orderdetails.productno ORDER BY sum(cost) DESC";
-	$eats_sales_nyp_reportsql = "SELECT details_no, if(`SaleName`= '', `Description`,SaleName) as itemSoldEats,sum(qty) as QtySoldEats, /*rate,*/ 'NYP' as AmountEats/*, OrderNo, orderdetails.productno, OrderDate*/ FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE orderdate >'$_date'  - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND category = 'Eats' AND PaidStatus = 0 /*delete*/  OR orderdate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND category = 'Eats' AND PaidStatus = 1 and paiddate > '$_date' + INTERVAL 19 HOUR /*delete*/ GROUP BY orderdetails.productno ORDER BY sum(qty) DESC";
-	$eats_PB_reportsql = "SELECT details_no, concat(if(`SaleName`= '', `Description`,SaleName), ' ', 'P/B') as itemSoldEats,sum(qty) as QtySoldEats, /*rate,*/ format(sum(cost),0) as AmountEats/*, OrderNo, orderdetails.productno, OrderDate*/ FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE Orderdate < '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND PaidStatus = 1 AND PaidDate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND PaidDate < '$_date' + INTERVAL 19 HOUR AND category = 'Eats' GROUP BY orderdetails.productno ORDER BY sum(Cost) DESC";
-	$eats_reqreportsql = "SELECT details_no, `Description` AS itemBoughtEats, if(sum(qtyRecieved) > 1, concat(round(SUM(qtyRecieved)), ' ',  UnitQty, 'S'),concat(round(SUM(qtyRecieved)), ' ',  UnitQty)) AS QtyBoughtEats, format(sum(if(isnull((finalamount)),if(isnull((purchaseamount)),(standardcost),(purchaseamount)),(finalamount))),0) AS AmountSpentEats FROM purchasedetails JOIN purchaseorder ON Purchase_No = PurchaseNo LEFT JOIN products ON Product_No = ProductNo left join items_bought on purchasedetails.ProductNo = items_bought.ProductNo WHERE Date(DateRecieved) = '$_date' AND products.Category = 'Eats' OR Date(DateRecieved) = '$_date' AND products.Category = 'Kitchen' GROUP BY items_bought.ProductNo";
+if(date('Y-m-d', strtotime($_date)) > date('Y-m-d', strtotime('2023-10-11'))){//used for wether to restrict items recieved before 7pm or not. 
 	
-	$sales_sum_sql = "select sum(cost) AS SalesTotal from orderdetails join orders on order_no = orderno where PaidStatus = 1 AND PaidDate < '$_date' + INTERVAL 19 HOUR and OrderDate > '$_date' - interval 1 day + interval 19 hour and orderdate < '$_date' + interval 19 HOUR";
-	$sales_pb_sum_sql = "select sum(cost) AS SalesTotal from orderdetails join orders on order_no = orderno where Orderdate < '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND PaidStatus = 1 AND PaidDate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND PaidDate < '$_date' + INTERVAL 19 HOUR";
+	$drinks_salesreportsql = "SELECT details_no, if(`SaleName`= '', `Description`,SaleName) as item,sum(qty) as Qty, format(sum(cost),0) as Amount, 0 AS sp_flag FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE DeliveredStatus <> 0 AND orderdate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND PaidStatus = 1 AND PaidDate < '$_date' + INTERVAL 19 HOUR AND isnull(specialprice) AND category = 'Drinks'  GROUP BY orderdetails.productno ORDER BY sum(cost) DESC";
+	$drinks_sales_sp_reportsql = "SELECT details_no, if(`SaleName`= '', `Description`,SaleName) as item,sum(qty) as Qty, format(sum(specialprice),0) as Amount, 1 AS sp_flag FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE orderdate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND PaidStatus = 1 AND PaidDate < '$_date' + INTERVAL 19 HOUR AND NOT isnull(specialprice) AND category = 'Drinks'  GROUP BY orderdetails.productno ORDER BY sum(specialprice) DESC";
+	$drinks_sales_nyp_reportsql = "SELECT details_no, if(`SaleName`= '', `Description`,SaleName) as item,sum(qty) as Qty,'NYP' as Amount FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE DeliveredStatus <> 0 AND orderdate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND category = 'Drinks' AND PaidStatus = 0 /*delete*/  OR orderdate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND category = 'Drinks' AND PaidStatus = 1 and paiddate > '$_date' + INTERVAL 19 HOUR /*delete*/ GROUP BY orderdetails.productno ORDER BY sum(qty) DESC";
+	$drinks_PB_reportsql = "SELECT details_no, concat(if(`SaleName`= '', `Description`,SaleName), ' ', 'P/B') as item,sum(qty) as Qty, format(sum(cost),0) as Amount FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE DeliveredStatus <> 0 AND Orderdate < '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND PaidStatus = 1 AND PaidDate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND PaidDate < '$_date' + INTERVAL 19 HOUR AND category = 'Drinks' GROUP BY orderdetails.productno ORDER BY sum(Cost) DESC";
+	$drinks_reqreportsql = "SELECT details_no, `Description` AS itemBought, round(SUM(qtyRecieved)) AS QtyBought, format(if(isnull(sum(finalamount)),if(isnull(sum(purchaseamount)),sum(standardcost),sum(purchaseamount)),sum(finalamount)),0) AS AmountSpent FROM purchasedetails JOIN purchaseorder ON Purchase_No = PurchaseNo LEFT JOIN products ON Product_No = ProductNo WHERE Date(DateRecieved) = '$_date' AND products.Category = 'Drinks' AND RequisitionType = 'External' GROUP BY ProductNo";
+	$eats_salesreportsql = "SELECT details_no, if(`SaleName`= '', `Description`,SaleName) as itemSoldEats,sum(qty) as QtySoldEats, /*rate,*/ format(sum(cost),0) as AmountEats, 0 AS sp_eatsflag/*, OrderNo, orderdetails.productno, OrderDate*/ FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE DeliveredStatus <> 0 AND orderdate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND isnull(specialprice) AND category = 'Eats' AND PaidStatus = 1 AND PaidDate < '$_date' + INTERVAL 19 HOUR GROUP BY orderdetails.productno ORDER BY sum(cost) DESC";
+	$eats_sales_sp_reportsql = "SELECT details_no, if(`SaleName`= '', `Description`,SaleName) as itemSoldEats,sum(qty) as QtySoldEats, format(sum(specialprice),0) as AmountEats, 1 AS sp_eatsflag FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE orderdate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND PaidStatus = 1 AND PaidDate < '$_date' + INTERVAL 19 HOUR AND NOT isnull(specialprice) AND category = 'Eats'  GROUP BY orderdetails.productno ORDER BY sum(specialprice) DESC";
+	$eats_sales_nyp_reportsql = "SELECT details_no, if(`SaleName`= '', `Description`,SaleName) as itemSoldEats,sum(qty) as QtySoldEats, /*rate,*/ 'NYP' as AmountEats/*, OrderNo, orderdetails.productno, OrderDate*/ FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE DeliveredStatus <> 0 AND orderdate >'$_date'  - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND category = 'Eats' AND PaidStatus = 0 /*delete*/  OR orderdate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND category = 'Eats' AND PaidStatus = 1 and paiddate > '$_date' + INTERVAL 19 HOUR /*delete*/ GROUP BY orderdetails.productno ORDER BY sum(qty) DESC";
+	$eats_PB_reportsql = "SELECT details_no, concat(if(`SaleName`= '', `Description`,SaleName), ' ', 'P/B') as itemSoldEats,sum(qty) as QtySoldEats, /*rate,*/ format(sum(cost),0) as AmountEats/*, OrderNo, orderdetails.productno, OrderDate*/ FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE DeliveredStatus <> 0 AND Orderdate < '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND PaidStatus = 1 AND PaidDate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND PaidDate < '$_date' + INTERVAL 19 HOUR AND category = 'Eats' GROUP BY orderdetails.productno ORDER BY sum(Cost) DESC";
+	$eats_reqreportsql = "SELECT details_no, `Description` AS itemBoughtEats, if(sum(qtyRecieved) > 1, concat(round(SUM(qtyRecieved)), ' ',  UnitQty, 'S'),concat(round(SUM(qtyRecieved)), ' ',  UnitQty)) AS QtyBoughtEats, format(sum(if(isnull((finalamount)),if(isnull((purchaseamount)),(standardcost),(purchaseamount)),(finalamount))),0) AS AmountSpentEats, if(PurchaseAmount <> StandardCost, 1,if(FinalAmount <> StandardCost,1,0)) AS isChanged FROM purchasedetails JOIN purchaseorder ON Purchase_No = PurchaseNo LEFT JOIN products ON Product_No = ProductNo left join items_bought on purchasedetails.ProductNo = items_bought.ProductNo WHERE DateRecieved > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND DateRecieved < '$_date' + INTERVAL 19 HOUR AND products.Category = 'Eats' OR DateRecieved > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND DateRecieved < '$_date' + INTERVAL 19 HOUR AND products.Category = 'Kitchen' GROUP BY items_bought.ProductNo";
+	
+	$sales_sum_sql = "select sum(ifnull(specialprice,cost)) AS SalesTotal from orderdetails join orders on order_no = orderno where DeliveredStatus <> 0 AND PaidStatus = 1 AND PaidDate < '$_date' + INTERVAL 19 HOUR and OrderDate > '$_date' - interval 1 day + interval 19 hour and orderdate < '$_date' + interval 19 HOUR";
+	$sales_pb_sum_sql = "select sum(ifnull(specialprice,cost)) AS SalesTotal from orderdetails join orders on order_no = orderno where DeliveredStatus <> 0 AND Orderdate < '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND PaidStatus = 1 AND PaidDate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND PaidDate < '$_date' + INTERVAL 19 HOUR";
+	$reqs_sum_sql = "select sum(if(isnull((finalamount)),if(isnull((purchaseamount)),(standardcost),(purchaseamount)),(finalamount))) AS PurchasesTotal FROM purchasedetails JOIN purchaseorder ON Purchase_No = PurchaseNo WHERE DateRecieved > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND DateRecieved < '$_date' + INTERVAL 19 HOUR";
+
+}else if(date('Y-m-d', strtotime($_date)) > date('Y-m-d', strtotime('2023-07-25'))){//used for wether to restrict items with payments before 7pm or not. 
+	$drinks_salesreportsql = "SELECT details_no, if(`SaleName`= '', `Description`,SaleName) as item,sum(qty) as Qty, format(sum(cost),0) as Amount, 0 AS sp_flag FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE DeliveredStatus <> 0 AND orderdate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND PaidStatus = 1 AND PaidDate < '$_date' + INTERVAL 19 HOUR AND isnull(specialprice) AND category = 'Drinks'  GROUP BY orderdetails.productno ORDER BY sum(cost) DESC";
+	$drinks_sales_sp_reportsql = "SELECT details_no, if(`SaleName`= '', `Description`,SaleName) as item,sum(qty) as Qty, format(sum(specialprice),0) as Amount, 1 AS sp_flag FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE orderdate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND PaidStatus = 1 AND PaidDate < '$_date' + INTERVAL 19 HOUR AND NOT isnull(specialprice) AND category = 'Drinks'  GROUP BY orderdetails.productno ORDER BY sum(specialprice) DESC";
+	$drinks_sales_nyp_reportsql = "SELECT details_no, if(`SaleName`= '', `Description`,SaleName) as item,sum(qty) as Qty,'NYP' as Amount FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE DeliveredStatus <> 0 AND orderdate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND category = 'Drinks' AND PaidStatus = 0 /*delete*/  OR orderdate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND category = 'Drinks' AND PaidStatus = 1 and paiddate > '$_date' + INTERVAL 19 HOUR /*delete*/ GROUP BY orderdetails.productno ORDER BY sum(qty) DESC";
+	$drinks_PB_reportsql = "SELECT details_no, concat(if(`SaleName`= '', `Description`,SaleName), ' ', 'P/B') as item,sum(qty) as Qty, format(sum(cost),0) as Amount FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE DeliveredStatus <> 0 AND Orderdate < '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND PaidStatus = 1 AND PaidDate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND PaidDate < '$_date' + INTERVAL 19 HOUR AND category = 'Drinks' GROUP BY orderdetails.productno ORDER BY sum(Cost) DESC";
+	$drinks_reqreportsql = "SELECT details_no, `Description` AS itemBought, round(SUM(qtyRecieved)) AS QtyBought, format(if(isnull(sum(finalamount)),if(isnull(sum(purchaseamount)),sum(standardcost),sum(purchaseamount)),sum(finalamount)),0) AS AmountSpent FROM purchasedetails JOIN purchaseorder ON Purchase_No = PurchaseNo LEFT JOIN products ON Product_No = ProductNo WHERE Date(DateRecieved) = '$_date' AND products.Category = 'Drinks' AND RequisitionType = 'External' GROUP BY ProductNo";
+	$eats_salesreportsql = "SELECT details_no, if(`SaleName`= '', `Description`,SaleName) as itemSoldEats,sum(qty) as QtySoldEats, /*rate,*/ format(sum(cost),0) as AmountEats, 0 AS sp_eatsflag/*, OrderNo, orderdetails.productno, OrderDate*/ FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE DeliveredStatus <> 0 AND orderdate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND isnull(specialprice) AND category = 'Eats' AND PaidStatus = 1 AND PaidDate < '$_date' + INTERVAL 19 HOUR GROUP BY orderdetails.productno ORDER BY sum(cost) DESC";
+	$eats_sales_sp_reportsql = "SELECT details_no, if(`SaleName`= '', `Description`,SaleName) as itemSoldEats,sum(qty) as QtySoldEats, format(sum(specialprice),0) as AmountEats, 1 AS sp_eatsflag FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE orderdate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND PaidStatus = 1 AND PaidDate < '$_date' + INTERVAL 19 HOUR AND NOT isnull(specialprice) AND category = 'Eats'  GROUP BY orderdetails.productno ORDER BY sum(specialprice) DESC";
+	$eats_sales_nyp_reportsql = "SELECT details_no, if(`SaleName`= '', `Description`,SaleName) as itemSoldEats,sum(qty) as QtySoldEats, /*rate,*/ 'NYP' as AmountEats/*, OrderNo, orderdetails.productno, OrderDate*/ FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE DeliveredStatus <> 0 AND orderdate >'$_date'  - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND category = 'Eats' AND PaidStatus = 0 /*delete*/  OR orderdate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND category = 'Eats' AND PaidStatus = 1 and paiddate > '$_date' + INTERVAL 19 HOUR /*delete*/ GROUP BY orderdetails.productno ORDER BY sum(qty) DESC";
+	$eats_PB_reportsql = "SELECT details_no, concat(if(`SaleName`= '', `Description`,SaleName), ' ', 'P/B') as itemSoldEats,sum(qty) as QtySoldEats, /*rate,*/ format(sum(cost),0) as AmountEats/*, OrderNo, orderdetails.productno, OrderDate*/ FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE DeliveredStatus <> 0 AND Orderdate < '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND PaidStatus = 1 AND PaidDate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND PaidDate < '$_date' + INTERVAL 19 HOUR AND category = 'Eats' GROUP BY orderdetails.productno ORDER BY sum(Cost) DESC";
+	$eats_reqreportsql = "SELECT details_no, `Description` AS itemBoughtEats, if(sum(qtyRecieved) > 1, concat(round(SUM(qtyRecieved)), ' ',  UnitQty, 'S'),concat(round(SUM(qtyRecieved)), ' ',  UnitQty)) AS QtyBoughtEats, format(sum(if(isnull((finalamount)),if(isnull((purchaseamount)),(standardcost),(purchaseamount)),(finalamount))),0) AS AmountSpentEats, if(PurchaseAmount <> StandardCost, 1,if(FinalAmount <> StandardCost,1,0)) AS isChanged FROM purchasedetails JOIN purchaseorder ON Purchase_No = PurchaseNo LEFT JOIN products ON Product_No = ProductNo left join items_bought on purchasedetails.ProductNo = items_bought.ProductNo WHERE Date(DateRecieved) = '$_date' AND products.Category = 'Eats' OR Date(DateRecieved) = '$_date' AND products.Category = 'Kitchen' GROUP BY items_bought.ProductNo";
+	
+	$sales_sum_sql = "select sum(ifnull(specialprice,cost)) AS SalesTotal from orderdetails join orders on order_no = orderno where DeliveredStatus <> 0 AND PaidStatus = 1 AND PaidDate < '$_date' + INTERVAL 19 HOUR and OrderDate > '$_date' - interval 1 day + interval 19 hour and orderdate < '$_date' + interval 19 HOUR";
+	$sales_pb_sum_sql = "select sum(ifnull(specialprice,cost)) AS SalesTotal from orderdetails join orders on order_no = orderno where DeliveredStatus <> 0 AND Orderdate < '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND PaidStatus = 1 AND PaidDate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND PaidDate < '$_date' + INTERVAL 19 HOUR";
 	$reqs_sum_sql = "select sum(if(isnull((finalamount)),if(isnull((purchaseamount)),(standardcost),(purchaseamount)),(finalamount))) AS PurchasesTotal FROM purchasedetails JOIN purchaseorder ON Purchase_No = PurchaseNo WHERE Date(DateRecieved) = '$_date'";
+	
 }else{
 				
 	$drinks_salesreportsql = "SELECT details_no, if(`SaleName`= '', `Description`,SaleName) as item,sum(qty) as Qty, format(sum(cost),0) as Amount FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE orderdate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND category = 'Drinks' AND PaidStatus = 1 GROUP BY orderdetails.productno ORDER BY sum(cost) DESC";
@@ -36,7 +56,7 @@ if(date('Y-m-d', strtotime($_date)) > date('Y-m-d', strtotime('2023-07-25'))){//
 	$eats_salesreportsql = "SELECT details_no, if(`SaleName`= '', `Description`,SaleName) as itemSoldEats,sum(qty) as QtySoldEats, /*rate,*/ format(sum(cost),0) as AmountEats/*, OrderNo, orderdetails.productno, OrderDate*/ FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE orderdate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND category = 'Eats' AND PaidStatus = 1 GROUP BY orderdetails.productno ORDER BY sum(cost) DESC";
 	$eats_sales_nyp_reportsql = "SELECT details_no, if(`SaleName`= '', `Description`,SaleName) as itemSoldEats,sum(qty) as QtySoldEats, /*rate,*/ 'NYP' as AmountEats/*, OrderNo, orderdetails.productno, OrderDate*/ FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE orderdate >'$_date'  - INTERVAL 1 DAY + INTERVAL 19 HOUR AND orderdate < '$_date' + INTERVAL 19 HOUR AND category = 'Eats' AND PaidStatus = 0 GROUP BY orderdetails.productno ORDER BY sum(qty) DESC";
 	$eats_PB_reportsql = "SELECT details_no, concat(if(`SaleName`= '', `Description`,SaleName), ' ', 'P/B') as itemSoldEats,sum(qty) as QtySoldEats, /*rate,*/ format(sum(cost),0) as AmountEats/*, OrderNo, orderdetails.productno, OrderDate*/ FROM orderdetails JOIN orders ON orderno = Order_No LEFT JOIN products ON Product_No = orderdetails.productno LEFT JOIN items_sold ON orderdetails.ProductNo = items_sold.ProductNo WHERE Orderdate < '2023-05-13'/*'$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND PaidStatus = 1 AND PaidDate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND PaidDate < '$_date' + INTERVAL 19 HOUR AND category = 'Eats'*/ GROUP BY orderdetails.productno ORDER BY sum(Cost) DESC";//query made to specifically generate 0 rows to maintain orders paid after 7pm
-	$eats_reqreportsql = "SELECT details_no, `Description` AS itemBoughtEats, if(sum(qtyRecieved) > 1, concat(round(SUM(qtyRecieved)), ' ',  UnitQty, 'S'),concat(round(SUM(qtyRecieved)), ' ',  UnitQty)) AS QtyBoughtEats, format(sum(if(isnull((finalamount)),if(isnull((purchaseamount)),(standardcost),(purchaseamount)),(finalamount))),0) AS AmountSpentEats FROM purchasedetails JOIN purchaseorder ON Purchase_No = PurchaseNo LEFT JOIN products ON Product_No = ProductNo left join items_bought on purchasedetails.ProductNo = items_bought.ProductNo WHERE Date(DateRecieved) = '$_date' AND products.Category = 'Eats' OR Date(DateRecieved) = '$_date' AND products.Category = 'Kitchen' GROUP BY items_bought.ProductNo";
+	$eats_reqreportsql = "SELECT details_no, `Description` AS itemBoughtEats, if(sum(qtyRecieved) > 1, concat(round(SUM(qtyRecieved)), ' ',  UnitQty, 'S'),concat(round(SUM(qtyRecieved)), ' ',  UnitQty)) AS QtyBoughtEats, format(sum(if(isnull((finalamount)),if(isnull((purchaseamount)),(standardcost),(purchaseamount)),(finalamount))),0) AS AmountSpentEats, if(Qtyrecieved <> qty, 1,if(FinalAmount <> StandardCost,1,0)) AS isChanged FROM purchasedetails JOIN purchaseorder ON Purchase_No = PurchaseNo LEFT JOIN products ON Product_No = ProductNo left join items_bought on purchasedetails.ProductNo = items_bought.ProductNo WHERE Date(DateRecieved) = '$_date' AND products.Category = 'Eats' OR Date(DateRecieved) = '$_date' AND products.Category = 'Kitchen' GROUP BY items_bought.ProductNo";
 	
 	$sales_sum_sql = "select sum(cost) AS SalesTotal from orderdetails join orders on order_no = orderno where PaidStatus = 1 and OrderDate > '$_date' - interval 1 day + interval 19 hour and orderdate < '$_date' + interval 19 HOUR";
 	$sales_pb_sum_sql = "select sum(cost) AS SalesTotal from orderdetails join orders on order_no = orderno where Orderdate < '2023-05-13'/*'$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND PaidStatus = 1 AND PaidDate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR AND PaidDate < '$_date' + INTERVAL 19 HOUR*/";
@@ -47,13 +67,21 @@ if(date('Y-m-d', strtotime($_date)) > date('Y-m-d', strtotime('2023-07-25'))){//
 $drinks_offersreportsql = "select offersdetails.ID, sum(qty) as DrinksQty/*, offersID*/, concat(if(salename = '',`Description`, salename), ' ', '(',recipientCategory,')') as DrinksItem, 'XXXXXX' AS DrinksAmount, offersdetails.productno/*, DateOccurred, RecipientCategory*/ from offersdetails left join offers on offers.ID = OffersID left join products on offersdetails.productNo = product_no left join items_sold on offersdetails.ProductNo = items_sold.ProductNo where isDeleted <> 1 and date(dateoccurred) = '$_date' and Category = 'Drinks' GROUP BY  ProductNo,RecipientCategory ORDER BY sum(qty) DESC";
 $eats_offersreportsql = "select offersdetails.ID, sum(qty) as EatsQty/*, offersID*/, concat(if(salename = '',`Description`, salename), ' ', '(',recipientCategory,')') as EatsItem, 'XXXXXX' AS EatsAmount, offersdetails.productno/*, DateOccurred, RecipientCategory*/ from offersdetails left join offers on offers.ID = OffersID left join products on offersdetails.productNo = product_no left join items_sold on offersdetails.ProductNo = items_sold.ProductNo where isDeleted <> 1 and date(dateoccurred) = '$_date' and Category = 'Eats' GROUP BY  ProductNo,RecipientCategory ORDER BY sum(qty) DESC";
 
-$mmpaymnt_sum_sql = "select sum(amount) AS M_MTotal from orderpaymentsextended where method <> 'Cash' and `date` = '$_date'";
+if(date('Y-m-d', strtotime($_date)) > date('Y-m-d', strtotime('2023-09-22'))){//used for when M.Money was considered on actual day paid instead of when the payment was made i.e M.Money paid on date but for night shift
+	$mmpaymnt_sum_sql = "select sum(amount) AS M_MTotal from orderpaymentsextended right join (select distinct OrderNo from orderdetails where PaidDate > '$_date' - INTERVAL 1 DAY + INTERVAL 19 HOUR and PaidDate < '$_date' + INTERVAL 19 HOUR group by orderNo) as ordDetails on ordDetails.OrderNo = orderpaymentsextended.OrderNo  where method != 'Cash'";
+}else{
+	$mmpaymnt_sum_sql = "select sum(amount) AS M_MTotal from orderpaymentsextended where method <> 'Cash' and `date` = '$_date'";
+}
+$check_notDelivered_items_sql = "select OrderNo from orderdetails left join orders on OrderNo = Order_No where (OrderDate) > '$_date' - interval 1 day + interval 19 HOUR and (OrderDate) < '$_date' + interval 19 HOUR and DeliveredStatus != 1";
+
 
 $drinks_salesdbConn_res = json_decode(dbConn($drinks_salesreportsql, array(), 'select'));
+$drinks_sales_sp_dbConn_res = json_decode(dbConn($drinks_sales_sp_reportsql, array(), 'select'));
 $drinks_sales_nyp_dbConn_res = json_decode(dbConn($drinks_sales_nyp_reportsql, array(), 'select'));
 $drinks_PB_dbConn_res = json_decode(dbConn($drinks_PB_reportsql, array(), 'select'));
 $drinks_reqdbConn_res = json_decode(dbConn($drinks_reqreportsql, array(), 'select'));
 $eats_salesdbConn_res = json_decode(dbConn($eats_salesreportsql, array(), 'select'));
+$eats_sales_sp_dbConn_res = json_decode(dbConn($eats_sales_sp_reportsql, array(), 'select'));
 $eats_sales_nyp_dbConn_res = json_decode(dbConn($eats_sales_nyp_reportsql, array(), 'select'));
 $eats_PB_dbConn_res = json_decode(dbConn($eats_PB_reportsql, array(), 'select'));
 $eats_reqdbConn_res = json_decode(dbConn($eats_reqreportsql, array(), 'select'));
@@ -66,11 +94,15 @@ $sales_pb_sumdbConn_res = json_decode(dbConn($sales_pb_sum_sql, array(), 'select
 $reqs_sumdbConn_res = json_decode(dbConn($reqs_sum_sql, array(), 'select'));
 $mmpaymnt_sumdbConn_res = json_decode(dbConn($mmpaymnt_sum_sql, array(), 'select'));
 
+$check_notDelivered_items_res = json_decode(dbConn($check_notDelivered_items_sql, array(), 'select'));
+
 $drinks_paid_arr = [];
+$drinks_paid_sp_arr = [];
 $drinks_nyp_arr = [];
 $drinks_pb_arr = [];
 
 $eats_paid_arr = [];
+$eats_paid_sp_arr = [];
 $eats_nyp_arr = [];
 $eats_pb_arr = [];
 
@@ -83,7 +115,17 @@ if($drinks_salesdbConn_res->status == 1){
 	array_push($drinks_paid_arr, $drinks_salesdbConn_res->message);
 	$drinks_sales_total = generateTotals($drinks_salesdbConn_res->message);
 }else{
-	array_push($drinks_pb_arr, $arr_d[0] = array());//add empty array to 0 index to assume 0 rows
+	array_push($drinks_paid_arr, $arr_d[0] = array());//add empty array to 0 index to assume 0 rows
+}
+
+if($drinks_sales_sp_dbConn_res->status == 1){
+	array_push($drinks_paid_sp_arr, $drinks_sales_sp_dbConn_res->message);
+	//$drinks_sales_total = generateTotals($drinks_sales_sp_dbConn_res->message);
+	foreach($drinks_sales_sp_dbConn_res->message as $v){
+		$drinks_sales_total += (int)str_replace(',','',$v->Amount);
+	}
+}else{
+	array_push($drinks_paid_sp_arr, $arr_d_sp[0] = array());//add empty array to 0 index to assume 0 rows
 }
 
 if($drinks_PB_dbConn_res->status == 1){
@@ -98,7 +140,7 @@ if($drinks_sales_nyp_dbConn_res->status == 1){
 }else{
 	array_push($drinks_nyp_arr, $arr_nypd[0] = array());
 }
-array_push($sections_arr, array_merge_recursive($drinks_paid_arr[0], $drinks_pb_arr[0], $drinks_nyp_arr[0]));
+array_push($sections_arr, array_merge_recursive($drinks_paid_arr[0], $drinks_paid_sp_arr[0], $drinks_pb_arr[0], $drinks_nyp_arr[0]));
 
 /*if($drinks_salesdbConn_res->status == 1 && $drinks_sales_nyp_dbConn_res->status == 1){
 	array_push($sections_arr, array_merge_recursive($drinks_salesdbConn_res->message, $drinks_sales_nyp_dbConn_res->message));
@@ -132,6 +174,15 @@ if($eats_salesdbConn_res->status == 1){
 	array_push($eats_paid_arr, $arr_e[0] = array());
 }
 
+if($eats_sales_sp_dbConn_res->status == 1){
+	array_push($eats_paid_sp_arr, $eats_sales_sp_dbConn_res->message);
+	foreach($eats_sales_sp_dbConn_res->message as $v){
+		$eats_sales_total += (int)str_replace(',','',$v->AmountEats);
+	}
+}else{
+	array_push($eats_paid_sp_arr, $arr_e_sp[0] = array());
+}
+
 if($eats_PB_dbConn_res->status == 1){
 	array_push($eats_pb_arr, $eats_PB_dbConn_res->message);
 	foreach($eats_PB_dbConn_res->message as $v){
@@ -147,7 +198,7 @@ if($eats_sales_nyp_dbConn_res->status == 1){
 	array_push($eats_nyp_arr, $arr_nype[0] = array());
 }
 
-array_push($sections_arr, array_merge_recursive($eats_paid_arr[0], $eats_pb_arr[0], $eats_nyp_arr[0]));
+array_push($sections_arr, array_merge_recursive($eats_paid_arr[0], $eats_paid_sp_arr[0], $eats_pb_arr[0], $eats_nyp_arr[0]));
 
 /*if($eats_salesdbConn_res->status == 1 && $eats_sales_nyp_dbConn_res->status == 1){
 	array_push($sections_arr, array_merge_recursive($eats_salesdbConn_res->message, $eats_sales_nyp_dbConn_res->message));
@@ -264,14 +315,28 @@ if(count($sections_arr) > 0){
 	$summary_bal = $total_sales - $total_reqs/* - $total_mm*/;
 	
 	$res_records->message = $arr_with_max_els;
-	$res_records->drinks_sales_total = number_format($drinks_sales_total,0);
+	if($check_notDelivered_items_res->numrows == 0){
+		$res_records->drinks_sales_total = number_format($drinks_sales_total,0);
+		$res_records->eats_sales_total = number_format($eats_sales_total,0);
+		$res_records->total_sales = number_format($total_sales,0);
+		$res_records->total_mm = $total_mm;
+		$res_records->summary_bal = number_format($summary_bal,0);
+	}else{
+		$res_records->drinks_sales_total = '*Pending';
+		$res_records->eats_sales_total = '*Pending';
+		$res_records->total_sales = '*Pending';
+		$res_records->total_mm = '*Pending';
+		$res_records->summary_bal = '*Pending';
+	}
 	$res_records->drinks_reqs_total = number_format($drinks_reqs_total,0);
-	$res_records->eats_sales_total = number_format($eats_sales_total,0);
+	
 	$res_records->eats_reqs_total = number_format($eats_reqs_total,0);
-	$res_records->total_sales = number_format($total_sales,0);
+	
 	$res_records->total_reqs = number_format($total_reqs,0);
-	$res_records->total_mm = $total_mm;
-	$res_records->summary_bal = number_format($summary_bal,0);
+	
+	$res_records->notDelivered = $check_notDelivered_items_res->numrows;
+	
+	
 	
 	echo json_encode($res_records);
 }

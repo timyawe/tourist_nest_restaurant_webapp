@@ -12,7 +12,7 @@ $reqtype = $clean_data['type'];
 
 $req_sql = "SELECT PurchaseStatus, Station, `Category`, RequisitionType FROM PurchaseOrder WHERE Purchase_No = '$reqNo'";
 if($reqtype == "External"){
-	$reqItems_sql = "SELECT qty, rate, total, item, RecievedStatus AS isChecked, QtyRecieved AS qty_recvd, PurchaseAmount, FinalAmount, DetailsNo FROM PurchaseDetailsExtended WHERE PurchaseNo = '$reqNo'";
+	$reqItems_sql = "SELECT qty,UnitQty, rate, total, item, RecievedStatus AS isChecked, QtyRecieved AS qty_recvd, PurchaseAmount, FinalAmount, DetailsNo FROM PurchaseDetailsExtended WHERE PurchaseNo = '$reqNo'";
 }else{
 	$reqItems_sql = "SELECT qty, item, GivenStatus AS isGiven, QtyGiven, RecievedStatus AS isRecieved, QtyRecieved AS qty_recvd, DetailsNo FROM internalrequisition_given_ext WHERE PurchaseNo = '$reqNo'";
 }

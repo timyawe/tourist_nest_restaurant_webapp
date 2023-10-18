@@ -12,7 +12,7 @@ if(isset($_GET['station'])){
 			$sql = "SELECT * FROM OrdersExtended WHERE Station = '$station' AND Status = '$status' ORDER BY time DESC";
 		}
 	}else{
-		$sql = "SELECT * FROM OrdersExtended WHERE Station = '$station' AND time > curdate() - INTERVAL 1 DAY + INTERVAL 19 HOUR AND Status <> 'Closed' OR Bill > Payment AND Year(time) > 2023 AND month(time) > 06 ORDER BY time DESC";//user has clicked on all orders btn
+		$sql = "SELECT * FROM OrdersExtended WHERE Station = '$station' AND time > curdate() - INTERVAL 1 DAY + INTERVAL 19 HOUR AND Status <> 'Closed' OR Station = '$station' AND isFullyPaid = 0 AND Status <> 'Closed' AND Year(time) >= 2023 AND month(time) > 06 ORDER BY time DESC";//user has clicked on all orders btn
 	}
 }else{
 	if(isset($_GET['ordStatus'])){

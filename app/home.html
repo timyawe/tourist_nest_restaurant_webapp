@@ -137,8 +137,11 @@
 					.when("/extras/:category", {templateUrl: "/views/manage_extras.html", controller: "manage_extrasCtlr"})
 					.when("/create_extra/:category", {templateUrl: "/views/create_extra.html", controller: "create_extraCtlr"})
 					.when("/edit_extra/:category/:ID", {templateUrl: "/views/edit_extra.html", controller: "create_extraCtlr"})
+					.when("/view_offer/:category/:ID", {templateUrl: "/views/view_offer.html", controller: "view_offerCtlr"})
 					.when("/reports", {templateUrl: "/views/report_filter.html", controller: "report_filterCtlr"})
 					.when("/report_result", {templateUrl: "/views/report_result.html", controller: "report_resultCtlr"})
+					.when("/search", {templateUrl: "/views/search_filter.html", controller: "search_filterCtlr"})
+					.when("/search_results", {templateUrl: "/views/search_results.html", controller: "search_resultCtlr"})
 					.otherwise({redirectTo: "/dashboard"});
 			});
 			
@@ -200,6 +203,7 @@
 		<script src="../controllers/account.js"></script>
 		<script src="../controllers/extras.js"></script>
 		<script src="../controllers/reports.js"></script>
+		<script src="../controllers/search.js"></script>
 		<script src="../services/userDetails.js"></script>
 		<script src="../services/httpResponse.js"></script>
 		<script src="../services/lineDetails.js"></script>

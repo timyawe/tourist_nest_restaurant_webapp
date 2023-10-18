@@ -1,0 +1,132 @@
+<div id="content_banner_box">
+	<h2 id="banner">Search Filter</h2>
+</div>
+<div id="sub_content_box">
+	<div id="view_content">
+		<div id="details_box">
+			<div id="details_header_box">
+				<h3>What do you want to search for...?</h3>
+			</div>
+			<div id="details_content_box"><div id="loader" style="display:none"></div>
+			<form id="details_form" name="search_filter_form" class="animate_show" ng-hide="hideForm" novalidate>
+				<div>
+					<div class="form_input_row">
+						<label style="width: initial">Station:</label>
+						<select class="select_box" name="station" ng-model="station" ng-change="changeStation()" required >
+							<option value="">Choose Station...</option>
+							<option value="Reception">Reception</option>
+							<option value="Restaurant">Restaurant</option>
+							<option value="Bar">Bar</option>
+							<option value="All">All</option>
+						</select>
+					</div>
+					<div class="form_input_row">
+						<label style="width: 8em; text-align: left">Search For:</label>
+						<select class="select_box" name="srchcategory" ng-model="srch_cat" ng-change="changeSearchCategory()" required >
+							<option value="">Choose Search Category...</option>
+							<option value="orders">Orders</option>
+							<option value="requisitions">Requisitions</option>
+							<option value="offers">Offers</option>
+							<option value="missing" ng-if="showSrchCat">Offers</option>
+						</select>
+					</div>
+				</div>
+				
+				<div>
+					<div class="animate_if" ng-if="date_sec">
+						<div class="form_input_row">
+							<label style="width: 8em; text-align: left">Date Filter:</label>
+							<select class="select_box" name="date_filter" ng-model="$parent.date_filter" ng-change="changeDateFilter()">
+								<option value="">Choose Filter...</option>
+								<option value="_date">Date</option>
+								<option value="range">Date Range</option>
+							</select>
+						</div>
+						
+						<div class="animate_if" ng-if="_date">
+							<div class="form_input_row">
+								<label style="width: 8em; text-align: left">Search Date:</label><input type="date" name="search_date" class="txt_box" ng-model="$parent.search_date" required/>
+							</div>
+						</div>
+						
+						<div class="animate_if" ng-if="date_range">
+							<div class="form_input_row">
+								<label style="width: 8em; text-align: left">From:</label><input type="date" name="from_date" class="txt_box" ng-model="$parent.$parent.fro_date" ng-blur="checkToDate()" required/>
+								<label style="width: 8em; text-align: left">Time</label><input type="time" name="from_period" class="txt_box" ng-model="$parent.from_period">
+							</div>
+							<div class="form_input_row">
+								<label style="width: 8em; text-align: left">To:</label><input type="date" name="to_date" class="txt_box" ng-model="$parent.$parent.to_date" ng-blur="checkFromDate()" required/>
+								<label style="width: 8em; text-align: left">Time</label><input type="time" name="to_period" class="txt_box" ng-model="$parent.to_period">
+							</div>
+						</div>
+					</div>
+					
+					<div>
+						<div class="animate_if" ng-if="orders_sec">
+							<div class="form_input_row">
+								<label style="width: 8em; text-align: left">Delivered To:</label>
+								<select class="select_box" name="to" ng-model="$parent.to" ng-change="changeOrdersCategory()" >
+									<option value="">Choose Delivery Point...</option>
+									<option value="Table">Table</option>
+									<option value="Room">Room</option>
+									<option value="Go">Go</option>
+								</select>
+							</div>
+							
+							<div class="form_input_row animate_show" data-ng-show="show">
+								<label style="width: 8em; text-align: left">{{to}}:</label>
+								<select class="select_box" name="ordDelvPnt" data-ng-options="delvPnt.pntName as delvPnt.pntName for delvPnt in delvPnts" data-ng-model="$parent.delv_point" data-ng-required="show">
+									<option value="">Choose {{to}}</option>
+								</select>						
+							</div>
+						</div>
+						
+						<div class="animate_if" ng-if="reqs_sec">
+							<div class="form_input_row">
+								<label style="width: 8em; text-align: left">For:</label>
+								<!--A filter on the items array is applied when the scope of category changes from drinks to eats -->
+								<select class="select_box" name="reqscategory" data-ng-model="$parent.reqscategory" required>
+									<option value="">Choose Category</option>
+									<option value="Eats">Eats</option>
+									<option value="Drinks">Drinks</option>
+									<option value="Kitchen">Kitchen Items</option>
+								</select>
+							</div>
+						</div>
+						
+						<div class="animate_if" ng-if="offers_sec">
+							<div  class="form_input_row">
+								<label style="width: 8em; text-align: left">Reciepient:</label>
+								<select class="select_box" name="offerscategory" data-ng-model="$parent.to">
+									<option value="">Choose Reciepient</option>
+									<option value="Staff">Staff</option>
+									<option value="Visitor">Visitor</option>
+									<option value="Eng">Eng</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					
+					<div ng-if="showItem" class="animate_if">
+						<div class="form_input_row">
+							<label style="width: initial">Items:</label>
+							<select class="select_box" name="item_id" data-ng-options="item.label for item in items | filter:reqscategory" ng-model="$parent.$parent.item_id" >
+								<option value="">Choose Item...</option>
+								<!--<option value="date">By Date</option>
+								<option value="item">By Item</option>-->
+							</select>
+						</div>
+					</div>
+					
+				</div>
+				
+				<div id="form_footer" ng-if="search_filter_form.$valid" class="animate_if">
+					<div>
+						<input type="button" class="save_btn" value="Done" ng-click="validate()"/>
+						<div><a id="srch_res_link" href="#!search_results" hidden></a></div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

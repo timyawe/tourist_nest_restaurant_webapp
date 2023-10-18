@@ -47,7 +47,9 @@
 								<div class="grid_view_header_cell" style="flex-grow: 1">
 									<span>Qty Reqst'd</span>
 								</div>
-								
+								<div class="grid_view_header_cell animate_if" >
+									<span>Msmt</span>
+								</div>
 								<div ng-if="showGiven()" class="grid_view_header_cell animate_if" style="flex-grow: 0">
 									<span>Given</span>
 								</div>
@@ -78,7 +80,9 @@
 									<div class="grid_view_content_cell" style="flex-grow: 1">
 										<span><input type="text" class="txt_box qty_reqstd num_field" ng-model="request_item.qty" readonly /></span>
 									</div>
-			
+									<div class="grid_view_content_cell animate_if" >
+										<span><input type="text" class="txt_box" style="text-align: center" data-ng-model="request_item.UnitQty" readonly /></span>
+									</div>
 									<div ng-if="showGiven()" class="grid_view_content_cell animate_if" style="flex-grow: 0">
 										<span><input type="checkbox" style="-webkit-transform: scale(1.5);" ng-model="request_item.isGiven" ng-change="giveItem(requisition_items, $index)" ng-disabled="request_item.isDisabledGvn"/></span>
 									</div>

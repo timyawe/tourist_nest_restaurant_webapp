@@ -10,11 +10,11 @@ if(isset($_GET['station'])){
 			from 
 			((((((products join items_bought on ((products.Product_No = items_bought.ProductNo))) 
 			left join 
-				(select ProductNo ,sum(Qty) AS ordersTotal from orderdetails join orders on Order_No = OrderNo WHERE Station = '$station' group by ProductNo) AS `ordersqty` on((Product_No = ordersqty.ProductNo))) 
+				(select IFNULL(`orderdetails`.`MainProduct_No`, `orderdetails`.`ProductNo`) AS ProductNo ,sum(Qty) AS ordersTotal from orderdetails join orders on Order_No = OrderNo WHERE Station = '$station' group by IFNULL(`orderdetails`.`MainProduct_No`, `orderdetails`.`ProductNo`)) AS `ordersqty` on((Product_No = ordersqty.ProductNo))) 
 			left join 
 				(select ProductNo, sum(QtyRecieved) AS reqsTotal from purchasedetails join purchaseorder on purchaseNo = purchase_no WHERE Station = '$station' group by ProductNo) AS `reqsqty` on((Product_No = reqsqty.ProductNo))) 
 			left join 
-				(select ProductNo, sum(Qty) AS offersTotal from offersdetails join offers on OffersID = offers.ID WHERE Station = '$station' AND isDeleted <> 1 group by ProductNo) AS `offersqty`  on((Product_No = offersqty.productNo))) 
+				(select IFNULL(`offersdetails`.`MainProduct_No`, `offersdetails`.`ProductNo`) AS ProductNo, sum(Qty) AS offersTotal from offersdetails join offers on OffersID = offers.ID WHERE Station = '$station' AND isDeleted <> 1 group by IFNULL(`offersdetails`.`MainProduct_No`, `offersdetails`.`ProductNo`)) AS `offersqty`  on((Product_No = offersqty.productNo))) 
 			left join 
 				(select ProductNo, sum(Qty) AS spoiltTotal from spoiltdetails join items_spoilt on SpoiltID = items_spoilt.ID WHERE Station = '$station' group by ProductNo)  AS `spoiltqty`  on((Product_No = spoiltqty.productNo))) 
 			left join 

@@ -22,8 +22,8 @@ foreach($clean_data as $k => $v){
 $off_details = $clean_data['details'];
 
 $off_sql = "INSERT INTO Offers (Station, RecipientCategory, UserID) VALUES (?,?,?)";
-$off_details_sql = "INSERT INTO OffersDetails (ProductNo, Qty, PurchaseRate, OffersID) VALUES (?,?,?,?)";
-$off_det_bindTypes = "sidi";
+$off_details_sql = "INSERT INTO OffersDetails (ProductNo, MainProduct_No, Qty, PurchaseRate, OffersID) VALUES (?,?,?,?,?)";
+$off_det_bindTypes = "ssidi";
 
 array_unshift($off_fields, createBindTypes($off_fields));
 

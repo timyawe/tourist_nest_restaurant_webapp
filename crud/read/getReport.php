@@ -109,17 +109,17 @@ $offrwhere_clause .= " AND isDeleted <> 1 ";
 $offrwhere_clause_prev .= " AND isDeleted <> 1 ";
 
 $prev_subqueries = [];
-$prev_subqueries['orders'] = " left join (select productno, sum(qty) as prevOrdersTotal from orderdetails join orders on Order_No = OrderNo $ordwhere_clause_prev group by productno) as prevOrdersQty on Product_No = prevOrdersQty.productno ";
+$prev_subqueries['orders'] = " left join (select IFNULL(`orderdetails`.`MainProduct_No`, `orderdetails`.`ProductNo`) AS productno, sum(qty) as prevOrdersTotal from orderdetails join orders on Order_No = OrderNo $ordwhere_clause_prev group by IFNULL(`orderdetails`.`MainProduct_No`, `orderdetails`.`ProductNo`)) as prevOrdersQty on Product_No = prevOrdersQty.productno ";
 $prev_subqueries['requisitions'] = "left join (select ProductNo, sum(qtyrecieved) as prevReqsTotal from purchasedetails join purchaseorder on purchaseNo = purchase_no $reqwhere_clause_prev group by ProductNo) as prevReqsQty on Product_No = prevReqsQty.productNo ";
-$prev_subqueries['offers'] = "left JOIN (select ProductNo, sum(qty) as prevOffersTotal from offersdetails join offers on OffersID = offers.ID $offrwhere_clause_prev group by ProductNo) as prevOffersQty on Product_No = prevOffersQty.productNo ";
+$prev_subqueries['offers'] = "left JOIN (select IFNULL(`offersdetails`.`MainProduct_No`, `offersdetails`.`ProductNo`) AS ProductNo, sum(qty) as prevOffersTotal from offersdetails join offers on OffersID = offers.ID $offrwhere_clause_prev group by IFNULL(`offersdetails`.`MainProduct_No`, `offersdetails`.`ProductNo`)) as prevOffersQty on Product_No = prevOffersQty.productNo ";
 $prev_subqueries['spoilt'] = "left join (select ProductNo, sum(qty) as prevSpoiltTotal from spoiltdetails join items_spoilt on SpoiltID = items_spoilt.ID $sptwhere_clause_prev group by ProductNo) as prevSpoiltQty on Product_No = prevSpoiltQty.productNo ";
 $prev_subqueries['missing'] = "left join (select ProductNo, sum(qty) as prevMissingTotal from missingdetails join items_missing on MissingID = items_missing.ID $missingwhere_clause_prev group by ProductNo) as prevMissingQty on Product_No = prevMissingQty.productNo ";
 
 
 $subqueries = [];
-$subqueries['orders'] = " left join (select productno, sum(qty) as ordersTotal from orderdetails join orders on Order_No = OrderNo $ordwhere_clause group by productno) as ordersQty on Product_No = ordersQty.productno ";
+$subqueries['orders'] = " left join (select IFNULL(`orderdetails`.`MainProduct_No`, `orderdetails`.`ProductNo`) AS productno, sum(qty) as ordersTotal from orderdetails join orders on Order_No = OrderNo $ordwhere_clause group by IFNULL(`orderdetails`.`MainProduct_No`, `orderdetails`.`ProductNo`)) as ordersQty on Product_No = ordersQty.productno ";
 $subqueries['requisitions'] = "left join (select ProductNo, sum(qtyrecieved) as reqsTotal from purchasedetails join purchaseorder on purchaseNo = purchase_no $reqwhere_clause group by ProductNo) as reqsQty on Product_No = reqsQty.productNo ";
-$subqueries['offers'] = "left JOIN (select ProductNo, sum(qty) as offersTotal from offersdetails join offers on OffersID = offers.ID $offrwhere_clause group by ProductNo) as offersQty on Product_No = offersQty.productNo ";
+$subqueries['offers'] = "left JOIN (select IFNULL(`offersdetails`.`MainProduct_No`, `offersdetails`.`ProductNo`) AS ProductNo, sum(qty) as offersTotal from offersdetails join offers on OffersID = offers.ID $offrwhere_clause group by IFNULL(`offersdetails`.`MainProduct_No`, `offersdetails`.`ProductNo`)) as offersQty on Product_No = offersQty.productNo ";
 $subqueries['spoilt'] = "left join (select ProductNo, sum(qty) as spoiltTotal from spoiltdetails join items_spoilt on SpoiltID = items_spoilt.ID $sptwhere_clause group by ProductNo) as spoiltQty on Product_No = spoiltQty.productNo ";
 $subqueries['missing'] = "left join (select ProductNo, sum(qty) as missingTotal from missingdetails join items_missing on MissingID = items_missing.ID $missingwhere_clause group by ProductNo) as missingQty on Product_No = missingQty.productNo ";
 /*if(count($json_data['rep_cols']) == 4){
@@ -184,7 +184,7 @@ $res_records = new stdClass();
 if(json_decode(dbConn($reportsql, array(), 'select'))->status == 1){
 	$res_records->status = 1;
 	$res_records->message = json_decode(dbConn($reportsql, array(), 'select'))->message;
-	//$res_records->sql = $reportsql;
+	$res_records->sql = $reportsql;
 	echo json_encode($res_records);
 }else{
 	$res_records->message = json_decode(dbConn($reportsql, array(), 'select'))->message;

@@ -56,7 +56,7 @@ theApp.controller("report_filterCtlr", function($scope, $timeout, lineDetails, u
 			$scope.showType = false;
 			$scope.showFields = false;
 			$scope.showItemAcc_sec = false;
-		}else if($scope.rep_cat == "accountabilities"){
+		}else if($scope.rep_cat == "accountabilities" || $scope.rep_cat == "monitoring"){
 			$scope.showItemCategory = true;
 			$scope.showItemAcc_sec = true;
 			$scope.showFields = false;
@@ -192,7 +192,7 @@ theApp.controller("report_filterCtlr", function($scope, $timeout, lineDetails, u
 				/*if($scope.rep_cat == "amounts" && form_values.rep_cols.length == 0){
 					formComplete = false;
 				}*/
-			}if($scope.rep_cat == "accountabilities"){
+			}if($scope.rep_cat == "accountabilities" || $scope.rep_cat == "monitoring"){
 				if(!angular.isDefined($scope.item_cat)){
 					formComplete = false;
 				}
@@ -256,7 +256,7 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 		
 	$http.get(getUrl(category), {params: {_data: filter_items}}).then(function(response){
 		console.log(response.data);
-		createEl();
+		createEl(response.data);
 		/*if(response.data.status_offers == 1){
 			createAmountsOffersTable();
 			$scope.offers_table_rows = response.data.message_offers;
@@ -345,6 +345,14 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 			month_name = date.toLocaleString('en', {month: 'long'});//Intl.DateTimeFormat('en', {month: 'long'}).format(new Date('7'));
 		}
 		$scope.report_desc = `${station} ${filter_items.item_cat} Monthly Accountability For ${month_name} ${filter_items.item_acc_date_filter_year}`;
+	}else if(category == "monitoring"){
+		let month_name;
+		if(filter_items.item_acc_date_filter == "monthly"){
+			let date = new Date()
+			date.setMonth(Number(filter_items.item_acc_date_filter_month)-1);
+			month_name = date.toLocaleString('en', {month: 'long'});//Intl.DateTimeFormat('en', {month: 'long'}).format(new Date('7'));
+		}
+		$scope.report_desc = `${station} ${filter_items.item_cat} Monitoring For ${month_name} ${filter_items.item_acc_date_filter_year}`;
 	}
 	
 	function getUrl(cat){
@@ -359,6 +367,12 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 				url = "../crud/read/getDrinksAccReport.php";
 			}else{
 				url = "../crud/read/getEatsKitAccReport.php";
+			}
+		}else if(cat == "monitoring"){
+			if(filter_items.item_cat == "Drinks"){
+				url = "../crud/read/getDrinksMonitoringReport.php";
+			}else{
+				url = "../crud/read/getEatsMonitoringReport.php";
 			}
 		}
 		
@@ -377,23 +391,268 @@ theApp.controller("report_resultCtlr", function($scope, $http, $compile){
 		return params;
 	}*/
 	
-	function createEl(){
-		let table = document.createElement('table');
-		let thead = document.createElement('thead');
-		let tbody = document.createElement('tbody');
-		
-		//thead.appendChild(createTableHead(getTableCols(category,rep_cols)));
-		//thead.appendChild(createQtyTableHead(qtyTableCols(rep_cols)));
-		table.appendChild(/*thead*/createTableHead(category, getTableCols(category,rep_cols),thead));
-		tbody.appendChild(getTableData(category, getTableCols(category,rep_cols), createTableBody()));
-		//tbody.appendChild(createQtyTableData(qtyTableCols(rep_cols), createTableBody()));
-		if(category == 'amounts'){createAmountsOffersTable(tbody);}
-		if(category == 'amounts'){createAmountsTotalsRow(tbody)}
-		if(category == 'accountabilities'){createAccTotalsRow(tbody,filter_items.item_cat)}
-		//Dynamically added component should be compiled using angular, use $compile function 
-		$compile(tbody)($scope);
-		table.appendChild(tbody);
-		document.querySelector('#table_content_box').appendChild(table);
+	function createEl(res){
+		if(category == 'monitoring'){
+			let outerbox = document.createElement('div');
+			outerbox.style.display = 'flex';
+			
+			let innerbox = document.createElement('div');
+			innerbox.style.display = 'flex';
+			//innerbox.style.flexDirection = 'column';
+			innerbox.style.gap = '.3em';
+			
+			res.message.forEach((val,idx)=>{
+				let idx_itembox = document.createElement('div');
+				idx_itembox.style.justifyContent = 'center';
+				idx_itembox.style.alignItems = 'center';	
+				let idx_itemtable = document.createElement('table');
+				let idx_thead = document.createElement('thead');
+				//idx_thead.style.display = 'table';
+				//idx_thead.style.tableLayout = 'fixed';
+				let idx_tbody = document.createElement('tbody');
+				
+				
+				let idx_headrow = document.createElement('tr');
+				
+				let idx_item_th = document.createElement('th');
+				idx_item_th.setAttribute('colspan', 9);
+				idx_item_th.appendChild(document.createTextNode(res.items_desc[idx]));
+				idx_item_th.style.fontWeight = 'bold';
+				idx_headrow.appendChild(idx_item_th);
+				
+				let idx_particulars_table_row = document.createElement('tr');
+				
+				let date_th = document.createElement('th');
+				date_th.appendChild(document.createTextNode('DATE'));
+				date_th.style.fontWeight = 'bold';
+				//date_th.setAttribute('rowspan', 1);
+				idx_particulars_table_row.appendChild(date_th);
+				
+				let idx_reqs_th = document.createElement('th');
+				idx_reqs_th.appendChild(document.createTextNode('Purchases'));
+				idx_reqs_th.setAttribute('colspan', 2);
+				idx_reqs_th.style.fontWeight = 'bold';
+				idx_particulars_table_row.appendChild(idx_reqs_th);
+				let idx_sales_th = document.createElement('th');
+				idx_sales_th.appendChild(document.createTextNode('Sales'));
+				idx_sales_th.setAttribute('colspan', 2);
+				idx_sales_th.style.fontWeight = 'bold';
+				idx_particulars_table_row.appendChild(idx_sales_th);
+				let idx_offers_th = document.createElement('th');
+				idx_offers_th.appendChild(document.createTextNode('Offers'));
+				idx_offers_th.setAttribute('colspan', 2);
+				idx_offers_th.style.fontWeight = 'bold';
+				idx_particulars_table_row.appendChild(idx_offers_th);
+				let idx_spoilt_th = document.createElement('th');
+				idx_spoilt_th.appendChild(document.createTextNode('Spoilt'));
+				idx_spoilt_th.setAttribute('colspan', 2);
+				idx_spoilt_th.style.fontWeight = 'bold';
+				idx_particulars_table_row.appendChild(idx_spoilt_th);
+				
+				let idx_particulars_table_row_2 = document.createElement('tr');
+				let date_emp_td = document.createElement('td');
+				idx_particulars_table_row_2.appendChild(date_emp_td);
+				
+				let idx_reqs_qty_th = document.createElement('th');
+				idx_reqs_qty_th.appendChild(document.createTextNode('Qty'));
+				idx_reqs_qty_th.style.fontWeight = 'bold';
+				idx_reqs_qty_th.style.color = 'black';
+				idx_particulars_table_row_2.appendChild(idx_reqs_qty_th);
+				let idx_reqs_amt_th = document.createElement('th');
+				idx_reqs_amt_th.appendChild(document.createTextNode('Amount'));
+				idx_reqs_amt_th.style.fontWeight = 'bold';
+				idx_reqs_amt_th.style.color = 'black';
+				idx_particulars_table_row_2.appendChild(idx_reqs_amt_th);
+				let idx_sales_qty_th = document.createElement('th');
+				idx_sales_qty_th.appendChild(document.createTextNode('Qty'));
+				idx_sales_qty_th.style.fontWeight = 'bold';
+				idx_sales_qty_th.style.color = 'black';
+				idx_particulars_table_row_2.appendChild(idx_sales_qty_th);
+				let idx_sales_amt_th = document.createElement('th');
+				idx_sales_amt_th.appendChild(document.createTextNode('Amount'));
+				idx_sales_amt_th.style.fontWeight = 'bold';
+				idx_sales_amt_th.style.color = 'black';
+				idx_particulars_table_row_2.appendChild(idx_sales_amt_th);
+				let idx_offers_qty_th = document.createElement('th');
+				idx_offers_qty_th.appendChild(document.createTextNode('Qty'));
+				idx_offers_qty_th.style.fontWeight = 'bold';
+				idx_offers_qty_th.style.color = 'black';
+				idx_particulars_table_row_2.appendChild(idx_offers_qty_th);
+				let idx_offers_amt_th = document.createElement('th');
+				idx_offers_amt_th.appendChild(document.createTextNode('Amount'));
+				idx_offers_amt_th.style.fontWeight = 'bold';
+				idx_offers_amt_th.style.color = 'black';
+				idx_particulars_table_row_2.appendChild(idx_offers_amt_th);
+				let idx_spoilt_qty_th = document.createElement('th');
+				idx_spoilt_qty_th.appendChild(document.createTextNode('Qty'));
+				idx_spoilt_qty_th.style.fontWeight = 'bold';
+				idx_spoilt_qty_th.style.color = 'black';
+				idx_particulars_table_row_2.appendChild(idx_spoilt_qty_th);
+				let idx_spoilt_amt_th = document.createElement('th');
+				idx_spoilt_amt_th.appendChild(document.createTextNode('Amount'));
+				idx_spoilt_amt_th.style.fontWeight = 'bold';
+				idx_spoilt_amt_th.style.color = 'black';
+				idx_particulars_table_row_2.appendChild(idx_spoilt_amt_th);
+				
+				let bf_row = document.createElement('tr');
+				let bf_row_td1 = document.createElement('td');
+				bf_row_td1.appendChild(document.createTextNode('B/F ->'));
+				bf_row_td1.style.fontWeight = 'bold';
+				bf_row.appendChild(bf_row_td1);
+				let bf_row_td2 = document.createElement('td');
+				bf_row.appendChild(bf_row_td2);
+				bf_row_td2.style.backgroundColor = '#ff5349';
+				bf_row_td2.appendChild(document.createTextNode(res.itemsbf_qty[idx]));
+				let bf_row_td3 = document.createElement('td');
+				bf_row_td3.style.backgroundColor = '#ff5349';
+				bf_row_td3.appendChild(document.createTextNode(res.itemsbf_amount[idx]));
+				bf_row.appendChild(bf_row_td3);
+				let bf_row_td4 = document.createElement('td');
+				bf_row_td4.setAttribute('colspan', 6);
+				bf_row.appendChild(bf_row_td4);
+								
+				
+				idx_thead.appendChild(idx_headrow);
+				idx_thead.appendChild(idx_particulars_table_row);
+				idx_thead.appendChild(idx_particulars_table_row_2);
+				idx_thead.appendChild(bf_row);
+				
+				//let details_box = document.createElement('div');
+				//idx_tbody.style.display = 'block';
+				//idx_tbody.style.maxHeight = '200px';
+				//idx_tbody.style.overflowX = 'scroll';
+				
+				//create table data
+				let idx_body_row = document.createElement('tr');
+				//idx_body_row.style.display = 'table';
+				//idx_body_row.style.width = '100%';
+				//idx_body_row.style.tableLayout = 'fixed';
+				idx_body_row.dataset.ngRepeat = `idx_table_row in table_rows_${idx} track by $index`;//Adding data related attributes
+				idx_body_row.classList.add("animate_repeat"/*, "ng-scope"*/);
+				
+				let idx_tab_cols = {dateData: 'dateData', BoughtQty: 'Qty', BoughtAmount: 'Amount',soldQty: 'Qty', soldAmount: 'Amount', offersQty: 'Qty', offersAmount: 'Amount', spoiltQty: 'Qty', spoiltAmount: 'Amount' };
+				
+				for(let idx_table_col in idx_tab_cols){
+					let idx_td = document.createElement('td');
+					idx_td.style.borderColor = 'black';
+					let idx_txt;//console.log(idx_table_col);
+					
+					//idx_txt = document.createTextNode(/*`{{idx_table_row.${idx_table_col}}}`*/`{{$index}} ${idx}`);
+					idx_txt = document.createTextNode(`{{idx_table_row.${idx_table_col}}}`);
+					if(idx_tab_cols[idx_table_col] == "dateData"){
+						idx_td.style.fontWeight = 'bold';
+					}
+					if(idx_tab_cols[idx_table_col] == "Qty"){
+						idx_td.classList.add('qty_col');
+					}
+					if(idx_tab_cols[idx_table_col] == "Amount"){
+						idx_td.classList.add('amount_col');
+					}
+					idx_td.appendChild(idx_txt);
+					idx_body_row.appendChild(idx_td);
+				}
+				
+				//details_box.appendChild(idx_body_row);
+				//idx_tbody.appendChild(details_box);
+				idx_tbody.appendChild(idx_body_row);
+				
+				let totals_row = document.createElement('tr');
+								
+				totals_row.style.fontWeight = 'bold';
+				let totals_row_td1 = document.createElement('td');
+				totals_row_td1.appendChild(document.createTextNode('TOTAL'));
+				totals_row_td1.style.borderColor = 'black';
+				totals_row.appendChild(totals_row_td1);
+				let totals_row_td2 = document.createElement('td');
+				totals_row_td2.appendChild(document.createTextNode(res.itemsqtytotals_reqs[idx]));
+				totals_row_td2.style.borderColor = 'black';
+				totals_row.appendChild(totals_row_td2);
+				let totals_row_td3 = document.createElement('td');
+				totals_row_td3.appendChild(document.createTextNode(res.itemsamttotals_reqs[idx]));
+				totals_row_td3.style.borderColor = 'black';
+				totals_row.appendChild(totals_row_td3);
+				let totals_row_td4 = document.createElement('td');
+				totals_row_td4.appendChild(document.createTextNode(res.itemsqtytotals_sales[idx]));
+				totals_row_td4.style.borderColor = 'black';
+				totals_row.appendChild(totals_row_td4);
+				let totals_row_td5 = document.createElement('td');
+				totals_row_td5.appendChild(document.createTextNode(res.itemsamttotals_sales[idx]));
+				totals_row_td5.style.borderColor = 'black';
+				totals_row.appendChild(totals_row_td5);
+				let totals_row_td6 = document.createElement('td');
+				totals_row_td6.appendChild(document.createTextNode(res.itemsqtytotals_offers[idx]));
+				totals_row_td6.style.borderColor = 'black';
+				totals_row.appendChild(totals_row_td6);
+				let totals_row_td7 = document.createElement('td');
+				totals_row_td7.appendChild(document.createTextNode(res.itemsamttotals_offers[idx]));
+				totals_row_td7.style.borderColor = 'black';
+				totals_row.appendChild(totals_row_td7);
+				let totals_row_td8 = document.createElement('td');
+				totals_row_td8.appendChild(document.createTextNode(res.itemsqtytotals_spoilt[idx]));
+				totals_row_td8.style.borderColor = 'black';
+				totals_row.appendChild(totals_row_td8);
+				let totals_row_td9 = document.createElement('td');
+				totals_row_td9.appendChild(document.createTextNode(res.itemsamttotals_spoilt[idx]));
+				totals_row_td9.style.borderColor = 'black';
+				totals_row.appendChild(totals_row_td9);
+				
+				let fin_row = document.createElement('tr');
+				let fin_label_td = document.createElement('td');
+				fin_label_td.style.fontWeight = 'bold';
+				fin_label_td.style.backgroundColor = 'limeGreen';
+				fin_label_td.appendChild(document.createTextNode('Finish'));
+				fin_row.appendChild(fin_label_td);
+				let fin_qty_td = document.createElement('td');
+				fin_qty_td.setAttribute('colspan', 8);
+				fin_qty_td.style.textAlign = 'center';
+				fin_qty_td.style.fontWeight = 'bold';
+				fin_qty_td.style.backgroundColor = 'limeGreen';
+				fin_qty_td.appendChild(document.createTextNode(res.itemsfinish_qty[idx]));
+				fin_row.appendChild(fin_qty_td);
+				
+				
+				idx_tbody.appendChild(totals_row);
+				idx_tbody.appendChild(fin_row);
+				
+				let idx_tfoot = document.createElement('tfoot');
+				let idx_tfoot_row = document.createElement('tr');
+				let idx_tfoot_th = document.createElement('th');
+				idx_tfoot_th.setAttribute('colspan', 9);
+				idx_tfoot_th.appendChild(document.createTextNode(res.items_desc[idx]));
+				idx_tfoot_row.appendChild(idx_tfoot_th);
+				idx_tfoot.appendChild(idx_tfoot_row);
+				
+				idx_itemtable.appendChild(idx_thead);
+				idx_itemtable.appendChild(idx_tbody);
+				idx_itemtable.appendChild(idx_tfoot);
+				idx_itembox.appendChild(idx_itemtable);
+				innerbox.appendChild(idx_itembox);
+				//console.log(`table_rows_${idx}`);
+				
+				$scope['table_rows_' + idx] = res.message[idx];
+			});
+			
+			$compile(innerbox)($scope);
+			outerbox.appendChild(innerbox);
+			document.querySelector('#table_content_box').appendChild(outerbox);
+		}else{
+			let table = document.createElement('table');
+			let thead = document.createElement('thead');
+			let tbody = document.createElement('tbody');
+			
+			//thead.appendChild(createTableHead(getTableCols(category,rep_cols)));
+			//thead.appendChild(createQtyTableHead(qtyTableCols(rep_cols)));
+			table.appendChild(/*thead*/createTableHead(category, getTableCols(category,rep_cols),thead));
+			tbody.appendChild(getTableData(category, getTableCols(category,rep_cols), createTableBody()));
+			//tbody.appendChild(createQtyTableData(qtyTableCols(rep_cols), createTableBody()));
+			if(category == 'amounts'){createAmountsOffersTable(tbody);}
+			if(category == 'amounts'){createAmountsTotalsRow(tbody)}
+			if(category == 'accountabilities'){createAccTotalsRow(tbody,filter_items.item_cat)}
+			//Dynamically added component should be compiled using angular, use $compile function 
+			$compile(tbody)($scope);
+			table.appendChild(tbody);
+			document.querySelector('#table_content_box').appendChild(table);
+		}
 	}
 	
 	

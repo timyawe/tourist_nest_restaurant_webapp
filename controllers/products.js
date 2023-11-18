@@ -15,14 +15,25 @@ theApp.controller("edit_productCtlr", function($scope, $timeout, $http, $routePa
 	$scope.changeCheckSold = function(){
 		if($scope.item_sold_check){
 			$scope.item_bought_check = false;
+			$scope.showMainPdtField = true;
+		}else{
+			$scope.showMainPdtField = false;
 		}
 	}
 	
 	$scope.changeCheckBought = function(){
 		if($scope.item_bought_check){
 			$scope.item_sold_check = false;
+			$scope.showMainPdtField = false;
 		}
 	}
+	
+	$http.get("../crud/read/getParentProductList.php").then(function(response){
+		console.log(response.data);
+		$scope.parentPdtsList = response.data;
+	},function(response){
+	
+	});
 	
 	/*Generate record for editing */
 	if($routeParams.pdtID !== undefined){
@@ -46,11 +57,13 @@ theApp.controller("edit_productCtlr", function($scope, $timeout, $http, $routePa
 				$scope.stkl_res = Number(res.Restaurant);
 				$scope.stkl_bar = Number(res.Bar);
 				
-				if(res.UnitCostPrice){
-					document.getElementById('check').checked = false;
+				/*if(res.UnitCostPrice){
+					document.getElementById('check_bought').checked = true;
+					$scope.item_bought_check = true;
 				}else{
 					document.getElementById('check').checked = true;
-				}
+					$scope.item_sold_check = true;
+				}*/
 			}
 			console.log(response.data);
 		},function(response){

@@ -48,6 +48,72 @@ theApp.controller("ordersCtlr", function($scope, $http, $routeParams,$timeout,$w
 		});
 	}
 	
+	
+	/* Generating the options of the Delivery Points select tag */
+	let delvpnts = [
+		{pntName: "Annex"},
+		{pntName: "Barca"},
+		{pntName: "Braxton"},
+		{pntName: "Cindy"},
+		{pntName: "Crown"},
+		{pntName: "Cubic"},
+		{pntName: "Elbrus"},
+		{pntName: "Everest"},
+		{pntName: "Finex"},
+		{pntName: "Houston"},
+		{pntName: "Jojo"},
+		{pntName: "Kintar"},
+		{pntName: "Leads"},
+		{pntName: "Marie"},
+		{pntName: "Miami"},
+		{pntName: "Middle"},
+		{pntName: "Mishel"},
+		{pntName: "Newton"},
+		{pntName: "Nic"},
+		{pntName: "Parkers"}, 
+		{pntName: "Saints"},
+		{pntName: "Tasha"},
+		{pntName: "Trend"},
+		{pntName: "Tidy"},
+		{pntName: "Tides"},
+		{pntName: "Top"},
+		{pntName: "Tournest"},
+		{pntName: "Vegas"},		
+		{pntName: "Upper Central"},
+		{pntName: "Lower Central"},
+		{pntName: "Upper Western"},
+		{pntName: "Lower Western"},
+		{pntName: "Upper Eastern"},
+		{pntName: "Lower Eastern"},
+		{pntName: "Table 1"}				
+	]
+	
+	$scope.delvPnts = delvpnts;
+	
+	$scope.changeDelvpntFilter = function(){
+		console.log($scope.delvpnt);
+		$http.get("../crud/read/filterOrders.php", {params: {station: userDetails.getStation(), delvpnt: $scope.delvpnt}}).then(function(response){
+			if(response.data.status === 1){
+				$scope.orders = response.data.message;
+				sessionStorage.setItem("order_filter", JSON.stringify(response.data.message));
+				$timeout(function(){
+					$scope.$apply();
+				}, 1000);
+				$scope.showNoItems = false;
+				toggleLoader("none");
+				document.getElementById("applyFilter_btn").innerHTML = "Remove Filter";
+			}else{
+				$scope.orders = undefined;
+				$timeout(function(){
+					$scope.$apply();
+				}, 1000);
+				$scope.showNoItems = true;
+			}
+			toggleLoader("none");
+			console.log(response.data);
+		});
+	}
+	
 	/*function httpUrl(){
 		if($routeParams.ordStatus === undefined){
 			return "../crud/read/getOrders.php";
@@ -348,7 +414,13 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 		odrStartTime = response.data.order[0].OrderDate;
 		ordMaxTime = ordPreptime(response.data.ord_details);
 		ordStatus = response.data.order[0].OrderStatus;
-		angular.forEach(response.data.ord_details, function(v)  {v.deleted = false})//Add deleted property for toggling deleted class in ngRepeat
+		angular.forEach(response.data.ord_details, function(v)  {//Add deleted property for toggling deleted class in ngRepeat
+			if(Number(v.isDeleted) == 1){
+				v.deleted = true;
+			}else{
+				v.deleted = false;
+			}
+		})
 		$scope.order_items = response.data.ord_details;//edit_ordersPage[0].order_items;
 		$scope.getGrandTotal = gTotal(response.data.ord_details);
 		$scope.totalPaid = response.data.ordpymt[0].TotalPaid;
@@ -601,9 +673,9 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 	function collectPromises(){
 		let collected = false;
 		
-		if(!deleteAllItems()){
+		/*if(!deleteAllItems()){*/
 			if(deleted_order_lines.length !== 0){
-				promisesArr.push(deletePromise({ordNo: $routeParams.ordNo, deletedLines: deleted_order_lines}));
+				promisesArr.push(deletePromise({ordNo: $routeParams.ordNo,userLevel: userDetails.getUserLevel(), deletedLines: deleted_order_lines}));
 				console.log(deletePromise({ordNo: $routeParams.ordNo, deletedLines: deleted_order_lines}))
 				collected = true;
 			}
@@ -612,7 +684,7 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 				promisesArr.push(addPromise({ordNo: $routeParams.ordNo, addedLines: editorder_details}));
 				collected = true;
 			}
-		}else{
+		/*}else{
 			if(userDetails.getUserLevel() === "Level1"){
 				if(ordStatus === "Delivered"){
 					alert("This order is already delivered, make sure to add an item before you Save");
@@ -622,7 +694,7 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 					collected = true;
 				}
 			}
-		}
+		}*/
 		
 		return collected;
 	}
@@ -644,28 +716,32 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 					}
 				}else{//console.log(response[0].data);
 					if(response[0].data.status === 1){
-						if(!deleteAllItems()){
-							httpResponse.success(1, "Updated Succesfuly");
-							$timeout(function(){
-								//wait for the httpResponse above to finish and return to the orders list
-								document.getElementById("orders_btn").click();
-								document.body.style.cursor = "auto";
-							}, 8000)
+						if(userDetails.getUserLevel() == 'Level1'){
+							alert("Item has been marked for deletion,\nContact Adminstrator to permanently delete item");
 						}else{
-							stop_timer();
-							//document.getElementsByClassName("pymt_btn").style.display = "none";
-							$scope.showTimer = false;
-							$scope.showDeliverBtn = false;
-							$scope.hidePymtBtn = true;
-							httpResponse.success(1, "Deleted Succesfuly, please wait...");
-							document.body.style.cursor = "wait";
-							$timeout(function(){
-								//wait for the httpResponse above to finish and return to the orders list
-								document.getElementById("orders_btn").click();
-								document.body.style.cursor = "auto";
-							}, 7000)
+							if(!deleteAllItems()){
+								httpResponse.success(1, "Updated Succesfuly");
+								$timeout(function(){
+									//wait for the httpResponse above to finish and return to the orders list
+									document.getElementById("orders_btn").click();
+									document.body.style.cursor = "auto";
+								}, 8000)
+							}else{
+								stop_timer();
+								//document.getElementsByClassName("pymt_btn").style.display = "none";
+								$scope.showTimer = false;
+								$scope.showDeliverBtn = false;
+								$scope.hidePymtBtn = true;
+								httpResponse.success(1, "Deleted Succesfuly, please wait...");
+								document.body.style.cursor = "wait";
+								$timeout(function(){
+									//wait for the httpResponse above to finish and return to the orders list
+									document.getElementById("orders_btn").click();
+									document.body.style.cursor = "auto";
+								}, 7000)
+							}
+							//httpResponse.success(1, "Updated Succesfuly");
 						}
-						//httpResponse.success(1, "Updated Succesfuly");
 					}else{
 						httpResponse.success(0, "The operation failed, Please try again");console.log(response[0].data);
 					}
@@ -685,7 +761,7 @@ theApp.controller("edit_orderCtlr", function($scope, $timeout, $interval, $http,
 	}
 });
 
-theApp.controller("view_orderCtlr", function($scope, $timeout, $interval, $http, $routeParams, userDetails/*, $q, httpResponse, lineDetails*/){
+theApp.controller("view_orderCtlr", function($scope, $timeout, $interval, $http, $routeParams, userDetails, httpResponse,/*, $q, lineDetails*/){
 	let userID = userDetails.getUserID();
 	let userType = userDetails.getUserType();
 	let odrStartTime;
@@ -753,6 +829,7 @@ theApp.controller("view_orderCtlr", function($scope, $timeout, $interval, $http,
 		$scope.createdBy = response.data.order[0].FirstName;
 		$scope.recievedBy = response.data.order[0].RecievedBy;
 		$scope.deliveredBy = response.data.order[0].DeliveredBy;
+		$scope.totalPaid = response.data.ordpymt[0].TotalPaid;
 		odrStartTime = response.data.order[0].OrderDate;
 		$scope.ordMaxTime = ordPreptime(response.data.ord_details);
 		ordMaxTime = ordPreptime(response.data.ord_details);
@@ -774,7 +851,9 @@ theApp.controller("view_orderCtlr", function($scope, $timeout, $interval, $http,
 				$scope.deliveredStatus = 'Not Yet Delivered';
 			}
 		}
-		angular.forEach(response.data.ord_details, function(v)  {v.deleted = false})//Add deleted property for toggling deleted class in ngRepeat
+		angular.forEach(response.data.ord_details, function(v)  {//Add deleted property for toggling deleted class in ngRepeat
+			v.deleted = false
+		})
 		$scope.order_items = response.data.ord_details;//edit_ordersPage[0].order_items;
 		$scope.getGrandTotal = gTotal(response.data.ord_details);
 		console.log($scope.order_items);
@@ -791,6 +870,65 @@ theApp.controller("view_orderCtlr", function($scope, $timeout, $interval, $http,
 	}, function(response){
 		console.log(response.data);
 	});
+	
+	$scope.deleteLineItem = function(lineItem, index){
+		console.log(lineItem);
+		if(lineItem.PaidStatus == 1){
+			if(confirm("This item is already paid for, do you want to delete anyway?")){
+				deleteItem();
+			}
+		}else{
+			deleteItem();
+		}
+		
+		function deleteItem(){
+			if(confirm("Are you sure you want to permanently delete this item?")){
+				let _data = {ordNo: $routeParams.ordNo,userLevel: userDetails.getUserLevel(),detailsID:lineItem.Details_No, paidStatus:lineItem.PaidStatus, total:lineItem.total};
+	
+				$http.post("../crud/delete/deleteOrderLine.php", /*{data: */_data).then(function(response){
+					if(response.data.status == 1){
+						httpResponse.success(1, "Deleted Succesfuly, please wait...");
+						document.body.style.cursor = "wait";
+						$timeout(function(){
+							//wait for the httpResponse above to finish and return to the orders list
+							document.getElementById("orders_btn").click();
+							document.body.style.cursor = "auto";
+						}, 8000)
+					}else{
+						console.log(_data,response.data);
+					}
+				}, function(response){
+					httpResponse.error(0, response.data.status);
+				});
+			}
+			//console.log(deleted_order_lines,index/*, $scope.order_items[index]*/);
+		}
+	}
+	
+	$scope.markPaid = function(paidStatus, total, details_no){
+		if(!Number($scope.totalPaid)){
+			alert("This order has no payments, please add payments before marking items as paid.");
+		}else if(total > Number($scope.totalPaid)){
+			alert("Cannot mark item as paid, total is greater than payments. Adjust payments to continue");
+		}else{
+			$http.post("../crud/update/setItemPaid.php", {PaidStatus: paidStatus, Total: total, Details_No: details_no, ordNo: $scope.ordNo}).then(function(response){
+				if(response.data.status == 1){
+					$scope.order_items = response.data.ord_details;
+					$timeout(function(){
+						$scope.$apply();
+						//console.log(response.data.ord_details);
+					}, 2000);
+					console.log(response.data.message);
+				}else{
+					alert(response.data.message);
+
+				}
+			}, function(response){
+				console.log(response.data);
+			});
+			console.log(Number(paidStatus), total, details_no);
+		}
+	}
 	
 	$scope.deleteOrder = function(){
 		if(confirm("Are you sure you want to delete this order?") == 1){
@@ -869,6 +1007,7 @@ theApp.controller("OrdpaymentCtlr", function($scope, $timeout, $http, $routePara
 			$scope.pamnt = "";
 		}
 	}
+	
 	
 	/* Validate Form Data and submit */
 	$scope.validate = function (){

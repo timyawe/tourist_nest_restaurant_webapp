@@ -9,17 +9,32 @@ $clean_data = array_map('funcSanitise', $json_data);
 $del_fail = [];//print_r($clean_data['ordNo']);
 $deleted_total = 0;
 $ordNo = $clean_data['ordNo'];
-foreach ($clean_data['deletedLines'] as $k => $v){
-	$detailsID = $v['detailsID'];
-	//print_r( $detailsID);
-	if(json_decode(dbConn("DELETE FROM OrderDetails WHERE Details_No = '$detailsID' LIMIT 1", array(), 'delete'))->status != 1){
-		array_push($del_fail, $detailsID);
+$userlevel = $clean_data['userLevel'];
+if($userlevel == 'Level1'){
+	foreach ($clean_data['deletedLines'] as $k => $v){
+		$detailsID = $v['detailsID'];
+		//print_r( $detailsID);
+		if(json_decode(dbConn("UPDATE OrderDetails SET isDeleted = ? WHERE Details_No = '$detailsID' LIMIT 1", array('i',1), 'update'))->status != 1){
+			array_push($del_fail, $detailsID);
+			
+		}/*else{
+			if($v['paidStatus'] == 1){
+				$deleted_total += $v['total'];
+			}
+		//}*/
+	}
+}else{
+	$detailsID = $clean_data['detailsID'];
+	$del_sql = json_decode(dbConn("DELETE FROM OrderDetails WHERE Details_No = '$detailsID' LIMIT 1", array(), 'delete'));
 		
-	}//else{
-		if($v['paidStatus'] == 1){
-			$deleted_total += $v['total'];
+	if($del_sql->status != 1){
+		array_push($del_fail, $detailsID);
+	}else{
+		if($clean_data['paidStatus'] == 1){
+			$deleted_total += $clean_data['total'];
+			//echo $deleted_total;
 		}
-	//}
+	}
 }
 
 if($deleted_total > 0){

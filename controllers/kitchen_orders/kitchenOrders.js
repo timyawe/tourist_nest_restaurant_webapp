@@ -41,6 +41,7 @@ kitchenApp.controller("view_orderCtlr", function($scope, $timeout, $interval, $h
 	let odrStartTime;
 	let ordMaxTime;
 	let ordStatus;
+	let isFullyDelivered = true;
 	console.log($routeParams.ordNo);
 	/*Pre-select icon class for the delete action of order details*/
 	//let del_icon = "fa fa-trash";
@@ -57,14 +58,23 @@ kitchenApp.controller("view_orderCtlr", function($scope, $timeout, $interval, $h
 		odrStartTime = response.data.order[0].OrderDate;
 		ordMaxTime = ordPreptime(response.data.ord_details);
 		ordStatus = response.data.order[0].OrderStatus;
-		angular.forEach(response.data.ord_details, function(v)  {v.deleted = false})//Add deleted property for toggling deleted class in ngRepeat
+		angular.forEach(response.data.ord_details, function(v)  {
+			v.deleted = false; //Add deleted property for toggling deleted class in ngRepeat
+			
+			if(Number(v.DeliveredStatus) == 0){
+				isFullyDelivered = false;
+			}
+		})
 		$scope.order_items = response.data.ord_details;//edit_ordersPage[0].order_items;
 		//$scope.getGrandTotal = gTotal(response.data.ord_details);
 		console.log($scope.order_items);
 		$scope.showErrorNote = true;
-		if(ordStatus === "Pending" || ordStatus === "In Progress"){
+		if(!isFullyDelivered/*ordStatus === "Pending" || ordStatus === "In Progress"*/){
 			$scope.showDeliverBtn = true;
-			$scope.showTimer = true;
+			$scope.showTimer = true;console.log(isFullyDelivered);
+		}else{
+			$scope.showDeliverBtn = false;
+			$scope.showTimer = false;console.log(isFullyDelivered);
 		}
 		
 		if(ordStatus === "In Progress"){

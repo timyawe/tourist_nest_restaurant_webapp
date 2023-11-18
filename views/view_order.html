@@ -93,18 +93,21 @@
 									<div class="grid_view_header_cell">
 										<span>Total</span>
 									</div>
+									<div class="grid_view_header_cell animate_if" style="flex-grow: 1; width: 3em" ng-if="showSpPrice">
+										<span>Special Price</span>
+									</div>
 									<div class="grid_view_header_cell">
 										<span>Delivered</span>
 									</div>
 									<div class="grid_view_header_cell" ng-if="showPaid">
 										<span>Paid</span>
 									</div>
-									<!--<div class="grid_view_header_cell action_cell">
-										<span><button type="button" class="add_row_btn" data-ng-click="addRow()"><i class="fa fa-plus"></i></button></span>
-									</div>-->
+									<<div class="grid_view_header_cell action_cell">
+										<span>Del<!--<button type="button" class="add_row_btn" data-ng-click="addRow()"><i class="fa fa-plus"></i></button>--></span>
+									</div>
 								</div>
 								
-								<div class="grid_view_content" data-ng-repeat="order_item in order_items" class="animate_repeat" ng-class="{item_deleted: order_item.deleted}">
+								<div class="grid_view_content" data-ng-repeat="order_item in order_items" class="animate_repeat" ng-class="{item_deleted: order_item.isDeleted == '1'}">
 									<div class="grid_view_content_cell">
 										<span>{{$index+1}}</span>
 									</div>
@@ -120,15 +123,18 @@
 									<div class="grid_view_content_cell">
 										<span><input type="text" class="txt_box" value="{{::order_item.total | number:0}}" readonly /></span>
 									</div>
+									<div class="grid_view_content_cell animate_if" style="flex-grow: 1; width: 3em" ng-if="showSpPrice">
+										<span><input type="text" class="txt_box total_input" value="{{::order_item.SpecialPrice | number:0}}" readonly/></span>
+									</div>
 									<div class="grid_view_content_cell">
 										<span<button style="cursor: pointer" type="button" ng-click="deliverItem(order_item.DeliveredStatus,order_item.Details_No)"><i ng-class="(order_item.DeliveredStatus == 1)? 'fa fa-check-circle-o' : 'fa fa-times-circle-o'" ng-style="{'color': (order_item.DeliveredStatus == 1)? 'green':'red','font-size': (order_item.DeliveredStatus == 1)? '1.5em':'1.5em'}"></i></button></span>
 									</div>
 									<div class="grid_view_content_cell" ng-if="showPaid">
 										<span<button style="cursor: pointer" type="button" ng-click="markPaid(order_item.PaidStatus, order_item.total, order_item.Details_No)"><i ng-class="(order_item.PaidStatus == 1)? 'fa fa-check-circle-o' : 'fa fa-times-circle-o'" ng-style="{'color': (order_item.PaidStatus == 1)? 'green':'red','font-size': (order_item.PaidStatus == 1)? '1.5em':'1.5em'}"></i></button></span>
 									</div>
-									<!--<div class="grid_view_content_cell action_cell">
-										<span data-ng-click="deleteLineItem(order_item.Details_No, $index)"><i ng-class="(!order_item.deleted)? 'fa fa-trash' : 'fa fa-undo'"></i></span>
-									</div>-->
+									<div class="grid_view_content_cell action_cell">
+										<span data-ng-click="deleteLineItem(order_item, $index)"><i class="fa fa-trash"></i><!--<i ng-class="(!order_item.deleted)? 'fa fa-trash' : 'fa fa-undo'"></i>--></span>
+									</div>
 								</div>
 								<!--<div id="grid_view_content" class="animate_repeat animate_if" data-ng-repeat="row in rows" ng-if="showEditDetails">
 									<div class="grid_view_content_cell">

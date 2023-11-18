@@ -8,8 +8,8 @@ $json_data = json_decode($json_post_file, true);
 $clean_data = array_map('funcSanitise', $json_data);
 
 $ordNo = $clean_data['ordNo'];
-$ord_sql = "SELECT Station, `To`, DeliveryPoint, OrderDate, OrderStatus, DeliveredTime, if(OrderDate < '2023-06-05 19:00:00',Orders.RecievedBy,OrderStatus.RecievedBy) AS RecievedBy, if(OrderDate < '2023-06-05 19:00:00',Orders.DeliveredBy,OrderStatus.DeliveredBy) AS DeliveredBy, FirstName, Reciepient FROM Orders JOIN Users on UserID = ID left JOIN OrderStatus on Order_No = OrderNo WHERE Order_No = '$ordNo'";
-$ordItems_sql = "SELECT qty, rate, total, item, preptime, Details_No, DeliveredStatus, PaidStatus FROM OrderDetailsExtended WHERE OrderNo = '$ordNo'";
+$ord_sql = "SELECT Station, `To`, DeliveryPoint, OrderDate, OrderStatus, DeliveredTime, ifnull(hasSpecialPrice,0) AS hasSpecialPrice, if(OrderDate < '2023-06-05 19:00:00',Orders.RecievedBy,OrderStatus.RecievedBy) AS RecievedBy, if(OrderDate < '2023-06-05 19:00:00',Orders.DeliveredBy,OrderStatus.DeliveredBy) AS DeliveredBy, FirstName, Reciepient FROM Orders JOIN Users on UserID = ID left JOIN OrderStatus on Order_No = OrderNo WHERE Order_No = '$ordNo'";
+$ordItems_sql = "SELECT qty, rate, total, item, preptime, Details_No, DeliveredStatus, SpecialPrice, PaidStatus, isDeleted FROM OrderDetailsExtended WHERE OrderNo = '$ordNo'";
 $ordpymt_sql = "SELECT TotalPaid FROM OrderPayments_grouped WHERE OrderNo = '$ordNo'";
 $json_ord = new stdClass();
 

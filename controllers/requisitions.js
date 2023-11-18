@@ -617,7 +617,8 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 			if($routeParams.category === "Eats" || $routeParams.category === "Kitchen"){
 				if(row[index].isChecked){
 					row[index].qty_recvd = Number(row[index].qty);
-					recvd_items.push({Details_No: row[index].DetailsNo, RecievedStatus: 1, QtyRecieved: row[index].qty_recvd});
+					//recvd_items.push({Details_No: row[index].DetailsNo, RecievedStatus: 1, QtyRecieved: row[index].qty_recvd});
+					recvd_items[index] = {Details_No: row[index].DetailsNo, RecievedStatus: 1, QtyRecieved: row[index].qty_recvd};
 					//console.log("Danku",recvd_items);
 				}else{
 					row[index].qty_recvd = null;
@@ -631,7 +632,8 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 						row[index].isChecked = false;
 					}else{
 						row[index].qty_recvd = row[index].QtyGiven;
-						recvd_items.push({Details_No: row[index].DetailsNo, RecievedStatus: 1, QtyRecieved: row[index].qty_recvd});
+						//recvd_items.push({Details_No: row[index].DetailsNo, RecievedStatus: 1, QtyRecieved: row[index].qty_recvd});
+						recvd_items[index] = {Details_No: row[index].DetailsNo, RecievedStatus: 1, QtyRecieved: row[index].qty_recvd};
 						//console.log("Danku",recvd_items);
 					}
 				}else{
@@ -642,7 +644,8 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 		}else{
 			if(row[index].isChecked){
 				row[index].qty_recvd = Number(row[index].qty);
-				recvd_items.push({Details_No: row[index].DetailsNo, RecievedStatus: 1, QtyRecieved: row[index].qty_recvd});
+				//recvd_items.push({Details_No: row[index].DetailsNo, RecievedStatus: 1, QtyRecieved: row[index].qty_recvd});
+				recvd_items[index] = {Details_No: row[index].DetailsNo, RecievedStatus: 1, QtyRecieved: row[index].qty_recvd};
 				//console.log("Danku",recvd_items);
 			}else{
 				row[index].qty_recvd = null;
@@ -719,7 +722,7 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 			if(recvd_items.length === 1){
 				recvd_items[0].FinalAmount = finAmnt;
 				items_changed.push(row[index].item);
-			}else{
+			}else{console.log(recvd_items[index], index)
 				recvd_items[index].FinalAmount = finAmnt;
 				items_changed.push(row[index].item);
 			}
@@ -731,7 +734,7 @@ theApp.controller("recv_requisitionCtlr", function($scope, $http, $routeParams, 
 				delete recvd_items[index].FinalAmount;
 			}
 		}
-		console.log(recvd_items, recvd_items[0].FinalAmount, finAmnt);
+		console.log(recvd_items, /*recvd_items[1].FinalAmount,*/ finAmnt,index);
 	}
 	
 	$scope.giveItem = function(row, index){//Entire row is brought to access the values of the object as needed (Consider this unlike in Create & Edit)
@@ -1006,7 +1009,7 @@ theApp.controller("view_requisitionCtlr", function($scope, $http, $routeParams, 
 	
 	$scope.updQtyRcvd = function(row, index){
 		let qty = Number(row.qty_recvd);
-		if(qty != row.QtyGiven){
+		//if(qty != row.QtyGiven){
 			if($routeParams.type === "External"){
 				if(!row.isRecieved){
 					alert("Mark item as recieved before you continue");
@@ -1034,7 +1037,9 @@ theApp.controller("view_requisitionCtlr", function($scope, $http, $routeParams, 
 				alert("Qty Recieved should equal to Qty Given, adjust Qty Given instead");
 				row.qty_recvd = row.QtyGiven;
 			}
-		}
+		/*}else{
+			if(Number(row.qty_recvd) != Number()
+		}*/
 	}
 	
 	$scope.updFinAmnt = function(row, index){
@@ -1066,7 +1071,7 @@ theApp.controller("view_requisitionCtlr", function($scope, $http, $routeParams, 
 	
 	$scope.validate = function(){
 		if(edited_rows.length == 0){
-			alert("Nothing was edited");
+			alert("Nothing was edited");console.log('edited')
 		}else{
 			angular.forEach(edited_rows, function(k,v){
 				//if(v == undefined){

@@ -11,17 +11,20 @@ $json_data = json_decode($json_post_file, true);
 $clean_data = array_map('funcSanitise', $json_data);
 $reqID = array_shift($clean_data);//echo $reqID;
 $recd_fail = [];//holds item lines which have failed to update
-
+//print_r($clean_data['recvd_items']);
 foreach($clean_data['recvd_items'] as $v){
-	date_default_timezone_set("Africa/Nairobi");
-	$v['DateRecieved'] = date('Y-m-d H:i:s');
-	$detNo = array_shift($v);
-	$fields_arr = array_keys($v);
-	array_unshift($v, createBindTypes($v));
-	$res = json_decode(dbConn(createUpdateSql($fields_arr, 'PurchaseDetails', 'Details_No', $detNo), $v, 'update'));
 	
-	if($res->status === 0){
-		array_push($recd_fail, $detNo); 
+	if(is_array($v)){//ignores the empty values that come as empty slots from js
+		date_default_timezone_set("Africa/Nairobi");
+		$v['DateRecieved'] = date('Y-m-d H:i:s');
+		$detNo = array_shift($v);
+		$fields_arr = array_keys($v);
+		array_unshift($v, createBindTypes($v));
+		$res = json_decode(dbConn(createUpdateSql($fields_arr, 'PurchaseDetails', 'Details_No', $detNo), $v, 'update'));
+		
+		if($res->status === 0){
+			array_push($recd_fail, $detNo); 
+		}
 	}
 }
 

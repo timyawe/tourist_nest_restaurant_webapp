@@ -18,6 +18,11 @@
 							<option value="">Choose Item</option>
 						</select>
 					</div>
+					<div ng-show="filterApplied" class="animate_show" style="display: flex">
+						<select ng-model="$parent.delvpnt" ng-change="changeDelvpntFilter()" ng-options="delvPnt.pntName as delvPnt.pntName for delvPnt in delvPnts">
+							<option value="">Choose Delivery Point</option>
+						</select>
+					</div>
 				</div>
 			</div>
 			<div id="details_content_box">
@@ -55,7 +60,7 @@
 					
 					<div id="details_content_box"><div id="loader"></div>
 					<div  style="max-height: 250px; overflow-y:auto">
-					<div class="grid_view_content" data-ng-repeat="order in orders" class="animate_repeat" data-ng-class="{pending_order: order.status == 'Pending', progress_order: order.status == 'In Progress', delivered_order: order.status == 'Delivered', NYP_order: order.status == 'NYP' }">
+					<div class="grid_view_content" data-ng-repeat="order in orders" class="animate_repeat" data-ng-class="{pending_order: order.status == 'Pending', progress_order: order.status == 'In Progress', delivered_order: order.status == 'Delivered', NYP_order: order.status == 'NYP',item_deleted: order.isItemDeleted == '1' }">
 						<div class="grid_view_content_cell">
 							<span>{{$index +1}}</span>
 						</div>
@@ -72,7 +77,7 @@
 							<span class="status_val">{{::order.status}}</span>
 						</div>
 						<div class="grid_view_content_cell  bill_cell">
-							<span>{{::order.bill}}</span>
+							<span>{{::order.bill}}</span><!--ng-style="{(order.status == 'Delivered')? {'color':'red'}:{'color':'white'}}"-->
 						</div>
 						<div class="grid_view_content_cell  paymt_cell">
 							<span>{{::order.payment}}</span>

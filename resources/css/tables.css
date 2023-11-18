@@ -11,7 +11,7 @@ table{
 	table-layout: fixed;
 }
 
-thead{
+thead, tfoot{
 	background-color: #3f87a6;
 	text-transform: capitalize;
 }
@@ -46,7 +46,7 @@ td {
 	text-align: right;
 }
 
-@media only screen and (max-width: 1111px){
+@media only screen and (max-width: 1311px){
 	#table_content_box{
 		width: 100%;
 		overflow: auto;

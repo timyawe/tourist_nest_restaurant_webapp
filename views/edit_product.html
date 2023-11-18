@@ -46,6 +46,10 @@
 										<option value="Active">Active</option>
 										<option value="Discontinued">Discontinued</option>
 									</select></div>
+									<div class="row animate_if" ng-if="showMainPdtField"><label class="col25">Main Product:</label>
+									<select class="select_box col75" data-ng-options="parentItem.Description for parentItem in parentPdtsList track by parentItem.Product_No" ng-model="main_product" name="main_product">
+										<option value="">Choose Parent Product</option>
+									</select></div>
 								</div>
 							</div>
 							<div class="row animate_if" ng-if="!item_sold_check">

@@ -4,7 +4,7 @@ $res_records = new stdClass();
 
 if(isset($_GET['station'])){
 	$station = $_GET['station'];
-	$orders_sql = "SELECT * FROM OrdersExtended WHERE Station = '$station' AND Status = 'Pending' OR Station = '$station' AND Status = 'In Progress' ORDER BY time DESC";
+	$orders_sql = "SELECT * FROM OrdersExtended WHERE Station = '$station' AND isFullyDelivered = 0 AND status != 'Closed'/*Status = 'Pending' OR Station = '$station' AND Status = 'In Progress'*/ ORDER BY time DESC";
 	$offers_sql = "SELECT * FROM OffersExtended WHERE Station = '$station' AND RecipientCategory = 'Eng' AND isDelivered = 0 OR Station = '$station' AND RecipientCategory = 'Visitor' AND isDelivered = 0 ORDER BY _date DESC";
 }
 
